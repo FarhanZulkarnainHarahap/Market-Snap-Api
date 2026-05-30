@@ -1,0 +1,13 @@
+import { Router } from "express";
+import { login, me, register, uploadAvatar } from "../controllers/authController.js";
+import { authenticate } from "../middleware/authRole.js";
+import { loginSchema, registerSchema } from "../middleware/schemas.js";
+import { uploadProfileImage } from "../middleware/upload.js";
+import { validate } from "../middleware/validate.js";
+
+export const authRouter = Router();
+
+authRouter.post("/auth/register", validate(registerSchema), register);
+authRouter.post("/auth/login", validate(loginSchema), login);
+authRouter.get("/auth/me", authenticate, me);
+authRouter.post("/auth/avatar", authenticate, uploadProfileImage.single("avatar"), uploadAvatar);
