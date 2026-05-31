@@ -74,7 +74,7 @@ npm run dev
 Default API URL:
 
 ```txt
-http://127.0.0.1:4100/api
+http://127.0.0.1:4100
 ```
 
 ## Environment
@@ -120,7 +120,7 @@ npm run prisma:migrate   # run Prisma migration
 Endpoint protected memakai JWT dari response login.
 
 ```bash
-curl -X POST https://your-market-snap-api.vercel.app/api/auth/login \
+curl -X POST https://your-market-snap-api.vercel.app/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@email.com","password":"password"}'
 ```
@@ -135,7 +135,7 @@ Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
 
 ## Checkout, Ongkir, and Payment
 
-`POST /api/orders` dipakai customer untuk membuat order. Endpoint ini sudah:
+`POST /orders` dipakai customer untuk membuat order. Endpoint ini sudah:
 
 - Memilih store terdekat dari `location`.
 - Menghitung ongkir RajaOngkir jika `destinationId` dikirim.
@@ -145,7 +145,7 @@ Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
 Contoh request:
 
 ```bash
-curl -X POST https://your-market-snap-api.vercel.app/api/orders \
+curl -X POST https://your-market-snap-api.vercel.app/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -167,36 +167,36 @@ Response akan membawa data order, detail shipping, dan `payment.invoiceUrl` jika
 
 | Method | Endpoint | Access | Description |
 | --- | --- | --- | --- |
-| GET | `/api/health` | Public | API health check |
-| GET | `/api/health/db` | Public | Prisma database check |
-| GET | `/api/stores/nearest` | Public | Nearest store by coordinate |
-| GET | `/api/categories` | Public | Product categories |
-| GET | `/api/products` | Public | Product list by selected store |
-| GET | `/api/products/:id` | Public | Product detail |
-| GET | `/api/users/me` | Auth | Current user profile |
-| PATCH | `/api/users/me` | Auth | Update profile |
-| GET | `/api/addresses` | Auth | User addresses |
-| POST | `/api/addresses` | Auth | Create address |
-| PATCH | `/api/addresses/:id` | Auth | Update address |
-| DELETE | `/api/addresses/:id` | Auth | Delete address |
-| GET | `/api/orders` | Auth | Order list |
-| POST | `/api/orders` | Customer | Create order, calculate shipping, create Xendit invoice |
-| PATCH | `/api/orders/:id` | Auth | Update order |
-| DELETE | `/api/orders/:id` | Auth | Delete order |
-| POST | `/api/orders/:id/payment-proof` | Customer | Upload payment proof |
-| PATCH | `/api/orders/:id/status` | Admin | Update order status |
-| GET | `/api/admin/stores` | Super admin | Store list |
-| POST | `/api/admin/stores` | Super admin | Create store |
-| GET | `/api/admin/users` | Super admin | User list |
-| POST | `/api/admin/users` | Super admin | Create store admin |
-| PATCH | `/api/admin/users/:id` | Super admin | Update user |
-| DELETE | `/api/admin/users/:id` | Super admin | Delete user |
-| POST | `/api/admin/products` | Super admin | Create product |
-| PATCH | `/api/admin/products/:id` | Super admin | Update product |
-| DELETE | `/api/admin/products/:id` | Super admin | Delete product |
-| GET | `/api/admin/discounts` | Admin | Discount list |
-| POST | `/api/admin/discounts` | Admin | Create discount |
-| GET | `/api/admin/reports/sales` | Admin | Sales report |
+| GET | `/health` | Public | API health check |
+| GET | `/health/db` | Public | Prisma database check |
+| GET | `/stores/nearest` | Public | Nearest store by coordinate |
+| GET | `/categories` | Public | Product categories |
+| GET | `/products` | Public | Product list by selected store |
+| GET | `/products/:id` | Public | Product detail |
+| GET | `/users/me` | Auth | Current user profile |
+| PATCH | `/users/me` | Auth | Update profile |
+| GET | `/addresses` | Auth | User addresses |
+| POST | `/addresses` | Auth | Create address |
+| PATCH | `/addresses/:id` | Auth | Update address |
+| DELETE | `/addresses/:id` | Auth | Delete address |
+| GET | `/orders` | Auth | Order list |
+| POST | `/orders` | Customer | Create order, calculate shipping, create Xendit invoice |
+| PATCH | `/orders/:id` | Auth | Update order |
+| DELETE | `/orders/:id` | Auth | Delete order |
+| POST | `/orders/:id/payment-proof` | Customer | Upload payment proof |
+| PATCH | `/orders/:id/status` | Admin | Update order status |
+| GET | `/admin/stores` | Super admin | Store list |
+| POST | `/admin/stores` | Super admin | Create store |
+| GET | `/admin/users` | Super admin | User list |
+| POST | `/admin/users` | Super admin | Create store admin |
+| PATCH | `/admin/users/:id` | Super admin | Update user |
+| DELETE | `/admin/users/:id` | Super admin | Delete user |
+| POST | `/admin/products` | Super admin | Create product |
+| PATCH | `/admin/products/:id` | Super admin | Update product |
+| DELETE | `/admin/products/:id` | Super admin | Delete product |
+| GET | `/admin/discounts` | Admin | Discount list |
+| POST | `/admin/discounts` | Admin | Create discount |
+| GET | `/admin/reports/sales` | Admin | Sales report |
 
 ## Deploy to Vercel
 
@@ -213,7 +213,7 @@ Folder `api` bisa dijadikan repository GitHub terpisah.
 9. Setelah deploy, gunakan domain API di web:
 
 ```env
-NEXT_PUBLIC_API_URL=https://your-market-snap-api.vercel.app/api
+NEXT_PUBLIC_API_URL=https://your-market-snap-api.vercel.app
 ```
 
 ## Grocery Flow

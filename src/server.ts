@@ -23,11 +23,10 @@ app.get("/", (_req, res) => {
   res.json({
     ok: true,
     name: "Market Snap API",
-    health: "/api/health",
-    docs: "/api"
+    health: "/health"
   });
 });
-app.use("/api", apiRouter);
+app.use(apiRouter);
 app.use(errorHandler);
 
 function normalizeOrigin(origin: string): string {
