@@ -3,6 +3,7 @@ import { z } from "zod";
 export const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
+  password: z.string().min(8),
   referralCode: z.preprocess((value) => value === "" ? undefined : value, z.string().optional())
 });
 

@@ -26,7 +26,7 @@ app.get("/", (_req, res) => {
     health: "/health"
   });
 });
-app.use(apiRouter);
+app.use("/", apiRouter);
 app.use(errorHandler);
 
 function normalizeOrigin(origin: string): string {

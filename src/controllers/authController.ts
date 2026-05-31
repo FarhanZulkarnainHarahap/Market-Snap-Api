@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { signToken, verifyPassword } from "../config/auth.js";
+import { hashPassword, signToken, verifyPassword } from "../config/auth.js";
 import { prisma } from "../config/prisma.js";
 import { handleControllerError, mapUser } from "../utils/controllerHelpers.js";
 
@@ -11,7 +11,16 @@ export async function register(req: Request, res: Response): Promise<void> {
       return;
     }
     const referralCode = cleanOptional(req.body.referralCode);
-    const user = await prisma.user.create({ data: { name: req.body.name, email: req.body.email, referralCode, role: "USER", isActive: true } });
+    const user = await prisma.user.create({
+      data: {
+        name: req.body.name,
+        email: req.body.email,
+        passwordHash: hashPassword(req.body.password),
+        referralCode,
+        role: "USER",
+        isActive: true
+      }
+    });
     res.status(201).json({ data: mapUser(user), verificationExpiresInMinutes: 60 });
   } catch (error) {
     handleControllerError(res, error);
