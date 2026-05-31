@@ -5,8 +5,10 @@ import { apiRouter } from "./routers/index.js";
 
 export const app = express();
 
+const webOrigins = (process.env.WEB_ORIGIN ?? "").split(",").map(normalizeOrigin).filter(Boolean);
+
 const allowedOrigins = [
-  process.env.WEB_ORIGIN,
+  ...webOrigins,
   "http://localhost:3000",
   "http://localhost:3100",
   "http://localhost:3200",
@@ -17,5 +19,17 @@ const allowedOrigins = [
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: "1mb" }));
+app.get("/", (_req, res) => {
+  res.json({
+    ok: true,
+    name: "Market Snap API",
+    health: "/api/health",
+    docs: "/api"
+  });
+});
 app.use("/api", apiRouter);
 app.use(errorHandler);
+
+function normalizeOrigin(origin: string): string {
+  return origin.trim().replace(/\/+$/, "");
+}
