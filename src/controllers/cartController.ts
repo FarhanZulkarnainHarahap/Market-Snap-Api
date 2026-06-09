@@ -13,7 +13,8 @@ export async function getCart(req: Request, res: Response): Promise<void> {
     const items = await prisma.cartItem.findMany({ where: { userId: req.user?.id }, include: cartInclude });
     const data = await Promise.all(items.map(enrichCartItem));
     const total = data.reduce((sum, item) => sum + item.subtotal, 0);
-    res.json({ data, summary: { totalItems: data.length, total } });
+    const totalItems = data.reduce((sum, item) => sum + item.quantity, 0);
+    res.json({ data, summary: { totalItems, total } });
   } catch (error) {
     handleControllerError(res, error);
   }

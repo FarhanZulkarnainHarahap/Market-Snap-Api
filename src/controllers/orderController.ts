@@ -23,12 +23,18 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(422).json({ message: "Alamat di luar jangkauan toko" });
       return;
     }
+    const stockIssue = await stockIssueFor(store.data.id, body.items ?? []);
+    if (stockIssue) {
+      res.status(422).json({ message: stockIssue });
+      return;
+    }
     const shipping = await shippingQuote(body);
     const orderNo = orderNumber();
     const total = orderTotal(body, shipping.cost);
     const payment = await paymentInvoice(body, orderNo, total, req.user?.email ?? "");
     const order = await prisma.order.create({ data: { orderNumber: orderNo, userId: String(req.user?.id), storeId: store.data.id, total, shippingCost: shipping.cost, paymentDeadline: new Date(Date.now() + 60 * 60 * 1000) } });
-    await createOrderItems(order.id, body.items ?? []);
+    await createOrderItems(order.id, body.items ?? [], store.data.id);
+    await prisma.cartItem.deleteMany({ where: { userId: req.user?.id, storeId: store.data.id } });
     res.status(201).json({ data: { ...order, status: "Menunggu Pembayaran" }, shipping, payment });
   } catch (error) {
     handleControllerError(res, error);
@@ -95,8 +101,26 @@ async function nearestStore(input: Record<string, unknown>) {
   return { data: fallback.id === store.id ? fallback : stores.find((item) => item.id === store.id) ?? fallback, inRange: Number(store.distanceKm) <= store.radiusKm };
 }
 
-async function createOrderItems(orderId: string, items: CreateOrderBody["items"]) {
-  await Promise.all((items ?? []).map((item) => item.productId ? prisma.orderItem.create({ data: { orderId, productId: item.productId, quantity: Number(item.quantity ?? 1), price: Number(item.price ?? 0) } }) : null));
+async function stockIssueFor(storeId: string, items: CreateOrderBody["items"]) {
+  for (const item of items ?? []) {
+    if (!item.productId) continue;
+    const quantity = Number(item.quantity ?? 1);
+    const inventory = await prisma.inventory.findUnique({ where: { storeId_productId: { storeId, productId: item.productId } }, include: { product: true } });
+    if (!inventory || inventory.quantity < quantity) return `Stok ${inventory?.product.name ?? item.productId} tidak mencukupi`;
+  }
+  return null;
+}
+
+async function createOrderItems(orderId: string, items: CreateOrderBody["items"], storeId: string) {
+  await prisma.$transaction(async (tx) => {
+    for (const item of items ?? []) {
+      if (!item.productId) continue;
+      const quantity = Number(item.quantity ?? 1);
+      await tx.orderItem.create({ data: { orderId, productId: item.productId, quantity, price: Number(item.price ?? 0) } });
+      await tx.inventory.update({ where: { storeId_productId: { storeId, productId: item.productId } }, data: { quantity: { decrement: quantity } } });
+      await tx.stockJournal.create({ data: { storeId, productId: item.productId, change: -quantity, note: `Order ${orderId}` } });
+    }
+  });
 }
 
 async function shippingQuote(body: CreateOrderBody) {

@@ -11,6 +11,15 @@ export async function getNearestStore(req: Request, res: Response): Promise<void
   }
 }
 
+export async function getStores(_req: Request, res: Response): Promise<void> {
+  try {
+    const stores = await prisma.store.findMany({ orderBy: [{ isMain: "desc" }, { name: "asc" }] });
+    res.json({ data: stores.map((store) => mapStore(store)) });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
 export async function getCategories(_req: Request, res: Response): Promise<void> {
   try {
     const categories = await prisma.productCategory.findMany({ orderBy: { name: "asc" } });
@@ -47,8 +56,11 @@ export async function getProductDetail(req: Request, res: Response): Promise<voi
 
 async function resolveStore(query: Request["query"]) {
   const stores = await prisma.store.findMany();
+  const selectedStoreId = typeof query.storeId === "string" ? query.storeId : "";
   const fallback = stores.find((store) => store.isMain) ?? stores[0];
   if (!fallback) throw new Error("Store belum tersedia");
+  const selectedStore = stores.find((store) => store.id === selectedStoreId);
+  if (selectedStore) return { store: mapStore(selectedStore), inRange: true };
   const location = locationFromQuery(query);
   if (!location) return { store: mapStore(fallback), inRange: true };
   const store = stores.map((item) => mapStore(item, location)).sort((a, b) => Number(a.distanceKm) - Number(b.distanceKm))[0];
@@ -63,11 +75,35 @@ async function filteredProducts(req: Request, storeId: string) {
 }
 
 function productInclude(storeId: string) {
-  return { category: true, images: true, stocks: { where: { storeId }, select: { quantity: true } } } as const;
+  const now = new Date();
+  return {
+    category: true,
+    images: true,
+    discounts: { where: { storeId, startsAt: { lte: now }, expiresAt: { gt: now } }, orderBy: { value: "desc" } },
+    stocks: { where: { storeId }, select: { quantity: true } }
+  } as const;
 }
 
 function mapProduct(product: ProductRow) {
-  return { id: product.id, name: product.name, category: product.category.name, price: product.price, unit: product.unit, description: product.description ?? undefined, image: product.images[0]?.url ?? "/product.png", discount: null, organic: false, stock: product.stocks[0]?.quantity ?? 0 };
+  const discount = product.discounts[0];
+  return {
+    id: product.id,
+    name: product.name,
+    category: product.category.name,
+    price: product.price,
+    unit: product.unit,
+    description: product.description ?? undefined,
+    image: product.images[0]?.url ?? "/product.png",
+    discount: discount ? discountLabel(discount) : null,
+    organic: Boolean(discount),
+    stock: product.stocks[0]?.quantity ?? 0
+  };
+}
+
+function discountLabel(discount: ProductRow["discounts"][number]) {
+  if (discount.type === "BOGO") return "BOGO";
+  if (discount.type === "NOMINAL") return `Rp ${discount.value.toLocaleString("id-ID")}`;
+  return `${discount.value}%`;
 }
 
 function sortProducts(items: ReturnType<typeof mapProduct>[], sort: string) {
@@ -86,5 +122,6 @@ type ProductRow = {
   unit: string;
   category: { name: string };
   images: { url: string }[];
+  discounts: { type: "PERCENTAGE" | "NOMINAL" | "BOGO"; value: number }[];
   stocks: { quantity: number }[];
 };
