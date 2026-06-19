@@ -29,6 +29,19 @@ export async function getCategories(_req: Request, res: Response): Promise<void>
   }
 }
 
+export async function getVouchers(_req: Request, res: Response): Promise<void> {
+  try {
+    const now = new Date();
+    const vouchers = await prisma.voucher.findMany({
+      where: { expiresAt: { gt: now } },
+      orderBy: [{ expiresAt: "asc" }, { createdAt: "desc" }]
+    });
+    res.json({ data: vouchers });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
 export async function getProducts(req: Request, res: Response): Promise<void> {
   try {
     const { store, inRange } = await resolveStore(req.query);
