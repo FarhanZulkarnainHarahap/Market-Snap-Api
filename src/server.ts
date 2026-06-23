@@ -1,10 +1,11 @@
 import cors from "cors";
 import express from "express";
-import { passport } from "./config/passport.js";
+import { authJsHandler } from "./config/authjs.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { apiRouter } from "./routers/index.js";
 
 export const app = express();
+app.set("trust proxy", true);
 
 const webOrigins = (process.env.WEB_ORIGIN ?? "").split(",").map(normalizeOrigin).filter(Boolean);
 
@@ -19,8 +20,8 @@ const allowedOrigins = [
 ].filter(Boolean) as string[];
 
 app.use(cors({ origin: allowedOrigins }));
+app.use(/^\/authjs\/(.*)/, authJsHandler);
 app.use(express.json({ limit: "1mb" }));
-app.use(passport.initialize());
 app.get("/", (_req, res) => {
   res.json({
     ok: true,

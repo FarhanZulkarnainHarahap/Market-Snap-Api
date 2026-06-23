@@ -1,8 +1,7 @@
 import type { Request, Response } from "express";
 import { hashPassword, signToken, verifyPassword } from "../config/auth.js";
-import { googleOAuthEnabled, passport } from "../config/passport.js";
+import { authJsGoogleSignInUrl, googleCallbackUrl, googleOAuthEnabled, webOrigin } from "../config/authjs.js";
 import { prisma } from "../config/prisma.js";
-import type { User } from "../types/market.js";
 import { handleControllerError, mapUser } from "../utils/controllerHelpers.js";
 
 export async function register(req: Request, res: Response): Promise<void> {
@@ -59,24 +58,16 @@ export function googleLogin(req: Request, res: Response): void {
     res.status(503).json({ message: "Google OAuth belum dikonfigurasi" });
     return;
   }
-  passport.authenticate("google", { scope: ["profile", "email"], session: false })(req, res);
+  const callbackUrl = cleanWebCallbackUrl(req.query.callbackUrl);
+  res.type("html").send(autoSubmitGoogleForm(authJsGoogleSignInUrl(), callbackUrl));
 }
 
-export function googleCallback(req: Request, res: Response): void {
+export function googleCallback(_req: Request, res: Response): void {
   if (!googleOAuthEnabled) {
-    redirectToWeb(res, "Google OAuth belum dikonfigurasi");
+    res.redirect(googleCallbackUrl({ error: "Google OAuth belum dikonfigurasi" }));
     return;
   }
-
-  passport.authenticate("google", { session: false }, (error: unknown, user?: User) => {
-    if (error || !user) {
-      redirectToWeb(res, error instanceof Error ? error.message : "Login Google gagal");
-      return;
-    }
-    const token = signToken({ sub: user.id, role: user.role });
-    const params = new URLSearchParams({ token });
-    res.redirect(`${webOrigin()}/auth/google/callback?${params.toString()}`);
-  })(req, res);
+  res.redirect(authJsGoogleSignInUrl());
 }
 
 function cleanOptional(value: unknown): string | undefined {
@@ -96,11 +87,37 @@ export function uploadAvatar(req: Request, res: Response): void {
   }
 }
 
-function webOrigin() {
-  return (process.env.WEB_ORIGIN?.split(",")[0] ?? "https://market-snap.vercel.app").trim().replace(/\/+$/, "");
+function cleanWebCallbackUrl(value: unknown): string {
+  const fallback = `${webOrigin()}/auth/google/callback`;
+  if (typeof value !== "string") return fallback;
+  try {
+    const url = new URL(value);
+    return url.origin === webOrigin() ? url.toString() : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
-function redirectToWeb(res: Response, message: string): void {
-  const params = new URLSearchParams({ error: message });
-  res.redirect(`${webOrigin()}/auth/google/callback?${params.toString()}`);
+function autoSubmitGoogleForm(action: string, callbackUrl: string): string {
+  return `<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menghubungkan Google...</title>
+  </head>
+  <body>
+    <form id="google-auth-form" method="post" action="${escapeHtml(action)}">
+      <input type="hidden" name="callbackUrl" value="${escapeHtml(callbackUrl)}" />
+    </form>
+    <script>document.getElementById("google-auth-form").submit();</script>
+    <noscript>
+      <button form="google-auth-form" type="submit">Lanjutkan dengan Google</button>
+    </noscript>
+  </body>
+</html>`;
+}
+
+function escapeHtml(value: string): string {
+  return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
