@@ -18,6 +18,13 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
 
 export async function updateProfile(req: Request, res: Response): Promise<void> {
   try {
+    if (req.body.avatarUrl) {
+      const existing = await prisma.user.findUnique({ where: { id: String(req.user?.id) } });
+      if (!existing || !(existing.passwordHash || existing.password)) {
+        res.status(403).json({ message: "Foto profil akun ini dikelola oleh penyedia login." });
+        return;
+      }
+    }
     const user = await prisma.user.update({ where: { id: String(req.user?.id) }, data: profileData(req.body) });
     res.json({ data: mapUser(user) });
   } catch (error) {
@@ -80,6 +87,7 @@ function profileData(body: Record<string, unknown>) {
   return {
     name: body.name as string | undefined,
     email: body.email as string | undefined,
+    avatarUrl: body.avatarUrl as string | undefined,
     password: password ? null : undefined,
     passwordHash: password ? hashPassword(password) : undefined,
     role: body.role ? prismaRole(String(body.role)) : undefined,

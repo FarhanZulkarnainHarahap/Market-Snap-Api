@@ -30,6 +30,7 @@ export function mapUser(user: PrismaUser): User {
     name: user.name,
     email: user.email,
     avatarUrl: user.avatarUrl ?? undefined,
+    canEditAvatar: Boolean(user.passwordHash || user.password),
     createdAt: user.createdAt.toISOString(),
     referralCode: user.referralCode ?? undefined,
     role: apiRole(user.role),

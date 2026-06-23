@@ -12,6 +12,15 @@ export const loginSchema = z.object({
   password: z.string().min(8)
 });
 
+export const passwordResetRequestSchema = z.object({
+  email: z.string().email()
+});
+
+export const passwordResetConfirmSchema = z.object({
+  token: z.string().min(20),
+  password: z.string().min(8)
+});
+
 export const createOrderSchema = z.object({
   userId: z.string().optional(),
   total: z.coerce.number().nonnegative(),
