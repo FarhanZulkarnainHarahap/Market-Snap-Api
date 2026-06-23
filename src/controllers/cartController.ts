@@ -22,6 +22,10 @@ export async function getCart(req: Request, res: Response): Promise<void> {
 
 export async function addCartItem(req: Request, res: Response): Promise<void> {
   try {
+    if (!req.user?.verified) {
+      res.status(403).json({ message: "Verifikasi akun terlebih dahulu sebelum menambahkan produk ke keranjang." });
+      return;
+    }
     const body = req.body as CartBody;
     const product = body.productId ? await prisma.product.findUnique({ where: { id: body.productId } }) : null;
     const store = body.storeId ? await prisma.store.findUnique({ where: { id: body.storeId } }) : await mainStore();

@@ -18,7 +18,7 @@ export async function register(req: Request, res: Response): Promise<void> {
   try {
     const exists = await prisma.user.findUnique({ where: { email: req.body.email } });
     if (exists) {
-      res.status(409).json({ message: "Email sudah terdaftar" });
+      res.status(409).json({ message: providerConflictMessage(accountProvider(exists)) });
       return;
     }
     const referralCode = cleanOptional(req.body.referralCode);
@@ -27,6 +27,7 @@ export async function register(req: Request, res: Response): Promise<void> {
         name: req.body.name,
         email: req.body.email,
         passwordHash: hashPassword(req.body.password),
+        authProvider: "credentials",
         referralCode,
         role: "USER",
         isActive: true
@@ -41,7 +42,16 @@ export async function register(req: Request, res: Response): Promise<void> {
 export async function login(req: Request, res: Response): Promise<void> {
   try {
     const user = await prisma.user.findUnique({ where: { email: req.body.email } });
-    if (!user || !verifyPassword(req.body.password, user.passwordHash ?? user.password)) {
+    if (!user) {
+      res.status(401).json({ message: "Email atau password salah" });
+      return;
+    }
+    const provider = accountProvider(user);
+    if (provider !== "credentials") {
+      res.status(409).json({ message: providerConflictMessage(provider) });
+      return;
+    }
+    if (!verifyPassword(req.body.password, user.passwordHash ?? user.password)) {
       res.status(401).json({ message: "Email atau password salah" });
       return;
     }
@@ -144,6 +154,50 @@ export async function confirmPasswordReset(req: Request, res: Response): Promise
   }
 }
 
+export async function requestEmailVerification(req: Request, res: Response): Promise<void> {
+  try {
+    const email = String(req.body.email ?? "").trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { id: String(req.user?.id) } });
+    if (!user) {
+      res.status(404).json({ message: "Akun tidak ditemukan" });
+      return;
+    }
+    if (user.verifiedAt) {
+      res.json({ message: "Akun Anda sudah terverifikasi." });
+      return;
+    }
+    if (email !== user.email.toLowerCase()) {
+      res.status(422).json({ message: "Email tidak sesuai dengan akun aktif." });
+      return;
+    }
+    const token = signToken({ sub: user.id, role: "email_verify" });
+    const verifyUrl = `${webOrigin()}/verify-email?token=${encodeURIComponent(token)}`;
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "Market Snap <onboarding@resend.dev>",
+      to: user.email,
+      subject: "Verifikasi akun Market Snap",
+      html: emailVerificationEmail(user.name, verifyUrl)
+    });
+    res.json({ message: "Link verifikasi sudah dikirim ke email Anda." });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
+export async function confirmEmailVerification(req: Request, res: Response): Promise<void> {
+  try {
+    const token = verifyToken(String(req.body.token ?? ""));
+    if (!token || token.role !== "email_verify") {
+      res.status(400).json({ message: "Link verifikasi sudah tidak berlaku." });
+      return;
+    }
+    const user = await prisma.user.update({ where: { id: token.sub }, data: { verifiedAt: new Date() } });
+    res.json({ message: "Akun berhasil diverifikasi.", data: mapUser(user) });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
 export async function uploadAvatar(req: Request, res: Response): Promise<void> {
   try {
     if (!req.file) {
@@ -187,6 +241,41 @@ function passwordResetEmail(name: string, resetUrl: string): string {
     </table>
   </body>
 </html>`;
+}
+
+function emailVerificationEmail(name: string, verifyUrl: string): string {
+  const safeName = escapeHtml(name);
+  const safeUrl = escapeHtml(verifyUrl);
+  return `<!doctype html>
+<html lang="id">
+  <body style="margin:0;background:#f4f8f1;font-family:Arial,sans-serif;color:#083f22;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f8f1;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border:1px solid #d9e5d8;border-radius:18px;padding:32px;">
+            <tr><td style="font-size:24px;font-weight:800;letter-spacing:.02em;">MARKET SNAP</td></tr>
+            <tr><td style="padding-top:28px;font-size:22px;font-weight:800;">Verifikasi akun Anda</td></tr>
+            <tr><td style="padding-top:12px;font-size:15px;line-height:1.7;color:#476152;">Halo ${safeName}, verifikasi akun Market Snap Anda untuk mulai menambahkan produk ke keranjang dan berbelanja lebih cepat.</td></tr>
+            <tr><td style="padding-top:24px;"><a href="${safeUrl}" style="display:inline-block;background:#07582c;color:#ffffff;text-decoration:none;border-radius:10px;padding:14px 22px;font-weight:800;">Verifikasi sekarang</a></td></tr>
+            <tr><td style="padding-top:24px;font-size:13px;line-height:1.6;color:#6d7d70;">Abaikan email ini jika Anda tidak meminta verifikasi akun.</td></tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
+function accountProvider(user: { authProvider?: string | null; password?: string | null; passwordHash?: string | null }): "credentials" | "facebook" | "google" {
+  if (user.passwordHash || user.password) return "credentials";
+  const provider = String(user.authProvider ?? "").toLowerCase();
+  return provider === "facebook" ? "facebook" : provider === "google" ? "google" : "credentials";
+}
+
+function providerConflictMessage(provider: "credentials" | "facebook" | "google"): string {
+  if (provider === "google") return "Email ini sudah terhubung dengan Google. Silakan masuk dengan Google.";
+  if (provider === "facebook") return "Email ini sudah terhubung dengan Facebook. Silakan masuk dengan Facebook.";
+  return "Email ini sudah terdaftar. Silakan masuk dengan email dan password.";
 }
 
 function cleanWebCallbackUrl(value: unknown, provider: "facebook" | "google"): string {

@@ -41,8 +41,10 @@ model User {
   id           String     @id @default(cuid())
   name         String
   email        String     @unique
+  phone        String?
   password     String?
   passwordHash String?
+  authProvider String     @default("credentials")
   role         Role       @default(USER)
   isActive     Boolean    @default(true)
   verifiedAt   DateTime?

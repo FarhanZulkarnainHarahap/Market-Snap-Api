@@ -126,18 +126,18 @@ async function seedUsers() {
   const passwordHash = hashPassword("password123");
   await prisma.user.upsert({
     where: { email: "superadmin@marketsnap.id" },
-    update: { passwordHash, role: "SUPER_ADMIN", verifiedAt: new Date(), isActive: true },
-    create: { name: "Super Admin", email: "superadmin@marketsnap.id", passwordHash, role: "SUPER_ADMIN", verifiedAt: new Date(), isActive: true, referralCode: "SUPERGREEN" }
+    update: { authProvider: "credentials", passwordHash, role: "SUPER_ADMIN", verifiedAt: new Date(), isActive: true },
+    create: { name: "Super Admin", email: "superadmin@marketsnap.id", authProvider: "credentials", passwordHash, role: "SUPER_ADMIN", verifiedAt: new Date(), isActive: true, referralCode: "SUPERGREEN" }
   });
   await prisma.user.upsert({
     where: { email: "admin.kemang@marketsnap.id" },
-    update: { passwordHash, role: "STORE_ADMIN", storeId: "kemang", verifiedAt: new Date(), isActive: true },
-    create: { name: "Admin Kemang", email: "admin.kemang@marketsnap.id", passwordHash, role: "STORE_ADMIN", storeId: "kemang", verifiedAt: new Date(), isActive: true, referralCode: "KEMANGADMIN" }
+    update: { authProvider: "credentials", passwordHash, role: "STORE_ADMIN", storeId: "kemang", verifiedAt: new Date(), isActive: true },
+    create: { name: "Admin Kemang", email: "admin.kemang@marketsnap.id", authProvider: "credentials", passwordHash, role: "STORE_ADMIN", storeId: "kemang", verifiedAt: new Date(), isActive: true, referralCode: "KEMANGADMIN" }
   });
   const customer = await prisma.user.upsert({
     where: { email: "customer@marketsnap.id" },
-    update: { passwordHash, role: "USER", verifiedAt: new Date(), isActive: true },
-    create: { name: "Andi Pratama", email: "customer@marketsnap.id", passwordHash, role: "USER", verifiedAt: new Date(), isActive: true, referralCode: "ANDISNAP" }
+    update: { authProvider: "credentials", passwordHash, role: "USER", verifiedAt: new Date(), isActive: true },
+    create: { name: "Andi Pratama", email: "customer@marketsnap.id", authProvider: "credentials", passwordHash, role: "USER", verifiedAt: new Date(), isActive: true, referralCode: "ANDISNAP" }
   });
   await prisma.address.upsert({
     where: { id: "seed-address-kemang" },

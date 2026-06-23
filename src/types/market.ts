@@ -34,7 +34,9 @@ export type User = {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   avatarUrl?: string;
+  authProvider?: string;
   canEditAvatar?: boolean;
   createdAt?: string;
   role: "user" | "admin" | "super_admin" | "store_admin";

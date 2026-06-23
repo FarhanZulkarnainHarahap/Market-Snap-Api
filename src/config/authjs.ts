@@ -25,11 +25,15 @@ export const authJsHandler = ExpressAuth({
         const avatarUrl = cleanString(profile?.picture ?? user.image) || undefined;
         const emailVerified = profile?.email_verified !== false;
         const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing && accountProvider(existing) !== provider) {
+          return oauthCallbackUrl(provider, { error: providerConflictMessage(accountProvider(existing)) });
+        }
         const marketUser = existing
           ? await prisma.user.update({
               where: { id: existing.id },
               data: {
                 avatarUrl: existing.avatarUrl ?? avatarUrl,
+                authProvider: provider,
                 isActive: true,
                 verifiedAt: existing.verifiedAt ?? (emailVerified ? new Date() : undefined)
               }
@@ -38,6 +42,7 @@ export const authJsHandler = ExpressAuth({
               data: {
                 avatarUrl,
                 email,
+                authProvider: provider,
                 isActive: true,
                 name,
                 role: "USER",
@@ -145,6 +150,18 @@ function cleanString(value: unknown): string {
 
 function fallbackEmail(provider: "facebook" | "google", providerAccountId: string): string {
   return provider === "facebook" && providerAccountId ? `facebook-${providerAccountId}@oauth.market-snap.local` : "";
+}
+
+function accountProvider(user: { authProvider?: string | null; password?: string | null; passwordHash?: string | null }): "credentials" | "facebook" | "google" {
+  if (user.passwordHash || user.password) return "credentials";
+  const provider = String(user.authProvider ?? "").toLowerCase();
+  return provider === "facebook" ? "facebook" : provider === "google" ? "google" : "credentials";
+}
+
+function providerConflictMessage(provider: "credentials" | "facebook" | "google"): string {
+  if (provider === "google") return "Email ini sudah terhubung dengan Google. Silakan masuk dengan Google.";
+  if (provider === "facebook") return "Email ini sudah terhubung dengan Facebook. Silakan masuk dengan Facebook.";
+  return "Email ini sudah terdaftar. Silakan masuk dengan email dan password.";
 }
 
 function normalizeOrigin(origin: string): string {

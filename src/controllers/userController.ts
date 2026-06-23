@@ -53,6 +53,7 @@ export async function createUser(req: Request, res: Response): Promise<void> {
         name: req.body.name,
         email: req.body.email,
         passwordHash: req.body.password ? hashPassword(req.body.password) : undefined,
+        authProvider: "credentials",
         role: prismaRole(req.body.role),
         isActive: true,
         verifiedAt: req.body.verified ? new Date() : null
@@ -87,6 +88,7 @@ function profileData(body: Record<string, unknown>) {
   return {
     name: body.name as string | undefined,
     email: body.email as string | undefined,
+    phone: body.phone as string | undefined,
     avatarUrl: body.avatarUrl as string | undefined,
     password: password ? null : undefined,
     passwordHash: password ? hashPassword(password) : undefined,

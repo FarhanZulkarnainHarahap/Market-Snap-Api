@@ -78,10 +78,19 @@ export const updateAddressSchema = createAddressSchema.partial();
 export const updateUserSchema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().email().optional(),
+  phone: z.string().min(8).max(20).optional(),
   password: z.string().min(8).optional(),
   avatarUrl: z.string().url().optional(),
   role: z.enum(["user", "admin", "super_admin", "store_admin"]).optional(),
   verified: z.coerce.boolean().optional()
+});
+
+export const emailVerificationRequestSchema = z.object({
+  email: z.string().email()
+});
+
+export const emailVerificationConfirmSchema = z.object({
+  token: z.string().min(20)
 });
 
 export const createUserSchema = z.object({
