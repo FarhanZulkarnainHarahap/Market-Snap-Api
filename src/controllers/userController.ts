@@ -5,7 +5,12 @@ import { handleControllerError, mapUser, paginate, prismaRole } from "../utils/c
 
 export async function getProfile(req: Request, res: Response): Promise<void> {
   try {
-    res.json({ data: req.user });
+    const user = await prisma.user.findUnique({ where: { id: String(req.user?.id) } });
+    if (!user) {
+      res.status(404).json({ message: "User tidak ditemukan" });
+      return;
+    }
+    res.json({ data: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
   }

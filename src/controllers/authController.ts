@@ -55,7 +55,12 @@ export async function me(req: Request, res: Response): Promise<void> {
       res.status(404).json({ message: "User tidak ditemukan" });
       return;
     }
-    res.json({ data: req.user });
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (!user) {
+      res.status(404).json({ message: "User tidak ditemukan" });
+      return;
+    }
+    res.json({ data: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
   }

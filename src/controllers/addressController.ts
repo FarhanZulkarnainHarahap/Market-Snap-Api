@@ -23,6 +23,11 @@ export async function createAddress(req: Request, res: Response): Promise<void> 
 
 export async function updateAddress(req: Request, res: Response): Promise<void> {
   try {
+    const exists = await prisma.address.findFirst({ where: { id: String(req.params.id), userId: req.user?.id } });
+    if (!exists) {
+      res.status(404).json({ message: "Alamat tidak ditemukan" });
+      return;
+    }
     if (req.body.isPrimary) await prisma.address.updateMany({ where: { userId: req.user?.id }, data: { isPrimary: false } });
     const address = await prisma.address.update({ where: { id: String(req.params.id) }, data: addressData(req.body) });
     res.json({ data: address });
@@ -33,6 +38,11 @@ export async function updateAddress(req: Request, res: Response): Promise<void> 
 
 export async function deleteAddress(req: Request, res: Response): Promise<void> {
   try {
+    const exists = await prisma.address.findFirst({ where: { id: String(req.params.id), userId: req.user?.id } });
+    if (!exists) {
+      res.status(404).json({ message: "Alamat tidak ditemukan" });
+      return;
+    }
     const address = await prisma.address.delete({ where: { id: String(req.params.id) } });
     res.json({ message: "Alamat berhasil dihapus", data: address });
   } catch (error) {

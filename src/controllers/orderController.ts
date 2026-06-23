@@ -43,7 +43,18 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
 
 export async function getOrders(req: Request, res: Response): Promise<void> {
   try {
-    const orders = await prisma.order.findMany({ where: req.query.status ? { status: statusFromText(String(req.query.status)) } : undefined, include: { items: true, store: true }, orderBy: { createdAt: "desc" } });
+    const where = {
+      ...(req.query.status ? { status: statusFromText(String(req.query.status)) } : {}),
+      ...(req.user?.role === "user" ? { userId: req.user.id } : {})
+    };
+    const orders = await prisma.order.findMany({
+      where,
+      include: {
+        items: { include: { product: { include: { category: true, images: true } } } },
+        store: true
+      },
+      orderBy: { createdAt: "desc" }
+    });
     res.json({ data: orders });
   } catch (error) {
     handleControllerError(res, error);
