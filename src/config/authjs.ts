@@ -8,7 +8,7 @@ const defaultApiOrigin = "https://apimarket-snap.vercel.app";
 const defaultWebOrigin = "https://market-snap.vercel.app";
 
 export const authJsPath = "/authjs";
-export const googleOAuthEnabled = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+export const googleOAuthEnabled = Boolean(env("GOOGLE_CLIENT_ID") && env("GOOGLE_CLIENT_SECRET"));
 
 export const authJsHandler = ExpressAuth({
   callbacks: {
@@ -55,7 +55,7 @@ export const authJsHandler = ExpressAuth({
     }
   },
   pages: {
-    error: `${defaultWebOrigin}/auth/google/callback`
+    error: `${webOrigin()}/auth/google/callback`
   },
   providers: googleOAuthEnabled
     ? [
@@ -65,31 +65,42 @@ export const authJsHandler = ExpressAuth({
               prompt: "select_account"
             }
           },
-          clientId: String(process.env.GOOGLE_CLIENT_ID),
-          clientSecret: String(process.env.GOOGLE_CLIENT_SECRET)
+          clientId: String(env("GOOGLE_CLIENT_ID")),
+          clientSecret: String(env("GOOGLE_CLIENT_SECRET")),
+          redirectProxyUrl: authJsBaseUrl()
         })
       ]
     : [],
-  secret: process.env.AUTH_SECRET ?? process.env.JWT_SECRET,
+  redirectProxyUrl: authJsBaseUrl(),
+  secret: env("AUTH_SECRET") ?? env("JWT_SECRET"),
   skipCSRFCheck,
   trustHost: true
 });
 
 export function authJsGoogleSignInUrl(): string {
-  return `${apiOrigin()}${authJsPath}/signin/google`;
+  return `${authJsBaseUrl()}/signin/google`;
 }
 
 export function webOrigin(): string {
-  return normalizeOrigin(process.env.WEB_ORIGIN?.split(",")[0] ?? defaultWebOrigin);
+  return normalizeOrigin(env("WEB_ORIGIN")?.split(",")[0] ?? defaultWebOrigin);
 }
 
 export function apiOrigin(): string {
-  return normalizeOrigin(process.env.API_PUBLIC_URL ?? process.env.AUTH_URL?.replace(/\/authjs\/?$/, "") ?? defaultApiOrigin);
+  return normalizeOrigin(env("API_PUBLIC_URL") ?? authUrlOrigin() ?? defaultApiOrigin);
 }
 
 export function googleCallbackUrl(params: Record<string, string>): string {
   const query = new URLSearchParams(params);
   return `${webOrigin()}/auth/google/callback?${query.toString()}`;
+}
+
+function authJsBaseUrl(): string {
+  const configured =
+    env("GOOGLE_REDIRECT_PROXY_URL") ??
+    env("AUTH_REDIRECT_PROXY_URL") ??
+    env("AUTH_URL") ??
+    `${apiOrigin()}${authJsPath}`;
+  return normalizeAuthJsUrl(configured);
 }
 
 function cleanString(value: unknown): string {
@@ -98,4 +109,24 @@ function cleanString(value: unknown): string {
 
 function normalizeOrigin(origin: string): string {
   return origin.trim().replace(/\/+$/, "");
+}
+
+function normalizeAuthJsUrl(url: string): string {
+  const clean = normalizeOrigin(url);
+  return clean.endsWith(authJsPath) ? clean : `${clean}${authJsPath}`;
+}
+
+function authUrlOrigin(): string | undefined {
+  const authUrl = env("AUTH_URL");
+  if (!authUrl) return undefined;
+  try {
+    return new URL(authUrl).origin;
+  } catch {
+    return undefined;
+  }
+}
+
+function env(key: string): string | undefined {
+  const value = process.env[key]?.trim();
+  return value || undefined;
 }
