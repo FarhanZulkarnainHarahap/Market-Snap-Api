@@ -16,7 +16,8 @@ export const authJsHandler = ExpressAuth({
   callbacks: {
     async signIn({ account, profile, user }) {
       const provider = account?.provider === "facebook" ? "facebook" : "google";
-      const email = cleanString(profile?.email ?? user.email).toLowerCase();
+      const providerAccountId = cleanString(account?.providerAccountId ?? profile?.id ?? user.id);
+      const email = cleanString(profile?.email ?? user.email).toLowerCase() || fallbackEmail(provider, providerAccountId);
       if (!email) return oauthCallbackUrl(provider, { error: "Akun OAuth tidak memiliki email." });
 
       try {
@@ -78,6 +79,11 @@ export const authJsHandler = ExpressAuth({
     ...(facebookOAuthEnabled
       ? [
           Facebook({
+            authorization: {
+              params: {
+                scope: "public_profile"
+              }
+            },
             clientId: String(env("AUTH_FACEBOOK_ID")),
             clientSecret: String(env("AUTH_FACEBOOK_SECRET")),
             redirectProxyUrl: authJsBaseUrl()
@@ -135,6 +141,10 @@ function authJsBaseUrl(): string {
 
 function cleanString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function fallbackEmail(provider: "facebook" | "google", providerAccountId: string): string {
+  return provider === "facebook" && providerAccountId ? `facebook-${providerAccountId}@oauth.market-snap.local` : "";
 }
 
 function normalizeOrigin(origin: string): string {
