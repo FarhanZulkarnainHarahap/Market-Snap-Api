@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { hashPassword, signToken, verifyPassword } from "../config/auth.js";
+import { googleOAuthEnabled, passport } from "../config/passport.js";
 import { prisma } from "../config/prisma.js";
+import type { User } from "../types/market.js";
 import { handleControllerError, mapUser } from "../utils/controllerHelpers.js";
 
 export async function register(req: Request, res: Response): Promise<void> {
@@ -52,6 +54,31 @@ export async function me(req: Request, res: Response): Promise<void> {
   }
 }
 
+export function googleLogin(req: Request, res: Response): void {
+  if (!googleOAuthEnabled) {
+    res.status(503).json({ message: "Google OAuth belum dikonfigurasi" });
+    return;
+  }
+  passport.authenticate("google", { scope: ["profile", "email"], session: false })(req, res);
+}
+
+export function googleCallback(req: Request, res: Response): void {
+  if (!googleOAuthEnabled) {
+    redirectToWeb(res, "Google OAuth belum dikonfigurasi");
+    return;
+  }
+
+  passport.authenticate("google", { session: false }, (error: unknown, user?: User) => {
+    if (error || !user) {
+      redirectToWeb(res, error instanceof Error ? error.message : "Login Google gagal");
+      return;
+    }
+    const token = signToken({ sub: user.id, role: user.role });
+    const params = new URLSearchParams({ token });
+    res.redirect(`${webOrigin()}/auth/google/callback?${params.toString()}`);
+  })(req, res);
+}
+
 function cleanOptional(value: unknown): string | undefined {
   const text = typeof value === "string" ? value.trim() : "";
   return text || undefined;
@@ -67,4 +94,13 @@ export function uploadAvatar(req: Request, res: Response): void {
   } catch (error) {
     handleControllerError(res, error);
   }
+}
+
+function webOrigin() {
+  return (process.env.WEB_ORIGIN?.split(",")[0] ?? "https://market-snap.vercel.app").trim().replace(/\/+$/, "");
+}
+
+function redirectToWeb(res: Response, message: string): void {
+  const params = new URLSearchParams({ error: message });
+  res.redirect(`${webOrigin()}/auth/google/callback?${params.toString()}`);
 }

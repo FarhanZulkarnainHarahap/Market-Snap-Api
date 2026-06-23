@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { passport } from "./config/passport.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { apiRouter } from "./routers/index.js";
 
@@ -19,6 +20,7 @@ const allowedOrigins = [
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: "1mb" }));
+app.use(passport.initialize());
 app.get("/", (_req, res) => {
   res.json({
     ok: true,
