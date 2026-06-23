@@ -1,6 +1,14 @@
 import type { Request, Response } from "express";
 import { hashPassword, signToken, verifyPassword } from "../config/auth.js";
-import { authJsGoogleSignInUrl, googleCallbackUrl, googleOAuthEnabled, webOrigin } from "../config/authjs.js";
+import {
+  authJsFacebookSignInUrl,
+  authJsGoogleSignInUrl,
+  facebookCallbackUrl,
+  facebookOAuthEnabled,
+  googleCallbackUrl,
+  googleOAuthEnabled,
+  webOrigin
+} from "../config/authjs.js";
 import { prisma } from "../config/prisma.js";
 import { handleControllerError, mapUser } from "../utils/controllerHelpers.js";
 
@@ -58,8 +66,8 @@ export function googleLogin(req: Request, res: Response): void {
     res.status(503).json({ message: "Google OAuth belum dikonfigurasi" });
     return;
   }
-  const callbackUrl = cleanWebCallbackUrl(req.query.callbackUrl);
-  res.type("html").send(autoSubmitGoogleForm(authJsGoogleSignInUrl(), callbackUrl));
+  const callbackUrl = cleanWebCallbackUrl(req.query.callbackUrl, "google");
+  res.type("html").send(autoSubmitOAuthForm(authJsGoogleSignInUrl(), callbackUrl));
 }
 
 export function googleCallback(_req: Request, res: Response): void {
@@ -68,6 +76,23 @@ export function googleCallback(_req: Request, res: Response): void {
     return;
   }
   res.redirect(authJsGoogleSignInUrl());
+}
+
+export function facebookLogin(req: Request, res: Response): void {
+  if (!facebookOAuthEnabled) {
+    res.status(503).json({ message: "Facebook OAuth belum dikonfigurasi" });
+    return;
+  }
+  const callbackUrl = cleanWebCallbackUrl(req.query.callbackUrl, "facebook");
+  res.type("html").send(autoSubmitOAuthForm(authJsFacebookSignInUrl(), callbackUrl));
+}
+
+export function facebookCallback(_req: Request, res: Response): void {
+  if (!facebookOAuthEnabled) {
+    res.redirect(facebookCallbackUrl({ error: "Facebook OAuth belum dikonfigurasi" }));
+    return;
+  }
+  res.redirect(authJsFacebookSignInUrl());
 }
 
 function cleanOptional(value: unknown): string | undefined {
@@ -87,8 +112,8 @@ export function uploadAvatar(req: Request, res: Response): void {
   }
 }
 
-function cleanWebCallbackUrl(value: unknown): string {
-  const fallback = `${webOrigin()}/auth/google/callback`;
+function cleanWebCallbackUrl(value: unknown, provider: "facebook" | "google"): string {
+  const fallback = `${webOrigin()}/auth/${provider}/callback`;
   if (typeof value !== "string") return fallback;
   try {
     const url = new URL(value);
@@ -98,13 +123,13 @@ function cleanWebCallbackUrl(value: unknown): string {
   }
 }
 
-function autoSubmitGoogleForm(action: string, callbackUrl: string): string {
+function autoSubmitOAuthForm(action: string, callbackUrl: string): string {
   return `<!doctype html>
 <html lang="id">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Menghubungkan Google...</title>
+    <title>Menghubungkan akun...</title>
   </head>
   <body>
     <form id="google-auth-form" method="post" action="${escapeHtml(action)}">
@@ -112,7 +137,7 @@ function autoSubmitGoogleForm(action: string, callbackUrl: string): string {
     </form>
     <script>document.getElementById("google-auth-form").submit();</script>
     <noscript>
-      <button form="google-auth-form" type="submit">Lanjutkan dengan Google</button>
+      <button form="google-auth-form" type="submit">Lanjutkan login</button>
     </noscript>
   </body>
 </html>`;
