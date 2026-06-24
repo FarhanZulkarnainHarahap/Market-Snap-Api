@@ -140,8 +140,13 @@ function authJsBaseUrl(): string {
     env("AUTH_REDIRECT_PROXY_URL") ??
     env("GOOGLE_REDIRECT_PROXY_URL") ??
     env("AUTH_URL") ??
-    `${apiOrigin()}${authJsPath}`;
-  return normalizeAuthJsUrl(configured);
+    `${webOrigin()}${authJsPath}`;
+  const normalized = normalizeAuthJsUrl(configured);
+  try {
+    return new URL(normalized).origin === apiOrigin() ? `${webOrigin()}${authJsPath}` : normalized;
+  } catch {
+    return `${webOrigin()}${authJsPath}`;
+  }
 }
 
 function cleanString(value: unknown): string {
