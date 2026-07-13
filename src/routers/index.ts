@@ -7,6 +7,7 @@ import { catalogRouter } from "./catalogRouter.js";
 import { healthRouter } from "./healthRouter.js";
 import { orderRouter } from "./orderRouter.js";
 import { productRouter } from "./productRouter.js";
+import { roleRouter } from "./roleRouter.js";
 import { userRouter } from "./userRouter.js";
 
 export const apiRouter = Router();
@@ -20,3 +21,4 @@ apiRouter.use(cartRouter);
 apiRouter.use(orderRouter);
 apiRouter.use(productRouter);
 apiRouter.use(adminRouter);
+apiRouter.use(roleRouter);
