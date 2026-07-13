@@ -5,8 +5,8 @@ import Google from "@auth/express/providers/google";
 import { signToken } from "./auth.js";
 import { prisma } from "./prisma.js";
 
-const defaultApiOrigin = "https://apimarket-snap.vercel.app";
-const defaultWebOrigin = "https://market-snap.vercel.app";
+const defaultApiOrigin = "https://api-node.market-snap.web.id";
+const defaultWebOrigin = "https://market-snap.web.id";
 
 export const authJsPath = "/authjs";
 export const googleOAuthEnabled = Boolean(env("GOOGLE_CLIENT_ID") && env("GOOGLE_CLIENT_SECRET"));
@@ -140,13 +140,8 @@ function authJsBaseUrl(): string {
     env("AUTH_REDIRECT_PROXY_URL") ??
     env("GOOGLE_REDIRECT_PROXY_URL") ??
     env("AUTH_URL") ??
-    `${webOrigin()}${authJsPath}`;
-  const normalized = normalizeAuthJsUrl(configured);
-  try {
-    return new URL(normalized).origin === apiOrigin() ? `${webOrigin()}${authJsPath}` : normalized;
-  } catch {
-    return `${webOrigin()}${authJsPath}`;
-  }
+    `${apiOrigin()}${authJsPath}`;
+  return normalizeAuthJsUrl(configured);
 }
 
 function cleanString(value: unknown): string {
