@@ -42,6 +42,7 @@ function bearerToken(authorization?: string): string | null {
   return match?.[1]?.trim() ?? null;
 }
 
-export const onlyAdmin = [authenticate, authorizeRoles("admin", "super_admin", "store_admin")];
+export const onlyAdmin = [authenticate, authorizeRoles("super_admin", "store_admin")];
 export const onlySuperAdmin = [authenticate, authorizeRoles("super_admin")];
-export const onlyUser = [authenticate, authorizeRoles("user")];
+export const onlyCustomer = [authenticate, authorizeRoles("customer")];
+export const onlyUser = onlyCustomer;

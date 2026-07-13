@@ -30,7 +30,7 @@ export async function register(req: Request, res: Response): Promise<void> {
         passwordHash: hashPassword(req.body.password),
         authProvider: "credentials",
         referralCode,
-        role: "USER",
+        role: "CUSTOMER",
         isActive: true
       }
     });

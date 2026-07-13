@@ -84,8 +84,7 @@ export type OrderItem = $Result.DefaultSelection<Prisma.$OrderItemPayload>
  */
 export namespace $Enums {
   export const Role: {
-  USER: 'USER',
-  ADMIN: 'ADMIN',
+  CUSTOMER: 'CUSTOMER',
   SUPER_ADMIN: 'SUPER_ADMIN',
   STORE_ADMIN: 'STORE_ADMIN'
 };

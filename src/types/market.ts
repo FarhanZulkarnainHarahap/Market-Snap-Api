@@ -39,7 +39,7 @@ export type User = {
   authProvider?: string;
   canEditAvatar?: boolean;
   createdAt?: string;
-  role: "user" | "admin" | "super_admin" | "store_admin";
+  role: "customer" | "super_admin" | "store_admin";
   verified: boolean;
   password?: string;
   referralCode?: string;

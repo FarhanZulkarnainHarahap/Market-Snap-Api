@@ -10,8 +10,7 @@ datasource db {
 }
 
 enum Role {
-  USER
-  ADMIN
+  CUSTOMER
   SUPER_ADMIN
   STORE_ADMIN
 }
@@ -45,7 +44,7 @@ model User {
   password     String?
   passwordHash String?
   authProvider String     @default("credentials")
-  role         Role       @default(USER)
+  role         Role       @default(CUSTOMER)
   isActive     Boolean    @default(true)
   verifiedAt   DateTime?
   avatarUrl    String?

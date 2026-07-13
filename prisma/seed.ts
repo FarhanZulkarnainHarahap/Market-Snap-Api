@@ -136,8 +136,8 @@ async function seedUsers() {
   });
   const customer = await prisma.user.upsert({
     where: { email: "customer@marketsnap.id" },
-    update: { authProvider: "credentials", passwordHash, role: "USER", verifiedAt: new Date(), isActive: true },
-    create: { name: "Andi Pratama", email: "customer@marketsnap.id", authProvider: "credentials", passwordHash, role: "USER", verifiedAt: new Date(), isActive: true, referralCode: "ANDISNAP" }
+    update: { authProvider: "credentials", passwordHash, role: "CUSTOMER", verifiedAt: new Date(), isActive: true },
+    create: { name: "Andi Pratama", email: "customer@marketsnap.id", authProvider: "credentials", passwordHash, role: "CUSTOMER", verifiedAt: new Date(), isActive: true, referralCode: "ANDISNAP" }
   });
   await prisma.address.upsert({
     where: { id: "seed-address-kemang" },

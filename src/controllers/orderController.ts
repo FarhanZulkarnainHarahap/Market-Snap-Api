@@ -45,7 +45,7 @@ export async function getOrders(req: Request, res: Response): Promise<void> {
   try {
     const where = {
       ...(req.query.status ? { status: statusFromText(String(req.query.status)) } : {}),
-      ...(req.user?.role === "user" ? { userId: req.user.id } : {})
+      ...(req.user?.role === "customer" ? { userId: req.user.id } : {})
     };
     const orders = await prisma.order.findMany({
       where,

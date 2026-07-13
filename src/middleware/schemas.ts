@@ -81,7 +81,7 @@ export const updateUserSchema = z.object({
   phone: z.string().min(8).max(20).optional(),
   password: z.string().min(8).optional(),
   avatarUrl: z.string().url().optional(),
-  role: z.enum(["user", "admin", "super_admin", "store_admin"]).optional(),
+  role: z.enum(["customer", "super_admin", "store_admin"]).optional(),
   verified: z.coerce.boolean().optional()
 });
 
@@ -97,7 +97,7 @@ export const createUserSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(8).optional(),
-  role: z.enum(["user", "admin", "super_admin", "store_admin"]).default("store_admin"),
+  role: z.enum(["customer", "super_admin", "store_admin"]).default("store_admin"),
   verified: z.coerce.boolean().default(false)
 });
 

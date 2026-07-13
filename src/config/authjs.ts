@@ -45,7 +45,7 @@ export const authJsHandler = ExpressAuth({
                 authProvider: provider,
                 isActive: true,
                 name,
-                role: "USER",
+                role: "CUSTOMER",
                 verifiedAt: emailVerified ? new Date() : undefined
               }
             });

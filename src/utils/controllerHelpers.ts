@@ -13,15 +13,13 @@ export function handleControllerError(res: Response, error: unknown): void {
 export function apiRole(role: Role): User["role"] {
   if (role === "SUPER_ADMIN") return "super_admin";
   if (role === "STORE_ADMIN") return "store_admin";
-  if (role === "ADMIN") return "admin";
-  return "user";
+  return "customer";
 }
 
 export function prismaRole(role?: string): Role {
   if (role === "super_admin") return "SUPER_ADMIN";
   if (role === "store_admin") return "STORE_ADMIN";
-  if (role === "admin") return "ADMIN";
-  return "USER";
+  return "CUSTOMER";
 }
 
 export function mapUser(user: PrismaUser): User {
