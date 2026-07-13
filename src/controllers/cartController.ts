@@ -10,11 +10,13 @@ type CartBody = {
 
 export async function getCart(req: Request, res: Response): Promise<void> {
   try {
+    if (!req.user?.verified) {
+      res.status(403).json({ message: "Verifikasi email untuk melanjutkan." });
+      return;
+    }
     const items = await prisma.cartItem.findMany({ where: { userId: req.user?.id }, include: cartInclude });
     const data = await Promise.all(items.map(enrichCartItem));
-    const total = data.reduce((sum, item) => sum + item.subtotal, 0);
-    const totalItems = data.reduce((sum, item) => sum + item.quantity, 0);
-    res.json({ data, summary: { totalItems, total } });
+    res.json(cartDto(data));
   } catch (error) {
     handleControllerError(res, error);
   }
@@ -84,11 +86,59 @@ async function findCart(userId: string, productId: string, storeId: string) {
 
 async function enrichCartItem(item: CartRow) {
   const stock = await stockFor(item.storeId, item.productId);
-  return { id: item.id, userId: item.userId, productId: item.productId, storeId: item.storeId, quantity: item.quantity, stock, subtotal: item.product.price * item.quantity, product: mapProduct(item.product) };
+  return {
+    id: item.id,
+    userId: item.userId,
+    productId: item.productId,
+    storeId: item.storeId,
+    store: mapCartStore(item.store),
+    quantity: item.quantity,
+    stock,
+    inventory: { availableStock: stock, status: stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK" },
+    unitPrice: item.product.price,
+    subtotal: item.product.price * item.quantity,
+    product: mapProduct(item.product)
+  };
 }
 
 function mapProduct(product: CartRow["product"]) {
-  return { id: product.id, name: product.name, category: product.category.name, price: product.price, unit: product.unit, image: product.images[0]?.url ?? "/product.png", discount: null, organic: false };
+  const image = product.images[0]?.url ?? "/product.png";
+  return {
+    id: product.id,
+    name: product.name,
+    category: product.category.name,
+    price: product.price,
+    unit: product.unit,
+    image,
+    primaryImage: { url: image, alt: product.name },
+    discount: null,
+    organic: false
+  };
+}
+
+function mapCartStore(store: CartRow["store"]) {
+  return { id: store.id, name: store.name, address: store.city, city: store.city, isOpen: true };
+}
+
+function cartDto(items: Awaited<ReturnType<typeof enrichCartItem>>[]) {
+  const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const estimatedShipping = items.length ? 10000 : 0;
+  const discount = 0;
+  const store = items[0]?.store ?? null;
+  return {
+    success: true,
+    data: {
+      id: items.length ? `cart-${items[0]?.userId}` : null,
+      store,
+      items,
+      itemCount,
+      subtotal,
+      discount,
+      estimatedShipping,
+      total: Math.max(0, subtotal + estimatedShipping - discount)
+    }
+  };
 }
 
 async function stockFor(storeId: string, productId: string): Promise<number> {
@@ -112,4 +162,5 @@ type CartRow = {
   storeId: string;
   quantity: number;
   product: { id: string; name: string; price: number; unit: string; category: { name: string }; images: { url: string }[] };
+  store: { id: string; name: string; city: string };
 };
