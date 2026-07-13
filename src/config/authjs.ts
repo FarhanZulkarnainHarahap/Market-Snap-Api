@@ -50,7 +50,7 @@ export const authJsHandler = ExpressAuth({
               }
             });
 
-        return oauthCallbackUrl(provider, { token: signToken({ sub: marketUser.id, role: marketUser.role }) });
+        return oauthCompleteUrl(provider, signToken({ sub: marketUser.id, role: marketUser.role }));
       } catch (error) {
         return oauthCallbackUrl(provider, { error: error instanceof Error ? error.message : "Login OAuth gagal" });
       }
@@ -133,6 +133,11 @@ export function oauthCallbackUrl(provider: "facebook" | "google", params: Record
 
 function authJsProviderSignInUrl(provider: "facebook" | "google"): string {
   return `${authJsBaseUrl()}/signin/${provider}`;
+}
+
+function oauthCompleteUrl(provider: "facebook" | "google", token: string): string {
+  const query = new URLSearchParams({ provider, token });
+  return `${apiOrigin()}/auth/oauth/complete?${query.toString()}`;
 }
 
 function authJsBaseUrl(): string {

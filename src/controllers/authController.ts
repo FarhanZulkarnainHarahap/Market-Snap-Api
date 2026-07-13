@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { cloudinary } from "../config/cloudinary.js";
 import { hashPassword, signToken, verifyPassword, verifyToken } from "../config/auth.js";
+import { clearSessionCookie, setSessionCookie } from "../config/session.js";
 import {
   authJsFacebookSignInUrl,
   authJsGoogleSignInUrl,
@@ -55,10 +56,16 @@ export async function login(req: Request, res: Response): Promise<void> {
       res.status(401).json({ message: "Email atau password salah" });
       return;
     }
-    res.json({ token: signToken({ sub: user.id, role: user.role }), user: mapUser(user) });
+    setSessionCookie(res, signToken({ sub: user.id, role: user.role }));
+    res.json({ token: "", user: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
   }
+}
+
+export function logout(_req: Request, res: Response): void {
+  clearSessionCookie(res);
+  res.json({ message: "Logout berhasil." });
 }
 
 export async function me(req: Request, res: Response): Promise<void> {
@@ -110,6 +117,17 @@ export function facebookCallback(_req: Request, res: Response): void {
     return;
   }
   res.redirect(authJsFacebookSignInUrl());
+}
+
+export function oauthComplete(req: Request, res: Response): void {
+  const provider = req.query.provider === "facebook" ? "facebook" : "google";
+  const token = typeof req.query.token === "string" ? req.query.token : "";
+  if (!verifyToken(token)) {
+    res.redirect(provider === "facebook" ? facebookCallbackUrl({ error: "Sesi OAuth tidak valid." }) : googleCallbackUrl({ error: "Sesi OAuth tidak valid." }));
+    return;
+  }
+  setSessionCookie(res, token);
+  res.redirect(provider === "facebook" ? facebookCallbackUrl({ success: "1" }) : googleCallbackUrl({ success: "1" }));
 }
 
 function cleanOptional(value: unknown): string | undefined {

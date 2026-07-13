@@ -19,7 +19,7 @@ const allowedOrigins = [
   "http://127.0.0.1:3200"
 ].filter(Boolean) as string[];
 
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({ credentials: true, origin: allowedOrigins }));
 app.use(/^\/authjs\/(.*)/, authJsHandler);
 app.use(express.json({ limit: "1mb" }));
 app.get("/", (_req, res) => {
