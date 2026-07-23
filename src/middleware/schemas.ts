@@ -23,13 +23,27 @@ export const passwordResetConfirmSchema = z.object({
 
 export const createOrderSchema = z.object({
   userId: z.string().optional(),
-  total: z.coerce.number().nonnegative(),
+  total: z.coerce.number().nonnegative().optional(),
   items: z.array(z.unknown()).default([]),
+  selectedCartItemIds: z.array(z.string().min(1)).optional(),
+  addressId: z.string().min(1).optional(),
   location: z.record(z.string(), z.unknown()).optional(),
   destinationId: z.string().optional(),
   courier: z.string().optional(),
+  shippingMethod: z.string().optional(),
+  deliveryDate: z.string().optional(),
+  deliverySlot: z.string().optional(),
+  voucherCode: z.string().optional(),
   weightGram: z.coerce.number().positive().optional(),
-  paymentMethod: z.enum(["manual_transfer", "xendit"]).optional()
+  paymentMethod: z.enum(["manual_transfer", "xendit"]).optional(),
+  paymentChannel: z.string().optional(),
+  orderNote: z.string().max(500).optional(),
+  storeId: z.string().optional()
+});
+
+export const validateVoucherSchema = z.object({
+  code: z.string().min(2),
+  selectedCartItemIds: z.array(z.string().min(1)).optional()
 });
 
 export const updateOrderStatusSchema = z.object({
@@ -67,7 +81,14 @@ export const updateProductSchema = createProductSchema.partial();
 
 export const createAddressSchema = z.object({
   label: z.string().min(2),
+  recipientName: z.string().min(2).optional(),
+  phone: z.string().min(8).max(20).optional(),
   detail: z.string().min(5),
+  district: z.string().optional(),
+  city: z.string().optional(),
+  province: z.string().optional(),
+  postalCode: z.string().optional(),
+  note: z.string().optional(),
   lat: z.coerce.number(),
   lng: z.coerce.number(),
   isPrimary: z.coerce.boolean().default(false)

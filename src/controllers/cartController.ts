@@ -76,6 +76,53 @@ export async function clearCart(req: Request, res: Response): Promise<void> {
   }
 }
 
+export async function deleteSelectedCartItems(req: Request, res: Response): Promise<void> {
+  try {
+    const ids = Array.isArray(req.body?.ids) ? req.body.ids.map(String).filter(Boolean) : [];
+    if (!ids.length) {
+      res.status(422).json({ message: "Pilih produk yang ingin dihapus." });
+      return;
+    }
+    const result = await prisma.cartItem.deleteMany({ where: { id: { in: ids }, userId: req.user?.id } });
+    res.json({ message: "Produk terpilih berhasil dihapus dari cart", removed: result.count });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
+export async function validateCartVoucher(req: Request, res: Response): Promise<void> {
+  try {
+    const code = String(req.body.code ?? "").trim().toUpperCase();
+    const selectedIds = Array.isArray(req.body.selectedCartItemIds) ? req.body.selectedCartItemIds.map(String).filter(Boolean) : [];
+    const items = await prisma.cartItem.findMany({
+      where: { userId: req.user?.id, ...(selectedIds.length ? { id: { in: selectedIds } } : {}) },
+      include: cartInclude
+    });
+    if (!items.length) {
+      res.status(422).json({ message: "Pilih produk sebelum memakai voucher." });
+      return;
+    }
+    const voucher = await prisma.voucher.findUnique({ where: { code } });
+    const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    const validation = validateVoucher(voucher, subtotal, items.map((item) => item.productId));
+    if (!validation.valid) {
+      res.status(validation.status).json({ message: validation.message });
+      return;
+    }
+    res.json({
+      data: {
+        voucher,
+        discount: validation.discount,
+        subtotal,
+        totalAfterDiscount: Math.max(0, subtotal - validation.discount)
+      },
+      message: "Voucher berhasil digunakan."
+    });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
 async function mainStore() {
   return (await prisma.store.findFirst({ where: { isMain: true } })) ?? prisma.store.findFirst();
 }
@@ -139,6 +186,16 @@ function cartDto(items: Awaited<ReturnType<typeof enrichCartItem>>[]) {
       total: Math.max(0, subtotal + estimatedShipping - discount)
     }
   };
+}
+
+function validateVoucher(voucher: Awaited<ReturnType<typeof prisma.voucher.findUnique>>, subtotal: number, productIds: string[]) {
+  if (!voucher) return { valid: false, status: 404, message: "Voucher tidak ditemukan.", discount: 0 };
+  if (voucher.expiresAt.getTime() < Date.now()) return { valid: false, status: 410, message: "Voucher sudah kedaluwarsa.", discount: 0 };
+  if (voucher.minSpend && subtotal < voucher.minSpend) return { valid: false, status: 422, message: `Minimal belanja voucher ini belum terpenuhi.`, discount: 0 };
+  if (voucher.scope === "PRODUCT" && voucher.productId && !productIds.includes(voucher.productId)) return { valid: false, status: 422, message: "Voucher tidak dapat digunakan untuk produk tersebut.", discount: 0 };
+  const rawDiscount = voucher.type === "PERCENTAGE" ? Math.round(subtotal * (voucher.value / 100)) : voucher.value;
+  const cappedDiscount = voucher.maxDiscount ? Math.min(rawDiscount, voucher.maxDiscount) : rawDiscount;
+  return { valid: true, status: 200, message: "Voucher berhasil digunakan.", discount: Math.min(subtotal, Math.max(0, cappedDiscount)) };
 }
 
 async function stockFor(storeId: string, productId: string): Promise<number> {

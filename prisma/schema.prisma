@@ -55,6 +55,7 @@ model User {
   addresses    Address[]
   carts        CartItem[]
   orders       Order[]
+  voucherUsages VoucherUsage[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
@@ -78,16 +79,23 @@ model Store {
 }
 
 model Address {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  label     String
-  detail    String
-  latitude  Float
-  longitude Float
-  isPrimary Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  label         String
+  recipientName String?
+  phone         String?
+  detail        String
+  district      String?
+  city          String?
+  province      String?
+  postalCode    String?
+  note          String?
+  latitude      Float
+  longitude     Float
+  isPrimary     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model ProductCategory {
@@ -188,24 +196,45 @@ model Voucher {
   maxDiscount Int?
   productId   String?
   expiresAt   DateTime
+  usages      VoucherUsage[]
   createdAt   DateTime     @default(now())
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique
-  userId          String
-  storeId         String
-  user            User        @relation(fields: [userId], references: [id])
-  store           Store       @relation(fields: [storeId], references: [id])
-  status          OrderStatus @default(WAITING_PAYMENT)
-  total           Int
-  shippingCost    Int         @default(0)
-  paymentProofUrl String?
-  paymentDeadline DateTime?
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                 String      @id @default(cuid())
+  orderNumber        String      @unique
+  userId             String
+  storeId            String
+  addressId          String?
+  addressSnapshot    Json?
+  deliveryDate       DateTime?
+  deliverySlot       String?
+  shippingMethod     String?
+  shippingProvider   String?
+  shippingCost       Int         @default(0)
+  serviceFee         Int         @default(0)
+  discountTotal      Int         @default(0)
+  voucherId          String?
+  voucherCode        String?
+  paymentMethod      String?
+  paymentChannel     String?
+  paymentInvoiceUrl  String?
+  paymentExternalId  String?
+  trackingNumber     String?
+  courierName        String?
+  estimatedArrival   DateTime?
+  orderNote          String?
+  user               User        @relation(fields: [userId], references: [id])
+  store              Store       @relation(fields: [storeId], references: [id])
+  status             OrderStatus @default(WAITING_PAYMENT)
+  total              Int
+  paymentProofUrl    String?
+  paymentDeadline    DateTime?
+  items              OrderItem[]
+  histories          OrderStatusHistory[]
+  voucherUsages      VoucherUsage[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 }
 
 model OrderItem {
@@ -216,4 +245,33 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Int
+}
+
+model OrderStatusHistory {
+  id          String      @id @default(cuid())
+  orderId     String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status      OrderStatus
+  description String?
+  location    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([orderId, createdAt])
+}
+
+model VoucherUsage {
+  id        String   @id @default(cuid())
+  voucherId String
+  voucher   Voucher  @relation(fields: [voucherId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  code      String
+  discount  Int
+  createdAt DateTime @default(now())
+
+  @@index([userId, voucherId])
+  @@index([orderId])
 }

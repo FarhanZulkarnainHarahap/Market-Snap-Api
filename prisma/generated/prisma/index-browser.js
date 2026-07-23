@@ -156,7 +156,14 @@ exports.Prisma.AddressScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   label: 'label',
+  recipientName: 'recipientName',
+  phone: 'phone',
   detail: 'detail',
+  district: 'district',
+  city: 'city',
+  province: 'province',
+  postalCode: 'postalCode',
+  note: 'note',
   latitude: 'latitude',
   longitude: 'longitude',
   isPrimary: 'isPrimary',
@@ -248,9 +255,27 @@ exports.Prisma.OrderScalarFieldEnum = {
   orderNumber: 'orderNumber',
   userId: 'userId',
   storeId: 'storeId',
+  addressId: 'addressId',
+  addressSnapshot: 'addressSnapshot',
+  deliveryDate: 'deliveryDate',
+  deliverySlot: 'deliverySlot',
+  shippingMethod: 'shippingMethod',
+  shippingProvider: 'shippingProvider',
+  shippingCost: 'shippingCost',
+  serviceFee: 'serviceFee',
+  discountTotal: 'discountTotal',
+  voucherId: 'voucherId',
+  voucherCode: 'voucherCode',
+  paymentMethod: 'paymentMethod',
+  paymentChannel: 'paymentChannel',
+  paymentInvoiceUrl: 'paymentInvoiceUrl',
+  paymentExternalId: 'paymentExternalId',
+  trackingNumber: 'trackingNumber',
+  courierName: 'courierName',
+  estimatedArrival: 'estimatedArrival',
+  orderNote: 'orderNote',
   status: 'status',
   total: 'total',
-  shippingCost: 'shippingCost',
   paymentProofUrl: 'paymentProofUrl',
   paymentDeadline: 'paymentDeadline',
   createdAt: 'createdAt',
@@ -265,9 +290,34 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   price: 'price'
 };
 
+exports.Prisma.OrderStatusHistoryScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  status: 'status',
+  description: 'description',
+  location: 'location',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VoucherUsageScalarFieldEnum = {
+  id: 'id',
+  voucherId: 'voucherId',
+  userId: 'userId',
+  orderId: 'orderId',
+  code: 'code',
+  discount: 'discount',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -278,6 +328,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.Role = exports.$Enums.Role = {
   CUSTOMER: 'CUSTOMER',
@@ -319,7 +375,9 @@ exports.Prisma.ModelName = {
   Discount: 'Discount',
   Voucher: 'Voucher',
   Order: 'Order',
-  OrderItem: 'OrderItem'
+  OrderItem: 'OrderItem',
+  OrderStatusHistory: 'OrderStatusHistory',
+  VoucherUsage: 'VoucherUsage'
 };
 
 /**

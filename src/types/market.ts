@@ -43,6 +43,7 @@ export type User = {
   verified: boolean;
   password?: string;
   referralCode?: string;
+  storeId?: string;
 };
 
 export type Address = {

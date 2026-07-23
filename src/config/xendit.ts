@@ -29,7 +29,7 @@ export type XenditInvoice = {
   amount: number;
 };
 
-export async function createXenditInvoice(input: { orderNumber: string; amount: number; payerEmail: string; description: string }) {
+export async function createXenditInvoice(input: { orderNumber: string; amount: number; payerEmail: string; description: string; paymentChannels?: string[] }) {
   return xenditFetch<XenditInvoice>("/v2/invoices", {
     method: "POST",
     body: JSON.stringify({
@@ -37,6 +37,7 @@ export async function createXenditInvoice(input: { orderNumber: string; amount: 
       amount: input.amount,
       payer_email: input.payerEmail,
       description: input.description,
+      payment_methods: input.paymentChannels?.length ? input.paymentChannels : undefined,
       invoice_duration: 3600
     })
   });

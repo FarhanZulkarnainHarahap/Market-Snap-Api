@@ -34,6 +34,7 @@ export function mapUser(user: PrismaUser): User {
     createdAt: user.createdAt.toISOString(),
     referralCode: user.referralCode ?? undefined,
     role: apiRole(user.role),
+    storeId: user.storeId ?? undefined,
     verified: Boolean(user.verifiedAt)
   };
 }

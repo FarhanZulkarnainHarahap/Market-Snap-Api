@@ -14,7 +14,7 @@ export async function getAddresses(req: Request, res: Response): Promise<void> {
 export async function createAddress(req: Request, res: Response): Promise<void> {
   try {
     if (req.body.isPrimary) await prisma.address.updateMany({ where: { userId: req.user?.id }, data: { isPrimary: false } });
-    const address = await prisma.address.create({ data: { userId: String(req.user?.id), label: req.body.label, detail: req.body.detail, latitude: Number(req.body.lat), longitude: Number(req.body.lng), isPrimary: Boolean(req.body.isPrimary) } });
+    const address = await prisma.address.create({ data: createAddressData(req.body, String(req.user?.id)) });
     res.status(201).json({ data: address });
   } catch (error) {
     handleControllerError(res, error);
@@ -50,6 +50,35 @@ export async function deleteAddress(req: Request, res: Response): Promise<void> 
   }
 }
 
-function addressData(body: Record<string, unknown>) {
-  return { label: body.label as string | undefined, detail: body.detail as string | undefined, latitude: body.lat === undefined ? undefined : Number(body.lat), longitude: body.lng === undefined ? undefined : Number(body.lng), isPrimary: body.isPrimary as boolean | undefined };
+function addressData(body: Record<string, unknown>, creating = false) {
+  return {
+    label: text(body.label),
+    recipientName: text(body.recipientName),
+    phone: text(body.phone),
+    detail: text(body.detail),
+    district: text(body.district),
+    city: text(body.city),
+    province: text(body.province),
+    postalCode: text(body.postalCode),
+    note: text(body.note),
+    latitude: body.lat === undefined ? undefined : Number(body.lat),
+    longitude: body.lng === undefined ? undefined : Number(body.lng),
+    isPrimary: creating ? undefined : body.isPrimary as boolean | undefined
+  };
+}
+
+function createAddressData(body: Record<string, unknown>, userId: string) {
+  return {
+    ...addressData(body, true),
+    detail: String(body.detail ?? "").trim(),
+    isPrimary: Boolean(body.isPrimary),
+    label: String(body.label ?? "").trim(),
+    latitude: Number(body.lat),
+    longitude: Number(body.lng),
+    userId
+  };
+}
+
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() || undefined : undefined;
 }
