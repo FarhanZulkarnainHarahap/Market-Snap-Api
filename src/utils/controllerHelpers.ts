@@ -6,8 +6,18 @@ import type { Store, User } from "../types/market.js";
 type QueryLike = Record<string, unknown>;
 
 export function handleControllerError(res: Response, error: unknown): void {
-  const message = error instanceof Error ? error.message : "Terjadi kesalahan server";
-  res.status(500).json({ message });
+  if (process.env.NODE_ENV !== "production" && error instanceof Error) {
+    console.error(error.message);
+  }
+  res.status(500).json({ message: publicErrorMessage(error) });
+}
+
+export function publicErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (message.includes("prisma.") || message.includes("Prisma") || message.includes("does not exist in the current database") || message.includes("column") || message.includes("constraint")) {
+    return "Data belum dapat diproses. Coba lagi sebentar atau hubungi bantuan Market Snap.";
+  }
+  return message || "Terjadi kesalahan server";
 }
 
 export function apiRole(role: Role): User["role"] {
