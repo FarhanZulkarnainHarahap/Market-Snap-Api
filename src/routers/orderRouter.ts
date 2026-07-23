@@ -10,6 +10,7 @@ export const orderRouter = Router();
 orderRouter.post("/orders", ...onlyUser, validate(createOrderSchema), createOrder);
 orderRouter.get("/orders", authenticate, getOrders);
 orderRouter.get("/checkout/options", authenticate, getCheckoutOptions);
+orderRouter.get("/orders/checkout/options", authenticate, getCheckoutOptions);
 orderRouter.get("/orders/statistics", ...onlyUser, getOrderStatistics);
 orderRouter.get("/orders/:id", authenticate, getOrderById);
 orderRouter.get("/orders/:id/tracking", authenticate, getOrderTracking);

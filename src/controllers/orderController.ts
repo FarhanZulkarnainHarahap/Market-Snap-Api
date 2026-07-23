@@ -75,7 +75,13 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(404).json({ message: "Cabang tidak ditemukan." });
       return;
     }
-    const shippingMethod = shippingMethodOptions().find((method) => method.id === (body.shippingMethod || body.courier)) ?? shippingMethodOptions()[0];
+    const shippingMethods = shippingMethodOptions();
+    const requestedShippingMethod = body.shippingMethod || body.courier || shippingMethods[0].id;
+    const shippingMethod = shippingMethods.find((method) => method.id === requestedShippingMethod);
+    if (!shippingMethod) {
+      res.status(422).json({ message: "Metode pengiriman tidak tersedia." });
+      return;
+    }
     const address = body.addressId ? await prisma.address.findFirst({ where: { id: body.addressId, userId } }) : null;
     if (shippingMethod.requiresAddress && !address && !locationFromQuery(body.location ?? {})) {
       res.status(422).json({ message: "Alamat pengiriman wajib dipilih." });
@@ -102,12 +108,25 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(422).json({ message: voucher.message });
       return;
     }
+    const deliveryDate = safeDate(body.deliveryDate);
+    if (!deliveryDate || !body.deliverySlot) {
+      res.status(422).json({ message: "Jadwal dan slot pengiriman wajib dipilih." });
+      return;
+    }
+    if (isPastSchedule(deliveryDate, body.deliverySlot)) {
+      res.status(422).json({ message: "Jadwal pengiriman tidak boleh berada di masa lalu." });
+      return;
+    }
+
     const shipping = await shippingQuote(body, shippingMethod);
     const serviceFee = Number(process.env.ORDER_SERVICE_FEE ?? 0);
     const total = Math.max(0, subtotal + shipping.cost + serviceFee - voucher.discount);
+    if (!paymentMethodOptions().some((method) => method.id === body.paymentChannel)) {
+      res.status(422).json({ message: "Metode pembayaran tidak tersedia." });
+      return;
+    }
     const payment = await paymentInvoice(body, orderNumber(), total, userEmail);
     const orderNo = payment.orderNumber;
-    const deliveryDate = safeDate(body.deliveryDate);
     const paymentDeadline = new Date(Date.now() + 60 * 60 * 1000);
 
     const order = await prisma.$transaction(async (tx) => {
@@ -386,7 +405,9 @@ async function shippingQuote(body: CreateOrderBody, method: ReturnType<typeof sh
 }
 
 async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: number, email: string) {
-  const selected = paymentMethodOptions().find((method) => method.id === body.paymentChannel) ?? paymentMethodOptions()[0];
+  const methods = paymentMethodOptions();
+  const selected = methods.find((method) => method.id === body.paymentChannel);
+  if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
   const method = selected.provider === "xendit" ? "xendit" : "manual_transfer";
   if (method === "manual_transfer") return { channel: selected.channel, externalId: null, invoiceUrl: null, method, orderNumber: orderNo, status: "MANUAL" };
   if (!xenditConfig.hasSecretKey) throw new Error("Konfigurasi Xendit belum lengkap");
@@ -498,6 +519,14 @@ function safeDate(value?: string) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isPastSchedule(date: Date, slot: string) {
+  const end = slot.split("-").at(-1)?.trim() ?? "";
+  const [hours = "0", minutes = "0"] = end.split(":");
+  const scheduledEnd = new Date(date);
+  scheduledEnd.setHours(Number(hours), Number(minutes), 0, 0);
+  return scheduledEnd.getTime() < Date.now();
 }
 
 function cleanText(value: unknown) {
