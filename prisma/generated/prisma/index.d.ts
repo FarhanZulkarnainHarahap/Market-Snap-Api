@@ -15,79 +15,94 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 /**
  * Model User
- * 
+ *
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
  * Model Store
- * 
+ *
  */
 export type Store = $Result.DefaultSelection<Prisma.$StorePayload>
 /**
  * Model Address
- * 
+ *
  */
 export type Address = $Result.DefaultSelection<Prisma.$AddressPayload>
 /**
  * Model ProductCategory
- * 
+ *
  */
 export type ProductCategory = $Result.DefaultSelection<Prisma.$ProductCategoryPayload>
 /**
  * Model Product
- * 
+ *
  */
 export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
 /**
  * Model ProductImage
- * 
+ *
  */
 export type ProductImage = $Result.DefaultSelection<Prisma.$ProductImagePayload>
 /**
  * Model Inventory
- * 
+ *
  */
 export type Inventory = $Result.DefaultSelection<Prisma.$InventoryPayload>
 /**
  * Model CartItem
- * 
+ *
  */
 export type CartItem = $Result.DefaultSelection<Prisma.$CartItemPayload>
 /**
  * Model StockJournal
- * 
+ *
  */
 export type StockJournal = $Result.DefaultSelection<Prisma.$StockJournalPayload>
 /**
  * Model Discount
- * 
+ *
  */
 export type Discount = $Result.DefaultSelection<Prisma.$DiscountPayload>
 /**
  * Model Voucher
- * 
+ *
  */
 export type Voucher = $Result.DefaultSelection<Prisma.$VoucherPayload>
 /**
  * Model Order
- * 
+ *
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
  * Model OrderItem
- * 
+ *
  */
 export type OrderItem = $Result.DefaultSelection<Prisma.$OrderItemPayload>
 /**
  * Model OrderStatusHistory
- * 
+ *
  */
 export type OrderStatusHistory = $Result.DefaultSelection<Prisma.$OrderStatusHistoryPayload>
 /**
  * Model VoucherUsage
- * 
+ *
  */
 export type VoucherUsage = $Result.DefaultSelection<Prisma.$VoucherUsagePayload>
+/**
+ * Model StoreAdminRequest
+ *
+ */
+export type StoreAdminRequest = $Result.DefaultSelection<Prisma.$StoreAdminRequestPayload>
+/**
+ * Model Notification
+ *
+ */
+export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
+/**
+ * Model AuditLog
+ *
+ */
+export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
 
 /**
  * Enums
@@ -131,6 +146,16 @@ export const VoucherScope: {
 
 export type VoucherScope = (typeof VoucherScope)[keyof typeof VoucherScope]
 
+
+export const StoreAdminRequestStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type StoreAdminRequestStatus = (typeof StoreAdminRequestStatus)[keyof typeof StoreAdminRequestStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -148,6 +173,10 @@ export const DiscountType: typeof $Enums.DiscountType
 export type VoucherScope = $Enums.VoucherScope
 
 export const VoucherScope: typeof $Enums.VoucherScope
+
+export type StoreAdminRequestStatus = $Enums.StoreAdminRequestStatus
+
+export const StoreAdminRequestStatus: typeof $Enums.StoreAdminRequestStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -255,7 +284,7 @@ export class PrismaClient<
    *   prisma.user.create({ data: { name: 'Alice' } }),
    * ])
    * ```
-   * 
+   *
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
@@ -416,6 +445,36 @@ export class PrismaClient<
     * ```
     */
   get voucherUsage(): Prisma.VoucherUsageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.storeAdminRequest`: Exposes CRUD operations for the **StoreAdminRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StoreAdminRequests
+    * const storeAdminRequests = await prisma.storeAdminRequest.findMany()
+    * ```
+    */
+  get storeAdminRequest(): Prisma.StoreAdminRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
+    * ```
+    */
+  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditLogs
+    * const auditLogs = await prisma.auditLog.findMany()
+    * ```
+    */
+  get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -871,7 +930,10 @@ export namespace Prisma {
     Order: 'Order',
     OrderItem: 'OrderItem',
     OrderStatusHistory: 'OrderStatusHistory',
-    VoucherUsage: 'VoucherUsage'
+    VoucherUsage: 'VoucherUsage',
+    StoreAdminRequest: 'StoreAdminRequest',
+    Notification: 'Notification',
+    AuditLog: 'AuditLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -890,7 +952,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "store" | "address" | "productCategory" | "product" | "productImage" | "inventory" | "cartItem" | "stockJournal" | "discount" | "voucher" | "order" | "orderItem" | "orderStatusHistory" | "voucherUsage"
+      modelProps: "user" | "store" | "address" | "productCategory" | "product" | "productImage" | "inventory" | "cartItem" | "stockJournal" | "discount" | "voucher" | "order" | "orderItem" | "orderStatusHistory" | "voucherUsage" | "storeAdminRequest" | "notification" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2004,6 +2066,228 @@ export namespace Prisma {
           }
         }
       }
+      StoreAdminRequest: {
+        payload: Prisma.$StoreAdminRequestPayload<ExtArgs>
+        fields: Prisma.StoreAdminRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StoreAdminRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StoreAdminRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.StoreAdminRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StoreAdminRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>
+          }
+          findMany: {
+            args: Prisma.StoreAdminRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>[]
+          }
+          create: {
+            args: Prisma.StoreAdminRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>
+          }
+          createMany: {
+            args: Prisma.StoreAdminRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StoreAdminRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.StoreAdminRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>
+          }
+          update: {
+            args: Prisma.StoreAdminRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.StoreAdminRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StoreAdminRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StoreAdminRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.StoreAdminRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StoreAdminRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.StoreAdminRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStoreAdminRequest>
+          }
+          groupBy: {
+            args: Prisma.StoreAdminRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StoreAdminRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StoreAdminRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<StoreAdminRequestCountAggregateOutputType> | number
+          }
+        }
+      }
+      Notification: {
+        payload: Prisma.$NotificationPayload<ExtArgs>
+        fields: Prisma.NotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          update: {
+            args: Prisma.NotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotification>
+          }
+          groupBy: {
+            args: Prisma.NotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuditLog: {
+        payload: Prisma.$AuditLogPayload<ExtArgs>
+        fields: Prisma.AuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.AuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.AuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.AuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          update: {
+            args: Prisma.AuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuditLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.AuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditLog>
+          }
+          groupBy: {
+            args: Prisma.AuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2049,7 +2333,7 @@ export namespace Prisma {
      * ```
      * // Shorthand for `emit: 'stdout'`
      * log: ['query', 'info', 'warn', 'error']
-     * 
+     *
      * // Emit as events only
      * log: [
      *   { emit: 'event', level: 'query' },
@@ -2057,14 +2341,14 @@ export namespace Prisma {
      *   { emit: 'event', level: 'warn' }
      *   { emit: 'event', level: 'error' }
      * ]
-     * 
+     *
      * / Emit as events and log to stdout
      * og: [
      *  { emit: 'stdout', level: 'query' },
      *  { emit: 'stdout', level: 'info' },
      *  { emit: 'stdout', level: 'warn' }
      *  { emit: 'stdout', level: 'error' }
-     * 
+     *
      * ```
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
@@ -2085,7 +2369,7 @@ export namespace Prisma {
     adapter?: runtime.SqlDriverAdapterFactory | null
     /**
      * Global configuration for omitting model fields by default.
-     * 
+     *
      * @example
      * ```
      * const prisma = new PrismaClient({
@@ -2115,6 +2399,9 @@ export namespace Prisma {
     orderItem?: OrderItemOmit
     orderStatusHistory?: OrderStatusHistoryOmit
     voucherUsage?: VoucherUsageOmit
+    storeAdminRequest?: StoreAdminRequestOmit
+    notification?: NotificationOmit
+    auditLog?: AuditLogOmit
   }
 
   /* Types for Logging */
@@ -2199,6 +2486,10 @@ export namespace Prisma {
     carts: number
     orders: number
     voucherUsages: number
+    storeAdminRequests: number
+    reviewedStoreAdminRequests: number
+    notifications: number
+    auditLogs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2206,6 +2497,10 @@ export namespace Prisma {
     carts?: boolean | UserCountOutputTypeCountCartsArgs
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
     voucherUsages?: boolean | UserCountOutputTypeCountVoucherUsagesArgs
+    storeAdminRequests?: boolean | UserCountOutputTypeCountStoreAdminRequestsArgs
+    reviewedStoreAdminRequests?: boolean | UserCountOutputTypeCountReviewedStoreAdminRequestsArgs
+    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   }
 
   // Custom InputTypes
@@ -2247,6 +2542,34 @@ export namespace Prisma {
     where?: VoucherUsageWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StoreAdminRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReviewedStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StoreAdminRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+  }
+
 
   /**
    * Count Type StoreCountOutputType
@@ -2259,6 +2582,8 @@ export namespace Prisma {
     orders: number
     discounts: number
     journals: number
+    requestedStoreAdminRequests: number
+    assignedStoreAdminRequests: number
   }
 
   export type StoreCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2268,6 +2593,8 @@ export namespace Prisma {
     orders?: boolean | StoreCountOutputTypeCountOrdersArgs
     discounts?: boolean | StoreCountOutputTypeCountDiscountsArgs
     journals?: boolean | StoreCountOutputTypeCountJournalsArgs
+    requestedStoreAdminRequests?: boolean | StoreCountOutputTypeCountRequestedStoreAdminRequestsArgs
+    assignedStoreAdminRequests?: boolean | StoreCountOutputTypeCountAssignedStoreAdminRequestsArgs
   }
 
   // Custom InputTypes
@@ -2321,6 +2648,20 @@ export namespace Prisma {
    */
   export type StoreCountOutputTypeCountJournalsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StockJournalWhereInput
+  }
+
+  /**
+   * StoreCountOutputType without action
+   */
+  export type StoreCountOutputTypeCountRequestedStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StoreAdminRequestWhereInput
+  }
+
+  /**
+   * StoreCountOutputType without action
+   */
+  export type StoreCountOutputTypeCountAssignedStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StoreAdminRequestWhereInput
   }
 
 
@@ -2649,43 +2990,43 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Users
     **/
     _count?: true | UserCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: UserMaxAggregateInputType
@@ -2772,6 +3113,10 @@ export namespace Prisma {
     carts?: boolean | User$cartsArgs<ExtArgs>
     orders?: boolean | User$ordersArgs<ExtArgs>
     voucherUsages?: boolean | User$voucherUsagesArgs<ExtArgs>
+    storeAdminRequests?: boolean | User$storeAdminRequestsArgs<ExtArgs>
+    reviewedStoreAdminRequests?: boolean | User$reviewedStoreAdminRequestsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
+    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2841,6 +3186,10 @@ export namespace Prisma {
     carts?: boolean | User$cartsArgs<ExtArgs>
     orders?: boolean | User$ordersArgs<ExtArgs>
     voucherUsages?: boolean | User$voucherUsagesArgs<ExtArgs>
+    storeAdminRequests?: boolean | User$storeAdminRequestsArgs<ExtArgs>
+    reviewedStoreAdminRequests?: boolean | User$reviewedStoreAdminRequestsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
+    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2858,6 +3207,10 @@ export namespace Prisma {
       carts: Prisma.$CartItemPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
       voucherUsages: Prisma.$VoucherUsagePayload<ExtArgs>[]
+      storeAdminRequests: Prisma.$StoreAdminRequestPayload<ExtArgs>[]
+      reviewedStoreAdminRequests: Prisma.$StoreAdminRequestPayload<ExtArgs>[]
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2955,13 +3308,13 @@ export namespace Prisma {
      * @example
      * // Get all Users
      * const users = await prisma.user.findMany()
-     * 
+     *
      * // Get first 10 Users
      * const users = await prisma.user.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -2975,7 +3328,7 @@ export namespace Prisma {
      *     // ... data to create a User
      *   }
      * })
-     * 
+     *
      */
     create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -2989,7 +3342,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends UserCreateManyArgs>(args?: SelectSubset<T, UserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -3003,7 +3356,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Users and only return the `id`
      * const userWithIdOnly = await prisma.user.createManyAndReturn({
      *   select: { id: true },
@@ -3013,7 +3366,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -3027,7 +3380,7 @@ export namespace Prisma {
      *     // ... filter to delete one User
      *   }
      * })
-     * 
+     *
      */
     delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -3044,7 +3397,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -3058,7 +3411,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends UserDeleteManyArgs>(args?: SelectSubset<T, UserDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -3077,7 +3430,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends UserUpdateManyArgs>(args: SelectSubset<T, UserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -3094,7 +3447,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Users and only return the `id`
      * const userWithIdOnly = await prisma.user.updateManyAndReturn({
      *   select: { id: true },
@@ -3107,7 +3460,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends UserUpdateManyAndReturnArgs>(args: SelectSubset<T, UserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -3196,7 +3549,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends UserGroupByArgs,
@@ -3275,6 +3628,10 @@ export namespace Prisma {
     carts<T extends User$cartsArgs<ExtArgs> = {}>(args?: Subset<T, User$cartsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends User$ordersArgs<ExtArgs> = {}>(args?: Subset<T, User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     voucherUsages<T extends User$voucherUsagesArgs<ExtArgs> = {}>(args?: Subset<T, User$voucherUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    storeAdminRequests<T extends User$storeAdminRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$storeAdminRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reviewedStoreAdminRequests<T extends User$reviewedStoreAdminRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewedStoreAdminRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3321,7 +3678,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -3390,31 +3747,31 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Users.
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Users.
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
@@ -3442,31 +3799,31 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Users.
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Users.
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
@@ -3494,25 +3851,25 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Users.
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Users.
      */
     skip?: number
@@ -3831,6 +4188,102 @@ export namespace Prisma {
   }
 
   /**
+   * User.storeAdminRequests
+   */
+  export type User$storeAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    where?: StoreAdminRequestWhereInput
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    cursor?: StoreAdminRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.reviewedStoreAdminRequests
+   */
+  export type User$reviewedStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    where?: StoreAdminRequestWhereInput
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    cursor?: StoreAdminRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.notifications
+   */
+  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * User.auditLogs
+   */
+  export type User$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    cursor?: AuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3967,55 +4420,55 @@ export namespace Prisma {
     where?: StoreWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Stores to fetch.
      */
     orderBy?: StoreOrderByWithRelationInput | StoreOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: StoreWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Stores from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Stores.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Stores
     **/
     _count?: true | StoreCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: StoreAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: StoreSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: StoreMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: StoreMaxAggregateInputType
@@ -4093,6 +4546,8 @@ export namespace Prisma {
     orders?: boolean | Store$ordersArgs<ExtArgs>
     discounts?: boolean | Store$discountsArgs<ExtArgs>
     journals?: boolean | Store$journalsArgs<ExtArgs>
+    requestedStoreAdminRequests?: boolean | Store$requestedStoreAdminRequestsArgs<ExtArgs>
+    assignedStoreAdminRequests?: boolean | Store$assignedStoreAdminRequestsArgs<ExtArgs>
     _count?: boolean | StoreCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["store"]>
 
@@ -4140,6 +4595,8 @@ export namespace Prisma {
     orders?: boolean | Store$ordersArgs<ExtArgs>
     discounts?: boolean | Store$discountsArgs<ExtArgs>
     journals?: boolean | Store$journalsArgs<ExtArgs>
+    requestedStoreAdminRequests?: boolean | Store$requestedStoreAdminRequestsArgs<ExtArgs>
+    assignedStoreAdminRequests?: boolean | Store$assignedStoreAdminRequestsArgs<ExtArgs>
     _count?: boolean | StoreCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StoreIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4154,6 +4611,8 @@ export namespace Prisma {
       orders: Prisma.$OrderPayload<ExtArgs>[]
       discounts: Prisma.$DiscountPayload<ExtArgs>[]
       journals: Prisma.$StockJournalPayload<ExtArgs>[]
+      requestedStoreAdminRequests: Prisma.$StoreAdminRequestPayload<ExtArgs>[]
+      assignedStoreAdminRequests: Prisma.$StoreAdminRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4244,13 +4703,13 @@ export namespace Prisma {
      * @example
      * // Get all Stores
      * const stores = await prisma.store.findMany()
-     * 
+     *
      * // Get first 10 Stores
      * const stores = await prisma.store.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const storeWithIdOnly = await prisma.store.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends StoreFindManyArgs>(args?: SelectSubset<T, StoreFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -4264,7 +4723,7 @@ export namespace Prisma {
      *     // ... data to create a Store
      *   }
      * })
-     * 
+     *
      */
     create<T extends StoreCreateArgs>(args: SelectSubset<T, StoreCreateArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -4278,7 +4737,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends StoreCreateManyArgs>(args?: SelectSubset<T, StoreCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -4292,7 +4751,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Stores and only return the `id`
      * const storeWithIdOnly = await prisma.store.createManyAndReturn({
      *   select: { id: true },
@@ -4302,7 +4761,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends StoreCreateManyAndReturnArgs>(args?: SelectSubset<T, StoreCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -4316,7 +4775,7 @@ export namespace Prisma {
      *     // ... filter to delete one Store
      *   }
      * })
-     * 
+     *
      */
     delete<T extends StoreDeleteArgs>(args: SelectSubset<T, StoreDeleteArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -4333,7 +4792,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends StoreUpdateArgs>(args: SelectSubset<T, StoreUpdateArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -4347,7 +4806,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends StoreDeleteManyArgs>(args?: SelectSubset<T, StoreDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -4366,7 +4825,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends StoreUpdateManyArgs>(args: SelectSubset<T, StoreUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -4383,7 +4842,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Stores and only return the `id`
      * const storeWithIdOnly = await prisma.store.updateManyAndReturn({
      *   select: { id: true },
@@ -4396,7 +4855,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends StoreUpdateManyAndReturnArgs>(args: SelectSubset<T, StoreUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -4485,7 +4944,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends StoreGroupByArgs,
@@ -4565,6 +5024,8 @@ export namespace Prisma {
     orders<T extends Store$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Store$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     discounts<T extends Store$discountsArgs<ExtArgs> = {}>(args?: Subset<T, Store$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     journals<T extends Store$journalsArgs<ExtArgs> = {}>(args?: Subset<T, Store$journalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    requestedStoreAdminRequests<T extends Store$requestedStoreAdminRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Store$requestedStoreAdminRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    assignedStoreAdminRequests<T extends Store$assignedStoreAdminRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Store$assignedStoreAdminRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4604,7 +5065,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Store", 'DateTime'>
     readonly updatedAt: FieldRef<"Store", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -4673,31 +5134,31 @@ export namespace Prisma {
     where?: StoreWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Stores to fetch.
      */
     orderBy?: StoreOrderByWithRelationInput | StoreOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Stores.
      */
     cursor?: StoreWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Stores from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Stores.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Stores.
      */
     distinct?: StoreScalarFieldEnum | StoreScalarFieldEnum[]
@@ -4725,31 +5186,31 @@ export namespace Prisma {
     where?: StoreWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Stores to fetch.
      */
     orderBy?: StoreOrderByWithRelationInput | StoreOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Stores.
      */
     cursor?: StoreWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Stores from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Stores.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Stores.
      */
     distinct?: StoreScalarFieldEnum | StoreScalarFieldEnum[]
@@ -4777,25 +5238,25 @@ export namespace Prisma {
     where?: StoreWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Stores to fetch.
      */
     orderBy?: StoreOrderByWithRelationInput | StoreOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Stores.
      */
     cursor?: StoreWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Stores from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Stores.
      */
     skip?: number
@@ -5135,6 +5596,54 @@ export namespace Prisma {
   }
 
   /**
+   * Store.requestedStoreAdminRequests
+   */
+  export type Store$requestedStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    where?: StoreAdminRequestWhereInput
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    cursor?: StoreAdminRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
+   * Store.assignedStoreAdminRequests
+   */
+  export type Store$assignedStoreAdminRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    where?: StoreAdminRequestWhereInput
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    cursor?: StoreAdminRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
    * Store without action
    */
   export type StoreDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5309,55 +5818,55 @@ export namespace Prisma {
     where?: AddressWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Addresses to fetch.
      */
     orderBy?: AddressOrderByWithRelationInput | AddressOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: AddressWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Addresses from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Addresses.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Addresses
     **/
     _count?: true | AddressCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: AddressAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: AddressSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: AddressMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: AddressMaxAggregateInputType
@@ -5617,13 +6126,13 @@ export namespace Prisma {
      * @example
      * // Get all Addresses
      * const addresses = await prisma.address.findMany()
-     * 
+     *
      * // Get first 10 Addresses
      * const addresses = await prisma.address.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const addressWithIdOnly = await prisma.address.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends AddressFindManyArgs>(args?: SelectSubset<T, AddressFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -5637,7 +6146,7 @@ export namespace Prisma {
      *     // ... data to create a Address
      *   }
      * })
-     * 
+     *
      */
     create<T extends AddressCreateArgs>(args: SelectSubset<T, AddressCreateArgs<ExtArgs>>): Prisma__AddressClient<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -5651,7 +6160,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends AddressCreateManyArgs>(args?: SelectSubset<T, AddressCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -5665,7 +6174,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Addresses and only return the `id`
      * const addressWithIdOnly = await prisma.address.createManyAndReturn({
      *   select: { id: true },
@@ -5675,7 +6184,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends AddressCreateManyAndReturnArgs>(args?: SelectSubset<T, AddressCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -5689,7 +6198,7 @@ export namespace Prisma {
      *     // ... filter to delete one Address
      *   }
      * })
-     * 
+     *
      */
     delete<T extends AddressDeleteArgs>(args: SelectSubset<T, AddressDeleteArgs<ExtArgs>>): Prisma__AddressClient<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -5706,7 +6215,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends AddressUpdateArgs>(args: SelectSubset<T, AddressUpdateArgs<ExtArgs>>): Prisma__AddressClient<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -5720,7 +6229,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends AddressDeleteManyArgs>(args?: SelectSubset<T, AddressDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -5739,7 +6248,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends AddressUpdateManyArgs>(args: SelectSubset<T, AddressUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -5756,7 +6265,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Addresses and only return the `id`
      * const addressWithIdOnly = await prisma.address.updateManyAndReturn({
      *   select: { id: true },
@@ -5769,7 +6278,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends AddressUpdateManyAndReturnArgs>(args: SelectSubset<T, AddressUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -5858,7 +6367,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends AddressGroupByArgs,
@@ -5979,7 +6488,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Address", 'DateTime'>
     readonly updatedAt: FieldRef<"Address", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -6048,31 +6557,31 @@ export namespace Prisma {
     where?: AddressWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Addresses to fetch.
      */
     orderBy?: AddressOrderByWithRelationInput | AddressOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Addresses.
      */
     cursor?: AddressWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Addresses from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Addresses.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Addresses.
      */
     distinct?: AddressScalarFieldEnum | AddressScalarFieldEnum[]
@@ -6100,31 +6609,31 @@ export namespace Prisma {
     where?: AddressWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Addresses to fetch.
      */
     orderBy?: AddressOrderByWithRelationInput | AddressOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Addresses.
      */
     cursor?: AddressWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Addresses from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Addresses.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Addresses.
      */
     distinct?: AddressScalarFieldEnum | AddressScalarFieldEnum[]
@@ -6152,25 +6661,25 @@ export namespace Prisma {
     where?: AddressWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Addresses to fetch.
      */
     orderBy?: AddressOrderByWithRelationInput | AddressOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Addresses.
      */
     cursor?: AddressWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Addresses from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Addresses.
      */
     skip?: number
@@ -6454,43 +6963,43 @@ export namespace Prisma {
     where?: ProductCategoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductCategories to fetch.
      */
     orderBy?: ProductCategoryOrderByWithRelationInput | ProductCategoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: ProductCategoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductCategories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductCategories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned ProductCategories
     **/
     _count?: true | ProductCategoryCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: ProductCategoryMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: ProductCategoryMaxAggregateInputType
@@ -6670,13 +7179,13 @@ export namespace Prisma {
      * @example
      * // Get all ProductCategories
      * const productCategories = await prisma.productCategory.findMany()
-     * 
+     *
      * // Get first 10 ProductCategories
      * const productCategories = await prisma.productCategory.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const productCategoryWithIdOnly = await prisma.productCategory.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends ProductCategoryFindManyArgs>(args?: SelectSubset<T, ProductCategoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -6690,7 +7199,7 @@ export namespace Prisma {
      *     // ... data to create a ProductCategory
      *   }
      * })
-     * 
+     *
      */
     create<T extends ProductCategoryCreateArgs>(args: SelectSubset<T, ProductCategoryCreateArgs<ExtArgs>>): Prisma__ProductCategoryClient<$Result.GetResult<Prisma.$ProductCategoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -6704,7 +7213,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends ProductCategoryCreateManyArgs>(args?: SelectSubset<T, ProductCategoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -6718,7 +7227,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many ProductCategories and only return the `id`
      * const productCategoryWithIdOnly = await prisma.productCategory.createManyAndReturn({
      *   select: { id: true },
@@ -6728,7 +7237,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends ProductCategoryCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductCategoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductCategoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -6742,7 +7251,7 @@ export namespace Prisma {
      *     // ... filter to delete one ProductCategory
      *   }
      * })
-     * 
+     *
      */
     delete<T extends ProductCategoryDeleteArgs>(args: SelectSubset<T, ProductCategoryDeleteArgs<ExtArgs>>): Prisma__ProductCategoryClient<$Result.GetResult<Prisma.$ProductCategoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -6759,7 +7268,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends ProductCategoryUpdateArgs>(args: SelectSubset<T, ProductCategoryUpdateArgs<ExtArgs>>): Prisma__ProductCategoryClient<$Result.GetResult<Prisma.$ProductCategoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -6773,7 +7282,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends ProductCategoryDeleteManyArgs>(args?: SelectSubset<T, ProductCategoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -6792,7 +7301,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends ProductCategoryUpdateManyArgs>(args: SelectSubset<T, ProductCategoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -6809,7 +7318,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more ProductCategories and only return the `id`
      * const productCategoryWithIdOnly = await prisma.productCategory.updateManyAndReturn({
      *   select: { id: true },
@@ -6822,7 +7331,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends ProductCategoryUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductCategoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductCategoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -6911,7 +7420,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends ProductCategoryGroupByArgs,
@@ -7020,7 +7529,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"ProductCategory", 'DateTime'>
     readonly updatedAt: FieldRef<"ProductCategory", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -7089,31 +7598,31 @@ export namespace Prisma {
     where?: ProductCategoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductCategories to fetch.
      */
     orderBy?: ProductCategoryOrderByWithRelationInput | ProductCategoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for ProductCategories.
      */
     cursor?: ProductCategoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductCategories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductCategories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of ProductCategories.
      */
     distinct?: ProductCategoryScalarFieldEnum | ProductCategoryScalarFieldEnum[]
@@ -7141,31 +7650,31 @@ export namespace Prisma {
     where?: ProductCategoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductCategories to fetch.
      */
     orderBy?: ProductCategoryOrderByWithRelationInput | ProductCategoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for ProductCategories.
      */
     cursor?: ProductCategoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductCategories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductCategories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of ProductCategories.
      */
     distinct?: ProductCategoryScalarFieldEnum | ProductCategoryScalarFieldEnum[]
@@ -7193,25 +7702,25 @@ export namespace Prisma {
     where?: ProductCategoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductCategories to fetch.
      */
     orderBy?: ProductCategoryOrderByWithRelationInput | ProductCategoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing ProductCategories.
      */
     cursor?: ProductCategoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductCategories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductCategories.
      */
     skip?: number
@@ -7553,55 +8062,55 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Products
     **/
     _count?: true | ProductCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: ProductAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: ProductSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: ProductMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: ProductMaxAggregateInputType
@@ -7833,13 +8342,13 @@ export namespace Prisma {
      * @example
      * // Get all Products
      * const products = await prisma.product.findMany()
-     * 
+     *
      * // Get first 10 Products
      * const products = await prisma.product.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const productWithIdOnly = await prisma.product.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends ProductFindManyArgs>(args?: SelectSubset<T, ProductFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -7853,7 +8362,7 @@ export namespace Prisma {
      *     // ... data to create a Product
      *   }
      * })
-     * 
+     *
      */
     create<T extends ProductCreateArgs>(args: SelectSubset<T, ProductCreateArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -7867,7 +8376,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends ProductCreateManyArgs>(args?: SelectSubset<T, ProductCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -7881,7 +8390,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Products and only return the `id`
      * const productWithIdOnly = await prisma.product.createManyAndReturn({
      *   select: { id: true },
@@ -7891,7 +8400,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends ProductCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -7905,7 +8414,7 @@ export namespace Prisma {
      *     // ... filter to delete one Product
      *   }
      * })
-     * 
+     *
      */
     delete<T extends ProductDeleteArgs>(args: SelectSubset<T, ProductDeleteArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -7922,7 +8431,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends ProductUpdateArgs>(args: SelectSubset<T, ProductUpdateArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -7936,7 +8445,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends ProductDeleteManyArgs>(args?: SelectSubset<T, ProductDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -7955,7 +8464,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends ProductUpdateManyArgs>(args: SelectSubset<T, ProductUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -7972,7 +8481,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Products and only return the `id`
      * const productWithIdOnly = await prisma.product.updateManyAndReturn({
      *   select: { id: true },
@@ -7985,7 +8494,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends ProductUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -8074,7 +8583,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends ProductGroupByArgs,
@@ -8193,7 +8702,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -8262,31 +8771,31 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Products.
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Products.
      */
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
@@ -8314,31 +8823,31 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Products.
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Products.
      */
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
@@ -8366,25 +8875,25 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Products.
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Products.
      */
     skip?: number
@@ -8806,43 +9315,43 @@ export namespace Prisma {
     where?: ProductImageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductImages to fetch.
      */
     orderBy?: ProductImageOrderByWithRelationInput | ProductImageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: ProductImageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductImages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductImages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned ProductImages
     **/
     _count?: true | ProductImageCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: ProductImageMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: ProductImageMaxAggregateInputType
@@ -9020,13 +9529,13 @@ export namespace Prisma {
      * @example
      * // Get all ProductImages
      * const productImages = await prisma.productImage.findMany()
-     * 
+     *
      * // Get first 10 ProductImages
      * const productImages = await prisma.productImage.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const productImageWithIdOnly = await prisma.productImage.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends ProductImageFindManyArgs>(args?: SelectSubset<T, ProductImageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -9040,7 +9549,7 @@ export namespace Prisma {
      *     // ... data to create a ProductImage
      *   }
      * })
-     * 
+     *
      */
     create<T extends ProductImageCreateArgs>(args: SelectSubset<T, ProductImageCreateArgs<ExtArgs>>): Prisma__ProductImageClient<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -9054,7 +9563,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends ProductImageCreateManyArgs>(args?: SelectSubset<T, ProductImageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -9068,7 +9577,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many ProductImages and only return the `id`
      * const productImageWithIdOnly = await prisma.productImage.createManyAndReturn({
      *   select: { id: true },
@@ -9078,7 +9587,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends ProductImageCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductImageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -9092,7 +9601,7 @@ export namespace Prisma {
      *     // ... filter to delete one ProductImage
      *   }
      * })
-     * 
+     *
      */
     delete<T extends ProductImageDeleteArgs>(args: SelectSubset<T, ProductImageDeleteArgs<ExtArgs>>): Prisma__ProductImageClient<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -9109,7 +9618,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends ProductImageUpdateArgs>(args: SelectSubset<T, ProductImageUpdateArgs<ExtArgs>>): Prisma__ProductImageClient<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -9123,7 +9632,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends ProductImageDeleteManyArgs>(args?: SelectSubset<T, ProductImageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -9142,7 +9651,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends ProductImageUpdateManyArgs>(args: SelectSubset<T, ProductImageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -9159,7 +9668,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more ProductImages and only return the `id`
      * const productImageWithIdOnly = await prisma.productImage.updateManyAndReturn({
      *   select: { id: true },
@@ -9172,7 +9681,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends ProductImageUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductImageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -9261,7 +9770,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends ProductImageGroupByArgs,
@@ -9369,7 +9878,7 @@ export namespace Prisma {
     readonly productId: FieldRef<"ProductImage", 'String'>
     readonly url: FieldRef<"ProductImage", 'String'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -9438,31 +9947,31 @@ export namespace Prisma {
     where?: ProductImageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductImages to fetch.
      */
     orderBy?: ProductImageOrderByWithRelationInput | ProductImageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for ProductImages.
      */
     cursor?: ProductImageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductImages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductImages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of ProductImages.
      */
     distinct?: ProductImageScalarFieldEnum | ProductImageScalarFieldEnum[]
@@ -9490,31 +9999,31 @@ export namespace Prisma {
     where?: ProductImageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductImages to fetch.
      */
     orderBy?: ProductImageOrderByWithRelationInput | ProductImageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for ProductImages.
      */
     cursor?: ProductImageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductImages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductImages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of ProductImages.
      */
     distinct?: ProductImageScalarFieldEnum | ProductImageScalarFieldEnum[]
@@ -9542,25 +10051,25 @@ export namespace Prisma {
     where?: ProductImageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of ProductImages to fetch.
      */
     orderBy?: ProductImageOrderByWithRelationInput | ProductImageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing ProductImages.
      */
     cursor?: ProductImageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` ProductImages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` ProductImages.
      */
     skip?: number
@@ -9868,55 +10377,55 @@ export namespace Prisma {
     where?: InventoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Inventories to fetch.
      */
     orderBy?: InventoryOrderByWithRelationInput | InventoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: InventoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Inventories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Inventories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Inventories
     **/
     _count?: true | InventoryCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: InventoryAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: InventorySumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: InventoryMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: InventoryMaxAggregateInputType
@@ -10117,13 +10626,13 @@ export namespace Prisma {
      * @example
      * // Get all Inventories
      * const inventories = await prisma.inventory.findMany()
-     * 
+     *
      * // Get first 10 Inventories
      * const inventories = await prisma.inventory.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const inventoryWithIdOnly = await prisma.inventory.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends InventoryFindManyArgs>(args?: SelectSubset<T, InventoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -10137,7 +10646,7 @@ export namespace Prisma {
      *     // ... data to create a Inventory
      *   }
      * })
-     * 
+     *
      */
     create<T extends InventoryCreateArgs>(args: SelectSubset<T, InventoryCreateArgs<ExtArgs>>): Prisma__InventoryClient<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -10151,7 +10660,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends InventoryCreateManyArgs>(args?: SelectSubset<T, InventoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -10165,7 +10674,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Inventories and only return the `id`
      * const inventoryWithIdOnly = await prisma.inventory.createManyAndReturn({
      *   select: { id: true },
@@ -10175,7 +10684,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends InventoryCreateManyAndReturnArgs>(args?: SelectSubset<T, InventoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -10189,7 +10698,7 @@ export namespace Prisma {
      *     // ... filter to delete one Inventory
      *   }
      * })
-     * 
+     *
      */
     delete<T extends InventoryDeleteArgs>(args: SelectSubset<T, InventoryDeleteArgs<ExtArgs>>): Prisma__InventoryClient<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -10206,7 +10715,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends InventoryUpdateArgs>(args: SelectSubset<T, InventoryUpdateArgs<ExtArgs>>): Prisma__InventoryClient<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -10220,7 +10729,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends InventoryDeleteManyArgs>(args?: SelectSubset<T, InventoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -10239,7 +10748,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends InventoryUpdateManyArgs>(args: SelectSubset<T, InventoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -10256,7 +10765,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Inventories and only return the `id`
      * const inventoryWithIdOnly = await prisma.inventory.updateManyAndReturn({
      *   select: { id: true },
@@ -10269,7 +10778,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends InventoryUpdateManyAndReturnArgs>(args: SelectSubset<T, InventoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -10358,7 +10867,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends InventoryGroupByArgs,
@@ -10469,7 +10978,7 @@ export namespace Prisma {
     readonly quantity: FieldRef<"Inventory", 'Int'>
     readonly updatedAt: FieldRef<"Inventory", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -10538,31 +11047,31 @@ export namespace Prisma {
     where?: InventoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Inventories to fetch.
      */
     orderBy?: InventoryOrderByWithRelationInput | InventoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Inventories.
      */
     cursor?: InventoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Inventories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Inventories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Inventories.
      */
     distinct?: InventoryScalarFieldEnum | InventoryScalarFieldEnum[]
@@ -10590,31 +11099,31 @@ export namespace Prisma {
     where?: InventoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Inventories to fetch.
      */
     orderBy?: InventoryOrderByWithRelationInput | InventoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Inventories.
      */
     cursor?: InventoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Inventories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Inventories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Inventories.
      */
     distinct?: InventoryScalarFieldEnum | InventoryScalarFieldEnum[]
@@ -10642,25 +11151,25 @@ export namespace Prisma {
     where?: InventoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Inventories to fetch.
      */
     orderBy?: InventoryOrderByWithRelationInput | InventoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Inventories.
      */
     cursor?: InventoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Inventories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Inventories.
      */
     skip?: number
@@ -10980,55 +11489,55 @@ export namespace Prisma {
     where?: CartItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of CartItems to fetch.
      */
     orderBy?: CartItemOrderByWithRelationInput | CartItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: CartItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` CartItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` CartItems.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned CartItems
     **/
     _count?: true | CartItemCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: CartItemAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: CartItemSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: CartItemMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: CartItemMaxAggregateInputType
@@ -11248,13 +11757,13 @@ export namespace Prisma {
      * @example
      * // Get all CartItems
      * const cartItems = await prisma.cartItem.findMany()
-     * 
+     *
      * // Get first 10 CartItems
      * const cartItems = await prisma.cartItem.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const cartItemWithIdOnly = await prisma.cartItem.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends CartItemFindManyArgs>(args?: SelectSubset<T, CartItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -11268,7 +11777,7 @@ export namespace Prisma {
      *     // ... data to create a CartItem
      *   }
      * })
-     * 
+     *
      */
     create<T extends CartItemCreateArgs>(args: SelectSubset<T, CartItemCreateArgs<ExtArgs>>): Prisma__CartItemClient<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -11282,7 +11791,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends CartItemCreateManyArgs>(args?: SelectSubset<T, CartItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -11296,7 +11805,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many CartItems and only return the `id`
      * const cartItemWithIdOnly = await prisma.cartItem.createManyAndReturn({
      *   select: { id: true },
@@ -11306,7 +11815,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends CartItemCreateManyAndReturnArgs>(args?: SelectSubset<T, CartItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -11320,7 +11829,7 @@ export namespace Prisma {
      *     // ... filter to delete one CartItem
      *   }
      * })
-     * 
+     *
      */
     delete<T extends CartItemDeleteArgs>(args: SelectSubset<T, CartItemDeleteArgs<ExtArgs>>): Prisma__CartItemClient<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -11337,7 +11846,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends CartItemUpdateArgs>(args: SelectSubset<T, CartItemUpdateArgs<ExtArgs>>): Prisma__CartItemClient<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -11351,7 +11860,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends CartItemDeleteManyArgs>(args?: SelectSubset<T, CartItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -11370,7 +11879,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends CartItemUpdateManyArgs>(args: SelectSubset<T, CartItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -11387,7 +11896,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more CartItems and only return the `id`
      * const cartItemWithIdOnly = await prisma.cartItem.updateManyAndReturn({
      *   select: { id: true },
@@ -11400,7 +11909,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends CartItemUpdateManyAndReturnArgs>(args: SelectSubset<T, CartItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -11489,7 +11998,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends CartItemGroupByArgs,
@@ -11603,7 +12112,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"CartItem", 'DateTime'>
     readonly updatedAt: FieldRef<"CartItem", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -11672,31 +12181,31 @@ export namespace Prisma {
     where?: CartItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of CartItems to fetch.
      */
     orderBy?: CartItemOrderByWithRelationInput | CartItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for CartItems.
      */
     cursor?: CartItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` CartItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` CartItems.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of CartItems.
      */
     distinct?: CartItemScalarFieldEnum | CartItemScalarFieldEnum[]
@@ -11724,31 +12233,31 @@ export namespace Prisma {
     where?: CartItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of CartItems to fetch.
      */
     orderBy?: CartItemOrderByWithRelationInput | CartItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for CartItems.
      */
     cursor?: CartItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` CartItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` CartItems.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of CartItems.
      */
     distinct?: CartItemScalarFieldEnum | CartItemScalarFieldEnum[]
@@ -11776,25 +12285,25 @@ export namespace Prisma {
     where?: CartItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of CartItems to fetch.
      */
     orderBy?: CartItemOrderByWithRelationInput | CartItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing CartItems.
      */
     cursor?: CartItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` CartItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` CartItems.
      */
     skip?: number
@@ -12108,55 +12617,55 @@ export namespace Prisma {
     where?: StockJournalWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of StockJournals to fetch.
      */
     orderBy?: StockJournalOrderByWithRelationInput | StockJournalOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: StockJournalWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` StockJournals from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` StockJournals.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned StockJournals
     **/
     _count?: true | StockJournalCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: StockJournalAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: StockJournalSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: StockJournalMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: StockJournalMaxAggregateInputType
@@ -12363,13 +12872,13 @@ export namespace Prisma {
      * @example
      * // Get all StockJournals
      * const stockJournals = await prisma.stockJournal.findMany()
-     * 
+     *
      * // Get first 10 StockJournals
      * const stockJournals = await prisma.stockJournal.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const stockJournalWithIdOnly = await prisma.stockJournal.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends StockJournalFindManyArgs>(args?: SelectSubset<T, StockJournalFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -12383,7 +12892,7 @@ export namespace Prisma {
      *     // ... data to create a StockJournal
      *   }
      * })
-     * 
+     *
      */
     create<T extends StockJournalCreateArgs>(args: SelectSubset<T, StockJournalCreateArgs<ExtArgs>>): Prisma__StockJournalClient<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -12397,7 +12906,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends StockJournalCreateManyArgs>(args?: SelectSubset<T, StockJournalCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -12411,7 +12920,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many StockJournals and only return the `id`
      * const stockJournalWithIdOnly = await prisma.stockJournal.createManyAndReturn({
      *   select: { id: true },
@@ -12421,7 +12930,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends StockJournalCreateManyAndReturnArgs>(args?: SelectSubset<T, StockJournalCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -12435,7 +12944,7 @@ export namespace Prisma {
      *     // ... filter to delete one StockJournal
      *   }
      * })
-     * 
+     *
      */
     delete<T extends StockJournalDeleteArgs>(args: SelectSubset<T, StockJournalDeleteArgs<ExtArgs>>): Prisma__StockJournalClient<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -12452,7 +12961,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends StockJournalUpdateArgs>(args: SelectSubset<T, StockJournalUpdateArgs<ExtArgs>>): Prisma__StockJournalClient<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -12466,7 +12975,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends StockJournalDeleteManyArgs>(args?: SelectSubset<T, StockJournalDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -12485,7 +12994,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends StockJournalUpdateManyArgs>(args: SelectSubset<T, StockJournalUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -12502,7 +13011,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more StockJournals and only return the `id`
      * const stockJournalWithIdOnly = await prisma.stockJournal.updateManyAndReturn({
      *   select: { id: true },
@@ -12515,7 +13024,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends StockJournalUpdateManyAndReturnArgs>(args: SelectSubset<T, StockJournalUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockJournalPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -12604,7 +13113,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends StockJournalGroupByArgs,
@@ -12716,7 +13225,7 @@ export namespace Prisma {
     readonly note: FieldRef<"StockJournal", 'String'>
     readonly createdAt: FieldRef<"StockJournal", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -12785,31 +13294,31 @@ export namespace Prisma {
     where?: StockJournalWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of StockJournals to fetch.
      */
     orderBy?: StockJournalOrderByWithRelationInput | StockJournalOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for StockJournals.
      */
     cursor?: StockJournalWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` StockJournals from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` StockJournals.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of StockJournals.
      */
     distinct?: StockJournalScalarFieldEnum | StockJournalScalarFieldEnum[]
@@ -12837,31 +13346,31 @@ export namespace Prisma {
     where?: StockJournalWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of StockJournals to fetch.
      */
     orderBy?: StockJournalOrderByWithRelationInput | StockJournalOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for StockJournals.
      */
     cursor?: StockJournalWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` StockJournals from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` StockJournals.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of StockJournals.
      */
     distinct?: StockJournalScalarFieldEnum | StockJournalScalarFieldEnum[]
@@ -12889,25 +13398,25 @@ export namespace Prisma {
     where?: StockJournalWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of StockJournals to fetch.
      */
     orderBy?: StockJournalOrderByWithRelationInput | StockJournalOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing StockJournals.
      */
     cursor?: StockJournalWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` StockJournals from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` StockJournals.
      */
     skip?: number
@@ -13259,55 +13768,55 @@ export namespace Prisma {
     where?: DiscountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Discounts to fetch.
      */
     orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: DiscountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Discounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Discounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Discounts
     **/
     _count?: true | DiscountCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: DiscountAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: DiscountSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: DiscountMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: DiscountMaxAggregateInputType
@@ -13544,13 +14053,13 @@ export namespace Prisma {
      * @example
      * // Get all Discounts
      * const discounts = await prisma.discount.findMany()
-     * 
+     *
      * // Get first 10 Discounts
      * const discounts = await prisma.discount.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const discountWithIdOnly = await prisma.discount.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends DiscountFindManyArgs>(args?: SelectSubset<T, DiscountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -13564,7 +14073,7 @@ export namespace Prisma {
      *     // ... data to create a Discount
      *   }
      * })
-     * 
+     *
      */
     create<T extends DiscountCreateArgs>(args: SelectSubset<T, DiscountCreateArgs<ExtArgs>>): Prisma__DiscountClient<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -13578,7 +14087,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends DiscountCreateManyArgs>(args?: SelectSubset<T, DiscountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -13592,7 +14101,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Discounts and only return the `id`
      * const discountWithIdOnly = await prisma.discount.createManyAndReturn({
      *   select: { id: true },
@@ -13602,7 +14111,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends DiscountCreateManyAndReturnArgs>(args?: SelectSubset<T, DiscountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -13616,7 +14125,7 @@ export namespace Prisma {
      *     // ... filter to delete one Discount
      *   }
      * })
-     * 
+     *
      */
     delete<T extends DiscountDeleteArgs>(args: SelectSubset<T, DiscountDeleteArgs<ExtArgs>>): Prisma__DiscountClient<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -13633,7 +14142,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends DiscountUpdateArgs>(args: SelectSubset<T, DiscountUpdateArgs<ExtArgs>>): Prisma__DiscountClient<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -13647,7 +14156,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends DiscountDeleteManyArgs>(args?: SelectSubset<T, DiscountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -13666,7 +14175,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends DiscountUpdateManyArgs>(args: SelectSubset<T, DiscountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -13683,7 +14192,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Discounts and only return the `id`
      * const discountWithIdOnly = await prisma.discount.updateManyAndReturn({
      *   select: { id: true },
@@ -13696,7 +14205,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends DiscountUpdateManyAndReturnArgs>(args: SelectSubset<T, DiscountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -13785,7 +14294,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends DiscountGroupByArgs,
@@ -13902,7 +14411,7 @@ export namespace Prisma {
     readonly expiresAt: FieldRef<"Discount", 'DateTime'>
     readonly createdAt: FieldRef<"Discount", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -13971,31 +14480,31 @@ export namespace Prisma {
     where?: DiscountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Discounts to fetch.
      */
     orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Discounts.
      */
     cursor?: DiscountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Discounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Discounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Discounts.
      */
     distinct?: DiscountScalarFieldEnum | DiscountScalarFieldEnum[]
@@ -14023,31 +14532,31 @@ export namespace Prisma {
     where?: DiscountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Discounts to fetch.
      */
     orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Discounts.
      */
     cursor?: DiscountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Discounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Discounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Discounts.
      */
     distinct?: DiscountScalarFieldEnum | DiscountScalarFieldEnum[]
@@ -14075,25 +14584,25 @@ export namespace Prisma {
     where?: DiscountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Discounts to fetch.
      */
     orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Discounts.
      */
     cursor?: DiscountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Discounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Discounts.
      */
     skip?: number
@@ -14464,55 +14973,55 @@ export namespace Prisma {
     where?: VoucherWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Vouchers to fetch.
      */
     orderBy?: VoucherOrderByWithRelationInput | VoucherOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: VoucherWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Vouchers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Vouchers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Vouchers
     **/
     _count?: true | VoucherCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: VoucherAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: VoucherSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: VoucherMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: VoucherMaxAggregateInputType
@@ -14738,13 +15247,13 @@ export namespace Prisma {
      * @example
      * // Get all Vouchers
      * const vouchers = await prisma.voucher.findMany()
-     * 
+     *
      * // Get first 10 Vouchers
      * const vouchers = await prisma.voucher.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const voucherWithIdOnly = await prisma.voucher.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends VoucherFindManyArgs>(args?: SelectSubset<T, VoucherFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -14758,7 +15267,7 @@ export namespace Prisma {
      *     // ... data to create a Voucher
      *   }
      * })
-     * 
+     *
      */
     create<T extends VoucherCreateArgs>(args: SelectSubset<T, VoucherCreateArgs<ExtArgs>>): Prisma__VoucherClient<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -14772,7 +15281,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends VoucherCreateManyArgs>(args?: SelectSubset<T, VoucherCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -14786,7 +15295,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Vouchers and only return the `id`
      * const voucherWithIdOnly = await prisma.voucher.createManyAndReturn({
      *   select: { id: true },
@@ -14796,7 +15305,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends VoucherCreateManyAndReturnArgs>(args?: SelectSubset<T, VoucherCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -14810,7 +15319,7 @@ export namespace Prisma {
      *     // ... filter to delete one Voucher
      *   }
      * })
-     * 
+     *
      */
     delete<T extends VoucherDeleteArgs>(args: SelectSubset<T, VoucherDeleteArgs<ExtArgs>>): Prisma__VoucherClient<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -14827,7 +15336,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends VoucherUpdateArgs>(args: SelectSubset<T, VoucherUpdateArgs<ExtArgs>>): Prisma__VoucherClient<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -14841,7 +15350,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends VoucherDeleteManyArgs>(args?: SelectSubset<T, VoucherDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -14860,7 +15369,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends VoucherUpdateManyArgs>(args: SelectSubset<T, VoucherUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -14877,7 +15386,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Vouchers and only return the `id`
      * const voucherWithIdOnly = await prisma.voucher.updateManyAndReturn({
      *   select: { id: true },
@@ -14890,7 +15399,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends VoucherUpdateManyAndReturnArgs>(args: SelectSubset<T, VoucherUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -14979,7 +15488,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends VoucherGroupByArgs,
@@ -15095,7 +15604,7 @@ export namespace Prisma {
     readonly expiresAt: FieldRef<"Voucher", 'DateTime'>
     readonly createdAt: FieldRef<"Voucher", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -15164,31 +15673,31 @@ export namespace Prisma {
     where?: VoucherWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Vouchers to fetch.
      */
     orderBy?: VoucherOrderByWithRelationInput | VoucherOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Vouchers.
      */
     cursor?: VoucherWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Vouchers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Vouchers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Vouchers.
      */
     distinct?: VoucherScalarFieldEnum | VoucherScalarFieldEnum[]
@@ -15216,31 +15725,31 @@ export namespace Prisma {
     where?: VoucherWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Vouchers to fetch.
      */
     orderBy?: VoucherOrderByWithRelationInput | VoucherOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Vouchers.
      */
     cursor?: VoucherWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Vouchers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Vouchers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Vouchers.
      */
     distinct?: VoucherScalarFieldEnum | VoucherScalarFieldEnum[]
@@ -15268,25 +15777,25 @@ export namespace Prisma {
     where?: VoucherWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Vouchers to fetch.
      */
     orderBy?: VoucherOrderByWithRelationInput | VoucherOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Vouchers.
      */
     cursor?: VoucherWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Vouchers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Vouchers.
      */
     skip?: number
@@ -15762,55 +16271,55 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned Orders
     **/
     _count?: true | OrderCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: OrderAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: OrderSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: OrderMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: OrderMaxAggregateInputType
@@ -16166,13 +16675,13 @@ export namespace Prisma {
      * @example
      * // Get all Orders
      * const orders = await prisma.order.findMany()
-     * 
+     *
      * // Get first 10 Orders
      * const orders = await prisma.order.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const orderWithIdOnly = await prisma.order.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends OrderFindManyArgs>(args?: SelectSubset<T, OrderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -16186,7 +16695,7 @@ export namespace Prisma {
      *     // ... data to create a Order
      *   }
      * })
-     * 
+     *
      */
     create<T extends OrderCreateArgs>(args: SelectSubset<T, OrderCreateArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -16200,7 +16709,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends OrderCreateManyArgs>(args?: SelectSubset<T, OrderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -16214,7 +16723,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many Orders and only return the `id`
      * const orderWithIdOnly = await prisma.order.createManyAndReturn({
      *   select: { id: true },
@@ -16224,7 +16733,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends OrderCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -16238,7 +16747,7 @@ export namespace Prisma {
      *     // ... filter to delete one Order
      *   }
      * })
-     * 
+     *
      */
     delete<T extends OrderDeleteArgs>(args: SelectSubset<T, OrderDeleteArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -16255,7 +16764,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends OrderUpdateArgs>(args: SelectSubset<T, OrderUpdateArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -16269,7 +16778,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends OrderDeleteManyArgs>(args?: SelectSubset<T, OrderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -16288,7 +16797,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends OrderUpdateManyArgs>(args: SelectSubset<T, OrderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -16305,7 +16814,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more Orders and only return the `id`
      * const orderWithIdOnly = await prisma.order.updateManyAndReturn({
      *   select: { id: true },
@@ -16318,7 +16827,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends OrderUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -16407,7 +16916,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends OrderGroupByArgs,
@@ -16545,7 +17054,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -16614,31 +17123,31 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Orders.
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Orders.
      */
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
@@ -16666,31 +17175,31 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for Orders.
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of Orders.
      */
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
@@ -16718,25 +17227,25 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing Orders.
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` Orders.
      */
     skip?: number
@@ -17120,55 +17629,55 @@ export namespace Prisma {
     where?: OrderItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderItems to fetch.
      */
     orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: OrderItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderItems.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned OrderItems
     **/
     _count?: true | OrderItemCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: OrderItemAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: OrderItemSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: OrderItemMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: OrderItemMaxAggregateInputType
@@ -17369,13 +17878,13 @@ export namespace Prisma {
      * @example
      * // Get all OrderItems
      * const orderItems = await prisma.orderItem.findMany()
-     * 
+     *
      * // Get first 10 OrderItems
      * const orderItems = await prisma.orderItem.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const orderItemWithIdOnly = await prisma.orderItem.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends OrderItemFindManyArgs>(args?: SelectSubset<T, OrderItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -17389,7 +17898,7 @@ export namespace Prisma {
      *     // ... data to create a OrderItem
      *   }
      * })
-     * 
+     *
      */
     create<T extends OrderItemCreateArgs>(args: SelectSubset<T, OrderItemCreateArgs<ExtArgs>>): Prisma__OrderItemClient<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -17403,7 +17912,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends OrderItemCreateManyArgs>(args?: SelectSubset<T, OrderItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -17417,7 +17926,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many OrderItems and only return the `id`
      * const orderItemWithIdOnly = await prisma.orderItem.createManyAndReturn({
      *   select: { id: true },
@@ -17427,7 +17936,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends OrderItemCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -17441,7 +17950,7 @@ export namespace Prisma {
      *     // ... filter to delete one OrderItem
      *   }
      * })
-     * 
+     *
      */
     delete<T extends OrderItemDeleteArgs>(args: SelectSubset<T, OrderItemDeleteArgs<ExtArgs>>): Prisma__OrderItemClient<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -17458,7 +17967,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends OrderItemUpdateArgs>(args: SelectSubset<T, OrderItemUpdateArgs<ExtArgs>>): Prisma__OrderItemClient<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -17472,7 +17981,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends OrderItemDeleteManyArgs>(args?: SelectSubset<T, OrderItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -17491,7 +18000,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends OrderItemUpdateManyArgs>(args: SelectSubset<T, OrderItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -17508,7 +18017,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more OrderItems and only return the `id`
      * const orderItemWithIdOnly = await prisma.orderItem.updateManyAndReturn({
      *   select: { id: true },
@@ -17521,7 +18030,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends OrderItemUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -17610,7 +18119,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends OrderItemGroupByArgs,
@@ -17721,7 +18230,7 @@ export namespace Prisma {
     readonly quantity: FieldRef<"OrderItem", 'Int'>
     readonly price: FieldRef<"OrderItem", 'Int'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -17790,31 +18299,31 @@ export namespace Prisma {
     where?: OrderItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderItems to fetch.
      */
     orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for OrderItems.
      */
     cursor?: OrderItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderItems.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of OrderItems.
      */
     distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
@@ -17842,31 +18351,31 @@ export namespace Prisma {
     where?: OrderItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderItems to fetch.
      */
     orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for OrderItems.
      */
     cursor?: OrderItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderItems.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of OrderItems.
      */
     distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
@@ -17894,25 +18403,25 @@ export namespace Prisma {
     where?: OrderItemWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderItems to fetch.
      */
     orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing OrderItems.
      */
     cursor?: OrderItemWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderItems from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderItems.
      */
     skip?: number
@@ -18214,43 +18723,43 @@ export namespace Prisma {
     where?: OrderStatusHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderStatusHistories to fetch.
      */
     orderBy?: OrderStatusHistoryOrderByWithRelationInput | OrderStatusHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: OrderStatusHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderStatusHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderStatusHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned OrderStatusHistories
     **/
     _count?: true | OrderStatusHistoryCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: OrderStatusHistoryMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: OrderStatusHistoryMaxAggregateInputType
@@ -18452,13 +18961,13 @@ export namespace Prisma {
      * @example
      * // Get all OrderStatusHistories
      * const orderStatusHistories = await prisma.orderStatusHistory.findMany()
-     * 
+     *
      * // Get first 10 OrderStatusHistories
      * const orderStatusHistories = await prisma.orderStatusHistory.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const orderStatusHistoryWithIdOnly = await prisma.orderStatusHistory.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends OrderStatusHistoryFindManyArgs>(args?: SelectSubset<T, OrderStatusHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -18472,7 +18981,7 @@ export namespace Prisma {
      *     // ... data to create a OrderStatusHistory
      *   }
      * })
-     * 
+     *
      */
     create<T extends OrderStatusHistoryCreateArgs>(args: SelectSubset<T, OrderStatusHistoryCreateArgs<ExtArgs>>): Prisma__OrderStatusHistoryClient<$Result.GetResult<Prisma.$OrderStatusHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -18486,7 +18995,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends OrderStatusHistoryCreateManyArgs>(args?: SelectSubset<T, OrderStatusHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -18500,7 +19009,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many OrderStatusHistories and only return the `id`
      * const orderStatusHistoryWithIdOnly = await prisma.orderStatusHistory.createManyAndReturn({
      *   select: { id: true },
@@ -18510,7 +19019,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends OrderStatusHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderStatusHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderStatusHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -18524,7 +19033,7 @@ export namespace Prisma {
      *     // ... filter to delete one OrderStatusHistory
      *   }
      * })
-     * 
+     *
      */
     delete<T extends OrderStatusHistoryDeleteArgs>(args: SelectSubset<T, OrderStatusHistoryDeleteArgs<ExtArgs>>): Prisma__OrderStatusHistoryClient<$Result.GetResult<Prisma.$OrderStatusHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -18541,7 +19050,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends OrderStatusHistoryUpdateArgs>(args: SelectSubset<T, OrderStatusHistoryUpdateArgs<ExtArgs>>): Prisma__OrderStatusHistoryClient<$Result.GetResult<Prisma.$OrderStatusHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -18555,7 +19064,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends OrderStatusHistoryDeleteManyArgs>(args?: SelectSubset<T, OrderStatusHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -18574,7 +19083,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends OrderStatusHistoryUpdateManyArgs>(args: SelectSubset<T, OrderStatusHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -18591,7 +19100,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more OrderStatusHistories and only return the `id`
      * const orderStatusHistoryWithIdOnly = await prisma.orderStatusHistory.updateManyAndReturn({
      *   select: { id: true },
@@ -18604,7 +19113,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends OrderStatusHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderStatusHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderStatusHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -18693,7 +19202,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends OrderStatusHistoryGroupByArgs,
@@ -18805,7 +19314,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"OrderStatusHistory", 'DateTime'>
     readonly updatedAt: FieldRef<"OrderStatusHistory", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -18874,31 +19383,31 @@ export namespace Prisma {
     where?: OrderStatusHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderStatusHistories to fetch.
      */
     orderBy?: OrderStatusHistoryOrderByWithRelationInput | OrderStatusHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for OrderStatusHistories.
      */
     cursor?: OrderStatusHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderStatusHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderStatusHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of OrderStatusHistories.
      */
     distinct?: OrderStatusHistoryScalarFieldEnum | OrderStatusHistoryScalarFieldEnum[]
@@ -18926,31 +19435,31 @@ export namespace Prisma {
     where?: OrderStatusHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderStatusHistories to fetch.
      */
     orderBy?: OrderStatusHistoryOrderByWithRelationInput | OrderStatusHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for OrderStatusHistories.
      */
     cursor?: OrderStatusHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderStatusHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderStatusHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of OrderStatusHistories.
      */
     distinct?: OrderStatusHistoryScalarFieldEnum | OrderStatusHistoryScalarFieldEnum[]
@@ -18978,25 +19487,25 @@ export namespace Prisma {
     where?: OrderStatusHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of OrderStatusHistories to fetch.
      */
     orderBy?: OrderStatusHistoryOrderByWithRelationInput | OrderStatusHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing OrderStatusHistories.
      */
     cursor?: OrderStatusHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` OrderStatusHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` OrderStatusHistories.
      */
     skip?: number
@@ -19316,55 +19825,55 @@ export namespace Prisma {
     where?: VoucherUsageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of VoucherUsages to fetch.
      */
     orderBy?: VoucherUsageOrderByWithRelationInput | VoucherUsageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the start position
      */
     cursor?: VoucherUsageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` VoucherUsages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` VoucherUsages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Count returned VoucherUsages
     **/
     _count?: true | VoucherUsageCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to average
     **/
     _avg?: VoucherUsageAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to sum
     **/
     _sum?: VoucherUsageSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the minimum value
     **/
     _min?: VoucherUsageMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
+     *
      * Select which fields to find the maximum value
     **/
     _max?: VoucherUsageMaxAggregateInputType
@@ -19584,13 +20093,13 @@ export namespace Prisma {
      * @example
      * // Get all VoucherUsages
      * const voucherUsages = await prisma.voucherUsage.findMany()
-     * 
+     *
      * // Get first 10 VoucherUsages
      * const voucherUsages = await prisma.voucherUsage.findMany({ take: 10 })
-     * 
+     *
      * // Only select the `id`
      * const voucherUsageWithIdOnly = await prisma.voucherUsage.findMany({ select: { id: true } })
-     * 
+     *
      */
     findMany<T extends VoucherUsageFindManyArgs>(args?: SelectSubset<T, VoucherUsageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -19604,7 +20113,7 @@ export namespace Prisma {
      *     // ... data to create a VoucherUsage
      *   }
      * })
-     * 
+     *
      */
     create<T extends VoucherUsageCreateArgs>(args: SelectSubset<T, VoucherUsageCreateArgs<ExtArgs>>): Prisma__VoucherUsageClient<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -19618,7 +20127,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *     
+     *
      */
     createMany<T extends VoucherUsageCreateManyArgs>(args?: SelectSubset<T, VoucherUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -19632,7 +20141,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Create many VoucherUsages and only return the `id`
      * const voucherUsageWithIdOnly = await prisma.voucherUsage.createManyAndReturn({
      *   select: { id: true },
@@ -19642,7 +20151,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     createManyAndReturn<T extends VoucherUsageCreateManyAndReturnArgs>(args?: SelectSubset<T, VoucherUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -19656,7 +20165,7 @@ export namespace Prisma {
      *     // ... filter to delete one VoucherUsage
      *   }
      * })
-     * 
+     *
      */
     delete<T extends VoucherUsageDeleteArgs>(args: SelectSubset<T, VoucherUsageDeleteArgs<ExtArgs>>): Prisma__VoucherUsageClient<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -19673,7 +20182,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     update<T extends VoucherUsageUpdateArgs>(args: SelectSubset<T, VoucherUsageUpdateArgs<ExtArgs>>): Prisma__VoucherUsageClient<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -19687,7 +20196,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     * 
+     *
      */
     deleteMany<T extends VoucherUsageDeleteManyArgs>(args?: SelectSubset<T, VoucherUsageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -19706,7 +20215,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     * 
+     *
      */
     updateMany<T extends VoucherUsageUpdateManyArgs>(args: SelectSubset<T, VoucherUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -19723,7 +20232,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     * 
+     *
      * // Update zero or more VoucherUsages and only return the `id`
      * const voucherUsageWithIdOnly = await prisma.voucherUsage.updateManyAndReturn({
      *   select: { id: true },
@@ -19736,7 +20245,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * 
+     *
      */
     updateManyAndReturn<T extends VoucherUsageUpdateManyAndReturnArgs>(args: SelectSubset<T, VoucherUsageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoucherUsagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -19825,7 +20334,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     * 
+     *
     **/
     groupBy<
       T extends VoucherUsageGroupByArgs,
@@ -19939,7 +20448,7 @@ export namespace Prisma {
     readonly discount: FieldRef<"VoucherUsage", 'Int'>
     readonly createdAt: FieldRef<"VoucherUsage", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -20008,31 +20517,31 @@ export namespace Prisma {
     where?: VoucherUsageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of VoucherUsages to fetch.
      */
     orderBy?: VoucherUsageOrderByWithRelationInput | VoucherUsageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for VoucherUsages.
      */
     cursor?: VoucherUsageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` VoucherUsages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` VoucherUsages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of VoucherUsages.
      */
     distinct?: VoucherUsageScalarFieldEnum | VoucherUsageScalarFieldEnum[]
@@ -20060,31 +20569,31 @@ export namespace Prisma {
     where?: VoucherUsageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of VoucherUsages to fetch.
      */
     orderBy?: VoucherUsageOrderByWithRelationInput | VoucherUsageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for searching for VoucherUsages.
      */
     cursor?: VoucherUsageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` VoucherUsages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` VoucherUsages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
+     *
      * Filter by unique combinations of VoucherUsages.
      */
     distinct?: VoucherUsageScalarFieldEnum | VoucherUsageScalarFieldEnum[]
@@ -20112,25 +20621,25 @@ export namespace Prisma {
     where?: VoucherUsageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
+     *
      * Determine the order of VoucherUsages to fetch.
      */
     orderBy?: VoucherUsageOrderByWithRelationInput | VoucherUsageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
+     *
      * Sets the position for listing VoucherUsages.
      */
     cursor?: VoucherUsageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Take `±n` VoucherUsages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
+     *
      * Skip the first `n` VoucherUsages.
      */
     skip?: number
@@ -20368,6 +20877,3467 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: VoucherUsageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StoreAdminRequest
+   */
+
+  export type AggregateStoreAdminRequest = {
+    _count: StoreAdminRequestCountAggregateOutputType | null
+    _min: StoreAdminRequestMinAggregateOutputType | null
+    _max: StoreAdminRequestMaxAggregateOutputType | null
+  }
+
+  export type StoreAdminRequestMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    requestedStoreId: string | null
+    reason: string | null
+    experience: string | null
+    status: $Enums.StoreAdminRequestStatus | null
+    reviewedById: string | null
+    assignedStoreId: string | null
+    rejectionReason: string | null
+    reviewedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StoreAdminRequestMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    requestedStoreId: string | null
+    reason: string | null
+    experience: string | null
+    status: $Enums.StoreAdminRequestStatus | null
+    reviewedById: string | null
+    assignedStoreId: string | null
+    rejectionReason: string | null
+    reviewedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StoreAdminRequestCountAggregateOutputType = {
+    id: number
+    userId: number
+    requestedStoreId: number
+    reason: number
+    experience: number
+    status: number
+    reviewedById: number
+    assignedStoreId: number
+    rejectionReason: number
+    reviewedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StoreAdminRequestMinAggregateInputType = {
+    id?: true
+    userId?: true
+    requestedStoreId?: true
+    reason?: true
+    experience?: true
+    status?: true
+    reviewedById?: true
+    assignedStoreId?: true
+    rejectionReason?: true
+    reviewedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StoreAdminRequestMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    requestedStoreId?: true
+    reason?: true
+    experience?: true
+    status?: true
+    reviewedById?: true
+    assignedStoreId?: true
+    rejectionReason?: true
+    reviewedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StoreAdminRequestCountAggregateInputType = {
+    id?: true
+    userId?: true
+    requestedStoreId?: true
+    reason?: true
+    experience?: true
+    status?: true
+    reviewedById?: true
+    assignedStoreId?: true
+    rejectionReason?: true
+    reviewedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StoreAdminRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StoreAdminRequest to aggregate.
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of StoreAdminRequests to fetch.
+     */
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: StoreAdminRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` StoreAdminRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` StoreAdminRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned StoreAdminRequests
+    **/
+    _count?: true | StoreAdminRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: StoreAdminRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: StoreAdminRequestMaxAggregateInputType
+  }
+
+  export type GetStoreAdminRequestAggregateType<T extends StoreAdminRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateStoreAdminRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStoreAdminRequest[P]>
+      : GetScalarType<T[P], AggregateStoreAdminRequest[P]>
+  }
+
+
+
+
+  export type StoreAdminRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StoreAdminRequestWhereInput
+    orderBy?: StoreAdminRequestOrderByWithAggregationInput | StoreAdminRequestOrderByWithAggregationInput[]
+    by: StoreAdminRequestScalarFieldEnum[] | StoreAdminRequestScalarFieldEnum
+    having?: StoreAdminRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StoreAdminRequestCountAggregateInputType | true
+    _min?: StoreAdminRequestMinAggregateInputType
+    _max?: StoreAdminRequestMaxAggregateInputType
+  }
+
+  export type StoreAdminRequestGroupByOutputType = {
+    id: string
+    userId: string
+    requestedStoreId: string | null
+    reason: string
+    experience: string | null
+    status: $Enums.StoreAdminRequestStatus
+    reviewedById: string | null
+    assignedStoreId: string | null
+    rejectionReason: string | null
+    reviewedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: StoreAdminRequestCountAggregateOutputType | null
+    _min: StoreAdminRequestMinAggregateOutputType | null
+    _max: StoreAdminRequestMaxAggregateOutputType | null
+  }
+
+  type GetStoreAdminRequestGroupByPayload<T extends StoreAdminRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StoreAdminRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StoreAdminRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StoreAdminRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], StoreAdminRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StoreAdminRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    requestedStoreId?: boolean
+    reason?: boolean
+    experience?: boolean
+    status?: boolean
+    reviewedById?: boolean
+    assignedStoreId?: boolean
+    rejectionReason?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    requestedStore?: boolean | StoreAdminRequest$requestedStoreArgs<ExtArgs>
+    assignedStore?: boolean | StoreAdminRequest$assignedStoreArgs<ExtArgs>
+    reviewedBy?: boolean | StoreAdminRequest$reviewedByArgs<ExtArgs>
+  }, ExtArgs["result"]["storeAdminRequest"]>
+
+  export type StoreAdminRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    requestedStoreId?: boolean
+    reason?: boolean
+    experience?: boolean
+    status?: boolean
+    reviewedById?: boolean
+    assignedStoreId?: boolean
+    rejectionReason?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    requestedStore?: boolean | StoreAdminRequest$requestedStoreArgs<ExtArgs>
+    assignedStore?: boolean | StoreAdminRequest$assignedStoreArgs<ExtArgs>
+    reviewedBy?: boolean | StoreAdminRequest$reviewedByArgs<ExtArgs>
+  }, ExtArgs["result"]["storeAdminRequest"]>
+
+  export type StoreAdminRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    requestedStoreId?: boolean
+    reason?: boolean
+    experience?: boolean
+    status?: boolean
+    reviewedById?: boolean
+    assignedStoreId?: boolean
+    rejectionReason?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    requestedStore?: boolean | StoreAdminRequest$requestedStoreArgs<ExtArgs>
+    assignedStore?: boolean | StoreAdminRequest$assignedStoreArgs<ExtArgs>
+    reviewedBy?: boolean | StoreAdminRequest$reviewedByArgs<ExtArgs>
+  }, ExtArgs["result"]["storeAdminRequest"]>
+
+  export type StoreAdminRequestSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    requestedStoreId?: boolean
+    reason?: boolean
+    experience?: boolean
+    status?: boolean
+    reviewedById?: boolean
+    assignedStoreId?: boolean
+    rejectionReason?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type StoreAdminRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "requestedStoreId" | "reason" | "experience" | "status" | "reviewedById" | "assignedStoreId" | "rejectionReason" | "reviewedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["storeAdminRequest"]>
+  export type StoreAdminRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    requestedStore?: boolean | StoreAdminRequest$requestedStoreArgs<ExtArgs>
+    assignedStore?: boolean | StoreAdminRequest$assignedStoreArgs<ExtArgs>
+    reviewedBy?: boolean | StoreAdminRequest$reviewedByArgs<ExtArgs>
+  }
+  export type StoreAdminRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    requestedStore?: boolean | StoreAdminRequest$requestedStoreArgs<ExtArgs>
+    assignedStore?: boolean | StoreAdminRequest$assignedStoreArgs<ExtArgs>
+    reviewedBy?: boolean | StoreAdminRequest$reviewedByArgs<ExtArgs>
+  }
+  export type StoreAdminRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    requestedStore?: boolean | StoreAdminRequest$requestedStoreArgs<ExtArgs>
+    assignedStore?: boolean | StoreAdminRequest$assignedStoreArgs<ExtArgs>
+    reviewedBy?: boolean | StoreAdminRequest$reviewedByArgs<ExtArgs>
+  }
+
+  export type $StoreAdminRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StoreAdminRequest"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      requestedStore: Prisma.$StorePayload<ExtArgs> | null
+      assignedStore: Prisma.$StorePayload<ExtArgs> | null
+      reviewedBy: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      requestedStoreId: string | null
+      reason: string
+      experience: string | null
+      status: $Enums.StoreAdminRequestStatus
+      reviewedById: string | null
+      assignedStoreId: string | null
+      rejectionReason: string | null
+      reviewedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["storeAdminRequest"]>
+    composites: {}
+  }
+
+  type StoreAdminRequestGetPayload<S extends boolean | null | undefined | StoreAdminRequestDefaultArgs> = $Result.GetResult<Prisma.$StoreAdminRequestPayload, S>
+
+  type StoreAdminRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StoreAdminRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StoreAdminRequestCountAggregateInputType | true
+    }
+
+  export interface StoreAdminRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StoreAdminRequest'], meta: { name: 'StoreAdminRequest' } }
+    /**
+     * Find zero or one StoreAdminRequest that matches the filter.
+     * @param {StoreAdminRequestFindUniqueArgs} args - Arguments to find a StoreAdminRequest
+     * @example
+     * // Get one StoreAdminRequest
+     * const storeAdminRequest = await prisma.storeAdminRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StoreAdminRequestFindUniqueArgs>(args: SelectSubset<T, StoreAdminRequestFindUniqueArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StoreAdminRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StoreAdminRequestFindUniqueOrThrowArgs} args - Arguments to find a StoreAdminRequest
+     * @example
+     * // Get one StoreAdminRequest
+     * const storeAdminRequest = await prisma.storeAdminRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StoreAdminRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, StoreAdminRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StoreAdminRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestFindFirstArgs} args - Arguments to find a StoreAdminRequest
+     * @example
+     * // Get one StoreAdminRequest
+     * const storeAdminRequest = await prisma.storeAdminRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StoreAdminRequestFindFirstArgs>(args?: SelectSubset<T, StoreAdminRequestFindFirstArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StoreAdminRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestFindFirstOrThrowArgs} args - Arguments to find a StoreAdminRequest
+     * @example
+     * // Get one StoreAdminRequest
+     * const storeAdminRequest = await prisma.storeAdminRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StoreAdminRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, StoreAdminRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StoreAdminRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StoreAdminRequests
+     * const storeAdminRequests = await prisma.storeAdminRequest.findMany()
+     *
+     * // Get first 10 StoreAdminRequests
+     * const storeAdminRequests = await prisma.storeAdminRequest.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const storeAdminRequestWithIdOnly = await prisma.storeAdminRequest.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends StoreAdminRequestFindManyArgs>(args?: SelectSubset<T, StoreAdminRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StoreAdminRequest.
+     * @param {StoreAdminRequestCreateArgs} args - Arguments to create a StoreAdminRequest.
+     * @example
+     * // Create one StoreAdminRequest
+     * const StoreAdminRequest = await prisma.storeAdminRequest.create({
+     *   data: {
+     *     // ... data to create a StoreAdminRequest
+     *   }
+     * })
+     *
+     */
+    create<T extends StoreAdminRequestCreateArgs>(args: SelectSubset<T, StoreAdminRequestCreateArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StoreAdminRequests.
+     * @param {StoreAdminRequestCreateManyArgs} args - Arguments to create many StoreAdminRequests.
+     * @example
+     * // Create many StoreAdminRequests
+     * const storeAdminRequest = await prisma.storeAdminRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends StoreAdminRequestCreateManyArgs>(args?: SelectSubset<T, StoreAdminRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StoreAdminRequests and returns the data saved in the database.
+     * @param {StoreAdminRequestCreateManyAndReturnArgs} args - Arguments to create many StoreAdminRequests.
+     * @example
+     * // Create many StoreAdminRequests
+     * const storeAdminRequest = await prisma.storeAdminRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many StoreAdminRequests and only return the `id`
+     * const storeAdminRequestWithIdOnly = await prisma.storeAdminRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends StoreAdminRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, StoreAdminRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StoreAdminRequest.
+     * @param {StoreAdminRequestDeleteArgs} args - Arguments to delete one StoreAdminRequest.
+     * @example
+     * // Delete one StoreAdminRequest
+     * const StoreAdminRequest = await prisma.storeAdminRequest.delete({
+     *   where: {
+     *     // ... filter to delete one StoreAdminRequest
+     *   }
+     * })
+     *
+     */
+    delete<T extends StoreAdminRequestDeleteArgs>(args: SelectSubset<T, StoreAdminRequestDeleteArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StoreAdminRequest.
+     * @param {StoreAdminRequestUpdateArgs} args - Arguments to update one StoreAdminRequest.
+     * @example
+     * // Update one StoreAdminRequest
+     * const storeAdminRequest = await prisma.storeAdminRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends StoreAdminRequestUpdateArgs>(args: SelectSubset<T, StoreAdminRequestUpdateArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StoreAdminRequests.
+     * @param {StoreAdminRequestDeleteManyArgs} args - Arguments to filter StoreAdminRequests to delete.
+     * @example
+     * // Delete a few StoreAdminRequests
+     * const { count } = await prisma.storeAdminRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends StoreAdminRequestDeleteManyArgs>(args?: SelectSubset<T, StoreAdminRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StoreAdminRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StoreAdminRequests
+     * const storeAdminRequest = await prisma.storeAdminRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends StoreAdminRequestUpdateManyArgs>(args: SelectSubset<T, StoreAdminRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StoreAdminRequests and returns the data updated in the database.
+     * @param {StoreAdminRequestUpdateManyAndReturnArgs} args - Arguments to update many StoreAdminRequests.
+     * @example
+     * // Update many StoreAdminRequests
+     * const storeAdminRequest = await prisma.storeAdminRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more StoreAdminRequests and only return the `id`
+     * const storeAdminRequestWithIdOnly = await prisma.storeAdminRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends StoreAdminRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, StoreAdminRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StoreAdminRequest.
+     * @param {StoreAdminRequestUpsertArgs} args - Arguments to update or create a StoreAdminRequest.
+     * @example
+     * // Update or create a StoreAdminRequest
+     * const storeAdminRequest = await prisma.storeAdminRequest.upsert({
+     *   create: {
+     *     // ... data to create a StoreAdminRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StoreAdminRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StoreAdminRequestUpsertArgs>(args: SelectSubset<T, StoreAdminRequestUpsertArgs<ExtArgs>>): Prisma__StoreAdminRequestClient<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StoreAdminRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestCountArgs} args - Arguments to filter StoreAdminRequests to count.
+     * @example
+     * // Count the number of StoreAdminRequests
+     * const count = await prisma.storeAdminRequest.count({
+     *   where: {
+     *     // ... the filter for the StoreAdminRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends StoreAdminRequestCountArgs>(
+      args?: Subset<T, StoreAdminRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StoreAdminRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StoreAdminRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StoreAdminRequestAggregateArgs>(args: Subset<T, StoreAdminRequestAggregateArgs>): Prisma.PrismaPromise<GetStoreAdminRequestAggregateType<T>>
+
+    /**
+     * Group by StoreAdminRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StoreAdminRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends StoreAdminRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StoreAdminRequestGroupByArgs['orderBy'] }
+        : { orderBy?: StoreAdminRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StoreAdminRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStoreAdminRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StoreAdminRequest model
+   */
+  readonly fields: StoreAdminRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StoreAdminRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StoreAdminRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    requestedStore<T extends StoreAdminRequest$requestedStoreArgs<ExtArgs> = {}>(args?: Subset<T, StoreAdminRequest$requestedStoreArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    assignedStore<T extends StoreAdminRequest$assignedStoreArgs<ExtArgs> = {}>(args?: Subset<T, StoreAdminRequest$assignedStoreArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    reviewedBy<T extends StoreAdminRequest$reviewedByArgs<ExtArgs> = {}>(args?: Subset<T, StoreAdminRequest$reviewedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StoreAdminRequest model
+   */
+  interface StoreAdminRequestFieldRefs {
+    readonly id: FieldRef<"StoreAdminRequest", 'String'>
+    readonly userId: FieldRef<"StoreAdminRequest", 'String'>
+    readonly requestedStoreId: FieldRef<"StoreAdminRequest", 'String'>
+    readonly reason: FieldRef<"StoreAdminRequest", 'String'>
+    readonly experience: FieldRef<"StoreAdminRequest", 'String'>
+    readonly status: FieldRef<"StoreAdminRequest", 'StoreAdminRequestStatus'>
+    readonly reviewedById: FieldRef<"StoreAdminRequest", 'String'>
+    readonly assignedStoreId: FieldRef<"StoreAdminRequest", 'String'>
+    readonly rejectionReason: FieldRef<"StoreAdminRequest", 'String'>
+    readonly reviewedAt: FieldRef<"StoreAdminRequest", 'DateTime'>
+    readonly createdAt: FieldRef<"StoreAdminRequest", 'DateTime'>
+    readonly updatedAt: FieldRef<"StoreAdminRequest", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * StoreAdminRequest findUnique
+   */
+  export type StoreAdminRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which StoreAdminRequest to fetch.
+     */
+    where: StoreAdminRequestWhereUniqueInput
+  }
+
+  /**
+   * StoreAdminRequest findUniqueOrThrow
+   */
+  export type StoreAdminRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which StoreAdminRequest to fetch.
+     */
+    where: StoreAdminRequestWhereUniqueInput
+  }
+
+  /**
+   * StoreAdminRequest findFirst
+   */
+  export type StoreAdminRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which StoreAdminRequest to fetch.
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of StoreAdminRequests to fetch.
+     */
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for StoreAdminRequests.
+     */
+    cursor?: StoreAdminRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` StoreAdminRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` StoreAdminRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of StoreAdminRequests.
+     */
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
+   * StoreAdminRequest findFirstOrThrow
+   */
+  export type StoreAdminRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which StoreAdminRequest to fetch.
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of StoreAdminRequests to fetch.
+     */
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for StoreAdminRequests.
+     */
+    cursor?: StoreAdminRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` StoreAdminRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` StoreAdminRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of StoreAdminRequests.
+     */
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
+   * StoreAdminRequest findMany
+   */
+  export type StoreAdminRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which StoreAdminRequests to fetch.
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of StoreAdminRequests to fetch.
+     */
+    orderBy?: StoreAdminRequestOrderByWithRelationInput | StoreAdminRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing StoreAdminRequests.
+     */
+    cursor?: StoreAdminRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` StoreAdminRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` StoreAdminRequests.
+     */
+    skip?: number
+    distinct?: StoreAdminRequestScalarFieldEnum | StoreAdminRequestScalarFieldEnum[]
+  }
+
+  /**
+   * StoreAdminRequest create
+   */
+  export type StoreAdminRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StoreAdminRequest.
+     */
+    data: XOR<StoreAdminRequestCreateInput, StoreAdminRequestUncheckedCreateInput>
+  }
+
+  /**
+   * StoreAdminRequest createMany
+   */
+  export type StoreAdminRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StoreAdminRequests.
+     */
+    data: StoreAdminRequestCreateManyInput | StoreAdminRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StoreAdminRequest createManyAndReturn
+   */
+  export type StoreAdminRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many StoreAdminRequests.
+     */
+    data: StoreAdminRequestCreateManyInput | StoreAdminRequestCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StoreAdminRequest update
+   */
+  export type StoreAdminRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StoreAdminRequest.
+     */
+    data: XOR<StoreAdminRequestUpdateInput, StoreAdminRequestUncheckedUpdateInput>
+    /**
+     * Choose, which StoreAdminRequest to update.
+     */
+    where: StoreAdminRequestWhereUniqueInput
+  }
+
+  /**
+   * StoreAdminRequest updateMany
+   */
+  export type StoreAdminRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StoreAdminRequests.
+     */
+    data: XOR<StoreAdminRequestUpdateManyMutationInput, StoreAdminRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which StoreAdminRequests to update
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * Limit how many StoreAdminRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StoreAdminRequest updateManyAndReturn
+   */
+  export type StoreAdminRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update StoreAdminRequests.
+     */
+    data: XOR<StoreAdminRequestUpdateManyMutationInput, StoreAdminRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which StoreAdminRequests to update
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * Limit how many StoreAdminRequests to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StoreAdminRequest upsert
+   */
+  export type StoreAdminRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StoreAdminRequest to update in case it exists.
+     */
+    where: StoreAdminRequestWhereUniqueInput
+    /**
+     * In case the StoreAdminRequest found by the `where` argument doesn't exist, create a new StoreAdminRequest with this data.
+     */
+    create: XOR<StoreAdminRequestCreateInput, StoreAdminRequestUncheckedCreateInput>
+    /**
+     * In case the StoreAdminRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StoreAdminRequestUpdateInput, StoreAdminRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * StoreAdminRequest delete
+   */
+  export type StoreAdminRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+    /**
+     * Filter which StoreAdminRequest to delete.
+     */
+    where: StoreAdminRequestWhereUniqueInput
+  }
+
+  /**
+   * StoreAdminRequest deleteMany
+   */
+  export type StoreAdminRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StoreAdminRequests to delete
+     */
+    where?: StoreAdminRequestWhereInput
+    /**
+     * Limit how many StoreAdminRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StoreAdminRequest.requestedStore
+   */
+  export type StoreAdminRequest$requestedStoreArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Store
+     */
+    select?: StoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Store
+     */
+    omit?: StoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreInclude<ExtArgs> | null
+    where?: StoreWhereInput
+  }
+
+  /**
+   * StoreAdminRequest.assignedStore
+   */
+  export type StoreAdminRequest$assignedStoreArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Store
+     */
+    select?: StoreSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Store
+     */
+    omit?: StoreOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreInclude<ExtArgs> | null
+    where?: StoreWhereInput
+  }
+
+  /**
+   * StoreAdminRequest.reviewedBy
+   */
+  export type StoreAdminRequest$reviewedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * StoreAdminRequest without action
+   */
+  export type StoreAdminRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StoreAdminRequest
+     */
+    select?: StoreAdminRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StoreAdminRequest
+     */
+    omit?: StoreAdminRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StoreAdminRequestInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Notification
+   */
+
+  export type AggregateNotification = {
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  export type NotificationMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: string | null
+    title: string | null
+    message: string | null
+    referenceId: string | null
+    referenceType: string | null
+    isRead: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: string | null
+    title: string | null
+    message: string | null
+    referenceId: string | null
+    referenceType: string | null
+    isRead: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    title: number
+    message: number
+    referenceId: number
+    referenceType: number
+    isRead: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NotificationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    referenceId?: true
+    referenceType?: true
+    isRead?: true
+    createdAt?: true
+  }
+
+  export type NotificationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    referenceId?: true
+    referenceType?: true
+    isRead?: true
+    createdAt?: true
+  }
+
+  export type NotificationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    referenceId?: true
+    referenceType?: true
+    isRead?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notification to aggregate.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned Notifications
+    **/
+    _count?: true | NotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotification[P]>
+      : GetScalarType<T[P], AggregateNotification[P]>
+  }
+
+
+
+
+  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
+    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
+    having?: NotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationCountAggregateInputType | true
+    _min?: NotificationMinAggregateInputType
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type NotificationGroupByOutputType = {
+    id: string
+    userId: string
+    type: string
+    title: string
+    message: string
+    referenceId: string | null
+    referenceType: string | null
+    isRead: boolean
+    createdAt: Date
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    referenceId?: boolean
+    referenceType?: boolean
+    isRead?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    referenceId?: boolean
+    referenceType?: boolean
+    isRead?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    referenceId?: boolean
+    referenceType?: boolean
+    isRead?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    referenceId?: boolean
+    referenceType?: boolean
+    isRead?: boolean
+    createdAt?: boolean
+  }
+
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "title" | "message" | "referenceId" | "referenceType" | "isRead" | "createdAt", ExtArgs["result"]["notification"]>
+  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Notification"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: string
+      title: string
+      message: string
+      referenceId: string | null
+      referenceType: string | null
+      isRead: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["notification"]>
+    composites: {}
+  }
+
+  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
+
+  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationCountAggregateInputType | true
+    }
+
+  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
+    /**
+     * Find zero or one Notification that matches the filter.
+     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notification.findMany()
+     *
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notification.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notification.
+     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
+     * @example
+     * // Create one Notification
+     * const Notification = await prisma.notification.create({
+     *   data: {
+     *     // ... data to create a Notification
+     *   }
+     * })
+     *
+     */
+    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Notifications and returns the data saved in the database.
+     * @param {NotificationCreateManyAndReturnArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends NotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Notification.
+     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
+     * @example
+     * // Delete one Notification
+     * const Notification = await prisma.notification.delete({
+     *   where: {
+     *     // ... filter to delete one Notification
+     *   }
+     * })
+     *
+     */
+    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notification.
+     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
+     * @example
+     * // Update one Notification
+     * const notification = await prisma.notification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications and returns the data updated in the database.
+     * @param {NotificationUpdateManyAndReturnArgs} args - Arguments to update many Notifications.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends NotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Notification.
+     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
+     * @example
+     * // Update or create a Notification
+     * const notification = await prisma.notification.upsert({
+     *   create: {
+     *     // ... data to create a Notification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notification.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationCountArgs>(
+      args?: Subset<T, NotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
+
+    /**
+     * Group by Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends NotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Notification model
+   */
+  readonly fields: NotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Notification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Notification model
+   */
+  interface NotificationFieldRefs {
+    readonly id: FieldRef<"Notification", 'String'>
+    readonly userId: FieldRef<"Notification", 'String'>
+    readonly type: FieldRef<"Notification", 'String'>
+    readonly title: FieldRef<"Notification", 'String'>
+    readonly message: FieldRef<"Notification", 'String'>
+    readonly referenceId: FieldRef<"Notification", 'String'>
+    readonly referenceType: FieldRef<"Notification", 'String'>
+    readonly isRead: FieldRef<"Notification", 'Boolean'>
+    readonly createdAt: FieldRef<"Notification", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * Notification findUnique
+   */
+  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findUniqueOrThrow
+   */
+  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findFirst
+   */
+  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findFirstOrThrow
+   */
+  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findMany
+   */
+  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notifications to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification create
+   */
+  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Notification.
+     */
+    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+  }
+
+  /**
+   * Notification createMany
+   */
+  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification createManyAndReturn
+   */
+  export type NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification update
+   */
+  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Notification.
+     */
+    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+    /**
+     * Choose, which Notification to update.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification updateMany
+   */
+  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification updateManyAndReturn
+   */
+  export type NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification upsert
+   */
+  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Notification to update in case it exists.
+     */
+    where: NotificationWhereUniqueInput
+    /**
+     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
+     */
+    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+    /**
+     * In case the Notification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * Notification delete
+   */
+  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter which Notification to delete.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification deleteMany
+   */
+  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notifications to delete
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification without action
+   */
+  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuditLog
+   */
+
+  export type AggregateAuditLog = {
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  export type AuditLogMinAggregateOutputType = {
+    id: string | null
+    actorId: string | null
+    action: string | null
+    entityType: string | null
+    entityId: string | null
+    requestId: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogMaxAggregateOutputType = {
+    id: string | null
+    actorId: string | null
+    action: string | null
+    entityType: string | null
+    entityId: string | null
+    requestId: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogCountAggregateOutputType = {
+    id: number
+    actorId: number
+    action: number
+    entityType: number
+    entityId: number
+    before: number
+    after: number
+    requestId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuditLogMinAggregateInputType = {
+    id?: true
+    actorId?: true
+    action?: true
+    entityType?: true
+    entityId?: true
+    requestId?: true
+    createdAt?: true
+  }
+
+  export type AuditLogMaxAggregateInputType = {
+    id?: true
+    actorId?: true
+    action?: true
+    entityType?: true
+    entityId?: true
+    requestId?: true
+    createdAt?: true
+  }
+
+  export type AuditLogCountAggregateInputType = {
+    id?: true
+    actorId?: true
+    action?: true
+    entityType?: true
+    entityId?: true
+    before?: true
+    after?: true
+    requestId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLog to aggregate.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned AuditLogs
+    **/
+    _count?: true | AuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type GetAuditLogAggregateType<T extends AuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditLog[P]>
+      : GetScalarType<T[P], AggregateAuditLog[P]>
+  }
+
+
+
+
+  export type AuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithAggregationInput | AuditLogOrderByWithAggregationInput[]
+    by: AuditLogScalarFieldEnum[] | AuditLogScalarFieldEnum
+    having?: AuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditLogCountAggregateInputType | true
+    _min?: AuditLogMinAggregateInputType
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type AuditLogGroupByOutputType = {
+    id: string
+    actorId: string | null
+    action: string
+    entityType: string
+    entityId: string
+    before: JsonValue | null
+    after: JsonValue | null
+    requestId: string | null
+    createdAt: Date
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  type GetAuditLogGroupByPayload<T extends AuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    before?: boolean
+    after?: boolean
+    requestId?: boolean
+    createdAt?: boolean
+    actor?: boolean | AuditLog$actorArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    before?: boolean
+    after?: boolean
+    requestId?: boolean
+    createdAt?: boolean
+    actor?: boolean | AuditLog$actorArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    before?: boolean
+    after?: boolean
+    requestId?: boolean
+    createdAt?: boolean
+    actor?: boolean | AuditLog$actorArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectScalar = {
+    id?: boolean
+    actorId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    before?: boolean
+    after?: boolean
+    requestId?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "actorId" | "action" | "entityType" | "entityId" | "before" | "after" | "requestId" | "createdAt", ExtArgs["result"]["auditLog"]>
+  export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    actor?: boolean | AuditLog$actorArgs<ExtArgs>
+  }
+  export type AuditLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    actor?: boolean | AuditLog$actorArgs<ExtArgs>
+  }
+  export type AuditLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    actor?: boolean | AuditLog$actorArgs<ExtArgs>
+  }
+
+  export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditLog"
+    objects: {
+      actor: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      actorId: string | null
+      action: string
+      entityType: string
+      entityId: string
+      before: Prisma.JsonValue | null
+      after: Prisma.JsonValue | null
+      requestId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["auditLog"]>
+    composites: {}
+  }
+
+  type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = $Result.GetResult<Prisma.$AuditLogPayload, S>
+
+  type AuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuditLogCountAggregateInputType | true
+    }
+
+  export interface AuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLog'], meta: { name: 'AuditLog' } }
+    /**
+     * Find zero or one AuditLog that matches the filter.
+     * @param {AuditLogFindUniqueArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditLogFindUniqueArgs>(args: SelectSubset<T, AuditLogFindUniqueArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuditLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuditLogFindUniqueOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditLogFindFirstArgs>(args?: SelectSubset<T, AuditLogFindFirstArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany()
+     *
+     * // Get first 10 AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends AuditLogFindManyArgs>(args?: SelectSubset<T, AuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuditLog.
+     * @param {AuditLogCreateArgs} args - Arguments to create a AuditLog.
+     * @example
+     * // Create one AuditLog
+     * const AuditLog = await prisma.auditLog.create({
+     *   data: {
+     *     // ... data to create a AuditLog
+     *   }
+     * })
+     *
+     */
+    create<T extends AuditLogCreateArgs>(args: SelectSubset<T, AuditLogCreateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuditLogs.
+     * @param {AuditLogCreateManyArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends AuditLogCreateManyArgs>(args?: SelectSubset<T, AuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuditLogs and returns the data saved in the database.
+     * @param {AuditLogCreateManyAndReturnArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends AuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuditLog.
+     * @param {AuditLogDeleteArgs} args - Arguments to delete one AuditLog.
+     * @example
+     * // Delete one AuditLog
+     * const AuditLog = await prisma.auditLog.delete({
+     *   where: {
+     *     // ... filter to delete one AuditLog
+     *   }
+     * })
+     *
+     */
+    delete<T extends AuditLogDeleteArgs>(args: SelectSubset<T, AuditLogDeleteArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuditLog.
+     * @param {AuditLogUpdateArgs} args - Arguments to update one AuditLog.
+     * @example
+     * // Update one AuditLog
+     * const auditLog = await prisma.auditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends AuditLogUpdateArgs>(args: SelectSubset<T, AuditLogUpdateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuditLogs.
+     * @param {AuditLogDeleteManyArgs} args - Arguments to filter AuditLogs to delete.
+     * @example
+     * // Delete a few AuditLogs
+     * const { count } = await prisma.auditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends AuditLogDeleteManyArgs>(args?: SelectSubset<T, AuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends AuditLogUpdateManyArgs>(args: SelectSubset<T, AuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs and returns the data updated in the database.
+     * @param {AuditLogUpdateManyAndReturnArgs} args - Arguments to update many AuditLogs.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends AuditLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AuditLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuditLog.
+     * @param {AuditLogUpsertArgs} args - Arguments to update or create a AuditLog.
+     * @example
+     * // Update or create a AuditLog
+     * const auditLog = await prisma.auditLog.upsert({
+     *   create: {
+     *     // ... data to create a AuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditLogUpsertArgs>(args: SelectSubset<T, AuditLogUpsertArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogCountArgs} args - Arguments to filter AuditLogs to count.
+     * @example
+     * // Count the number of AuditLogs
+     * const count = await prisma.auditLog.count({
+     *   where: {
+     *     // ... the filter for the AuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditLogCountArgs>(
+      args?: Subset<T, AuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditLogAggregateArgs>(args: Subset<T, AuditLogAggregateArgs>): Prisma.PrismaPromise<GetAuditLogAggregateType<T>>
+
+    /**
+     * Group by AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends AuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: AuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditLog model
+   */
+  readonly fields: AuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    actor<T extends AuditLog$actorArgs<ExtArgs> = {}>(args?: Subset<T, AuditLog$actorArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditLog model
+   */
+  interface AuditLogFieldRefs {
+    readonly id: FieldRef<"AuditLog", 'String'>
+    readonly actorId: FieldRef<"AuditLog", 'String'>
+    readonly action: FieldRef<"AuditLog", 'String'>
+    readonly entityType: FieldRef<"AuditLog", 'String'>
+    readonly entityId: FieldRef<"AuditLog", 'String'>
+    readonly before: FieldRef<"AuditLog", 'Json'>
+    readonly after: FieldRef<"AuditLog", 'Json'>
+    readonly requestId: FieldRef<"AuditLog", 'String'>
+    readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * AuditLog findUnique
+   */
+  export type AuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findUniqueOrThrow
+   */
+  export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findFirst
+   */
+  export type AuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findFirstOrThrow
+   */
+  export type AuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findMany
+   */
+  export type AuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogs to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog create
+   */
+  export type AuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuditLog.
+     */
+    data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * AuditLog createMany
+   */
+  export type AuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog createManyAndReturn
+   */
+  export type AuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuditLog update
+   */
+  export type AuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuditLog.
+     */
+    data: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which AuditLog to update.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog updateMany
+   */
+  export type AuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog updateManyAndReturn
+   */
+  export type AuditLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuditLog upsert
+   */
+  export type AuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuditLog to update in case it exists.
+     */
+    where: AuditLogWhereUniqueInput
+    /**
+     * In case the AuditLog found by the `where` argument doesn't exist, create a new AuditLog with this data.
+     */
+    create: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+    /**
+     * In case the AuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditLog delete
+   */
+  export type AuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter which AuditLog to delete.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog deleteMany
+   */
+  export type AuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogs to delete
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog.actor
+   */
+  export type AuditLog$actorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * AuditLog without action
+   */
+  export type AuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
   }
 
 
@@ -20619,6 +24589,54 @@ export namespace Prisma {
   export type VoucherUsageScalarFieldEnum = (typeof VoucherUsageScalarFieldEnum)[keyof typeof VoucherUsageScalarFieldEnum]
 
 
+  export const StoreAdminRequestScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    requestedStoreId: 'requestedStoreId',
+    reason: 'reason',
+    experience: 'experience',
+    status: 'status',
+    reviewedById: 'reviewedById',
+    assignedStoreId: 'assignedStoreId',
+    rejectionReason: 'rejectionReason',
+    reviewedAt: 'reviewedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StoreAdminRequestScalarFieldEnum = (typeof StoreAdminRequestScalarFieldEnum)[keyof typeof StoreAdminRequestScalarFieldEnum]
+
+
+  export const NotificationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    title: 'title',
+    message: 'message',
+    referenceId: 'referenceId',
+    referenceType: 'referenceType',
+    isRead: 'isRead',
+    createdAt: 'createdAt'
+  };
+
+  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+  export const AuditLogScalarFieldEnum: {
+    id: 'id',
+    actorId: 'actorId',
+    action: 'action',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    before: 'before',
+    after: 'after',
+    requestId: 'requestId',
+    createdAt: 'createdAt'
+  };
+
+  export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -20669,133 +24687,147 @@ export namespace Prisma {
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
-    
+
 
 
   /**
    * Reference to a field of type 'String[]'
    */
   export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'Role'
    */
   export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
-    
+
 
 
   /**
    * Reference to a field of type 'Role[]'
    */
   export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
+
 
 
   /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
+
 
 
   /**
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
+
 
 
   /**
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
+
 
 
   /**
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'DiscountType'
    */
   export type EnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountType'>
-    
+
 
 
   /**
    * Reference to a field of type 'DiscountType[]'
    */
   export type ListEnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountType[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'VoucherScope'
    */
   export type EnumVoucherScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VoucherScope'>
-    
+
 
 
   /**
    * Reference to a field of type 'VoucherScope[]'
    */
   export type ListEnumVoucherScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VoucherScope[]'>
-    
+
 
 
   /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
+
 
 
   /**
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
+
 
 
   /**
    * Reference to a field of type 'OrderStatus'
    */
   export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
-    
+
 
 
   /**
    * Reference to a field of type 'OrderStatus[]'
    */
   export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus[]'>
-    
+
+
+
+  /**
+   * Reference to a field of type 'StoreAdminRequestStatus'
+   */
+  export type EnumStoreAdminRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StoreAdminRequestStatus'>
+
+
+
+  /**
+   * Reference to a field of type 'StoreAdminRequestStatus[]'
+   */
+  export type ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StoreAdminRequestStatus[]'>
+
   /**
    * Deep Input Types
    */
@@ -20826,6 +24858,10 @@ export namespace Prisma {
     carts?: CartItemListRelationFilter
     orders?: OrderListRelationFilter
     voucherUsages?: VoucherUsageListRelationFilter
+    storeAdminRequests?: StoreAdminRequestListRelationFilter
+    reviewedStoreAdminRequests?: StoreAdminRequestListRelationFilter
+    notifications?: NotificationListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -20850,6 +24886,10 @@ export namespace Prisma {
     carts?: CartItemOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
     voucherUsages?: VoucherUsageOrderByRelationAggregateInput
+    storeAdminRequests?: StoreAdminRequestOrderByRelationAggregateInput
+    reviewedStoreAdminRequests?: StoreAdminRequestOrderByRelationAggregateInput
+    notifications?: NotificationOrderByRelationAggregateInput
+    auditLogs?: AuditLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -20877,6 +24917,10 @@ export namespace Prisma {
     carts?: CartItemListRelationFilter
     orders?: OrderListRelationFilter
     voucherUsages?: VoucherUsageListRelationFilter
+    storeAdminRequests?: StoreAdminRequestListRelationFilter
+    reviewedStoreAdminRequests?: StoreAdminRequestListRelationFilter
+    notifications?: NotificationListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }, "id" | "email" | "referralCode">
 
   export type UserOrderByWithAggregationInput = {
@@ -20942,6 +24986,8 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     discounts?: DiscountListRelationFilter
     journals?: StockJournalListRelationFilter
+    requestedStoreAdminRequests?: StoreAdminRequestListRelationFilter
+    assignedStoreAdminRequests?: StoreAdminRequestListRelationFilter
   }
 
   export type StoreOrderByWithRelationInput = {
@@ -20960,6 +25006,8 @@ export namespace Prisma {
     orders?: OrderOrderByRelationAggregateInput
     discounts?: DiscountOrderByRelationAggregateInput
     journals?: StockJournalOrderByRelationAggregateInput
+    requestedStoreAdminRequests?: StoreAdminRequestOrderByRelationAggregateInput
+    assignedStoreAdminRequests?: StoreAdminRequestOrderByRelationAggregateInput
   }
 
   export type StoreWhereUniqueInput = Prisma.AtLeast<{
@@ -20981,6 +25029,8 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     discounts?: DiscountListRelationFilter
     journals?: StockJournalListRelationFilter
+    requestedStoreAdminRequests?: StoreAdminRequestListRelationFilter
+    assignedStoreAdminRequests?: StoreAdminRequestListRelationFilter
   }, "id">
 
   export type StoreOrderByWithAggregationInput = {
@@ -22076,6 +26126,255 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"VoucherUsage"> | Date | string
   }
 
+  export type StoreAdminRequestWhereInput = {
+    AND?: StoreAdminRequestWhereInput | StoreAdminRequestWhereInput[]
+    OR?: StoreAdminRequestWhereInput[]
+    NOT?: StoreAdminRequestWhereInput | StoreAdminRequestWhereInput[]
+    id?: StringFilter<"StoreAdminRequest"> | string
+    userId?: StringFilter<"StoreAdminRequest"> | string
+    requestedStoreId?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    reason?: StringFilter<"StoreAdminRequest"> | string
+    experience?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    status?: EnumStoreAdminRequestStatusFilter<"StoreAdminRequest"> | $Enums.StoreAdminRequestStatus
+    reviewedById?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    assignedStoreId?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    rejectionReason?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"StoreAdminRequest"> | Date | string | null
+    createdAt?: DateTimeFilter<"StoreAdminRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"StoreAdminRequest"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requestedStore?: XOR<StoreNullableScalarRelationFilter, StoreWhereInput> | null
+    assignedStore?: XOR<StoreNullableScalarRelationFilter, StoreWhereInput> | null
+    reviewedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type StoreAdminRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestedStoreId?: SortOrderInput | SortOrder
+    reason?: SortOrder
+    experience?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewedById?: SortOrderInput | SortOrder
+    assignedStoreId?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    requestedStore?: StoreOrderByWithRelationInput
+    assignedStore?: StoreOrderByWithRelationInput
+    reviewedBy?: UserOrderByWithRelationInput
+  }
+
+  export type StoreAdminRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StoreAdminRequestWhereInput | StoreAdminRequestWhereInput[]
+    OR?: StoreAdminRequestWhereInput[]
+    NOT?: StoreAdminRequestWhereInput | StoreAdminRequestWhereInput[]
+    userId?: StringFilter<"StoreAdminRequest"> | string
+    requestedStoreId?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    reason?: StringFilter<"StoreAdminRequest"> | string
+    experience?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    status?: EnumStoreAdminRequestStatusFilter<"StoreAdminRequest"> | $Enums.StoreAdminRequestStatus
+    reviewedById?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    assignedStoreId?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    rejectionReason?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"StoreAdminRequest"> | Date | string | null
+    createdAt?: DateTimeFilter<"StoreAdminRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"StoreAdminRequest"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requestedStore?: XOR<StoreNullableScalarRelationFilter, StoreWhereInput> | null
+    assignedStore?: XOR<StoreNullableScalarRelationFilter, StoreWhereInput> | null
+    reviewedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type StoreAdminRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestedStoreId?: SortOrderInput | SortOrder
+    reason?: SortOrder
+    experience?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewedById?: SortOrderInput | SortOrder
+    assignedStoreId?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StoreAdminRequestCountOrderByAggregateInput
+    _max?: StoreAdminRequestMaxOrderByAggregateInput
+    _min?: StoreAdminRequestMinOrderByAggregateInput
+  }
+
+  export type StoreAdminRequestScalarWhereWithAggregatesInput = {
+    AND?: StoreAdminRequestScalarWhereWithAggregatesInput | StoreAdminRequestScalarWhereWithAggregatesInput[]
+    OR?: StoreAdminRequestScalarWhereWithAggregatesInput[]
+    NOT?: StoreAdminRequestScalarWhereWithAggregatesInput | StoreAdminRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StoreAdminRequest"> | string
+    userId?: StringWithAggregatesFilter<"StoreAdminRequest"> | string
+    requestedStoreId?: StringNullableWithAggregatesFilter<"StoreAdminRequest"> | string | null
+    reason?: StringWithAggregatesFilter<"StoreAdminRequest"> | string
+    experience?: StringNullableWithAggregatesFilter<"StoreAdminRequest"> | string | null
+    status?: EnumStoreAdminRequestStatusWithAggregatesFilter<"StoreAdminRequest"> | $Enums.StoreAdminRequestStatus
+    reviewedById?: StringNullableWithAggregatesFilter<"StoreAdminRequest"> | string | null
+    assignedStoreId?: StringNullableWithAggregatesFilter<"StoreAdminRequest"> | string | null
+    rejectionReason?: StringNullableWithAggregatesFilter<"StoreAdminRequest"> | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"StoreAdminRequest"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"StoreAdminRequest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StoreAdminRequest"> | Date | string
+  }
+
+  export type NotificationWhereInput = {
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    referenceId?: StringNullableFilter<"Notification"> | string | null
+    referenceType?: StringNullableFilter<"Notification"> | string | null
+    isRead?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type NotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    referenceId?: SortOrderInput | SortOrder
+    referenceType?: SortOrderInput | SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    userId?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    referenceId?: StringNullableFilter<"Notification"> | string | null
+    referenceType?: StringNullableFilter<"Notification"> | string | null
+    isRead?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type NotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    referenceId?: SortOrderInput | SortOrder
+    referenceType?: SortOrderInput | SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+    _count?: NotificationCountOrderByAggregateInput
+    _max?: NotificationMaxOrderByAggregateInput
+    _min?: NotificationMinOrderByAggregateInput
+  }
+
+  export type NotificationScalarWhereWithAggregatesInput = {
+    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    OR?: NotificationScalarWhereWithAggregatesInput[]
+    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Notification"> | string
+    userId?: StringWithAggregatesFilter<"Notification"> | string
+    type?: StringWithAggregatesFilter<"Notification"> | string
+    title?: StringWithAggregatesFilter<"Notification"> | string
+    message?: StringWithAggregatesFilter<"Notification"> | string
+    referenceId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    referenceType?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+  }
+
+  export type AuditLogWhereInput = {
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    id?: StringFilter<"AuditLog"> | string
+    actorId?: StringNullableFilter<"AuditLog"> | string | null
+    action?: StringFilter<"AuditLog"> | string
+    entityType?: StringFilter<"AuditLog"> | string
+    entityId?: StringFilter<"AuditLog"> | string
+    before?: JsonNullableFilter<"AuditLog">
+    after?: JsonNullableFilter<"AuditLog">
+    requestId?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    actor?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type AuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    actorId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    before?: SortOrderInput | SortOrder
+    after?: SortOrderInput | SortOrder
+    requestId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    actor?: UserOrderByWithRelationInput
+  }
+
+  export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    actorId?: StringNullableFilter<"AuditLog"> | string | null
+    action?: StringFilter<"AuditLog"> | string
+    entityType?: StringFilter<"AuditLog"> | string
+    entityId?: StringFilter<"AuditLog"> | string
+    before?: JsonNullableFilter<"AuditLog">
+    after?: JsonNullableFilter<"AuditLog">
+    requestId?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    actor?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type AuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    actorId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    before?: SortOrderInput | SortOrder
+    after?: SortOrderInput | SortOrder
+    requestId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AuditLogCountOrderByAggregateInput
+    _max?: AuditLogMaxOrderByAggregateInput
+    _min?: AuditLogMinOrderByAggregateInput
+  }
+
+  export type AuditLogScalarWhereWithAggregatesInput = {
+    AND?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    OR?: AuditLogScalarWhereWithAggregatesInput[]
+    NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuditLog"> | string
+    actorId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    action?: StringWithAggregatesFilter<"AuditLog"> | string
+    entityType?: StringWithAggregatesFilter<"AuditLog"> | string
+    entityId?: StringWithAggregatesFilter<"AuditLog"> | string
+    before?: JsonNullableWithAggregatesFilter<"AuditLog">
+    after?: JsonNullableWithAggregatesFilter<"AuditLog">
+    requestId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -22097,6 +26396,10 @@ export namespace Prisma {
     carts?: CartItemCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -22120,6 +26423,10 @@ export namespace Prisma {
     carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserUpdateInput = {
@@ -22143,6 +26450,10 @@ export namespace Prisma {
     carts?: CartItemUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -22166,6 +26477,10 @@ export namespace Prisma {
     carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -22240,6 +26555,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutStoreInput
     discounts?: DiscountCreateNestedManyWithoutStoreInput
     journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateInput = {
@@ -22258,6 +26575,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
     journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUpdateInput = {
@@ -22276,6 +26595,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateInput = {
@@ -22294,6 +26615,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreCreateManyInput = {
@@ -23462,6 +27785,273 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StoreAdminRequestCreateInput = {
+    id?: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutStoreAdminRequestsInput
+    requestedStore?: StoreCreateNestedOneWithoutRequestedStoreAdminRequestsInput
+    assignedStore?: StoreCreateNestedOneWithoutAssignedStoreAdminRequestsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedStoreAdminRequestsInput
+  }
+
+  export type StoreAdminRequestUncheckedCreateInput = {
+    id?: string
+    userId: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStoreAdminRequestsNestedInput
+    requestedStore?: StoreUpdateOneWithoutRequestedStoreAdminRequestsNestedInput
+    assignedStore?: StoreUpdateOneWithoutAssignedStoreAdminRequestsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedStoreAdminRequestsNestedInput
+  }
+
+  export type StoreAdminRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestCreateManyInput = {
+    id?: string
+    userId: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateInput = {
+    id?: string
+    type: string
+    title: string
+    message: string
+    referenceId?: string | null
+    referenceType?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: string
+    title: string
+    message: string
+    referenceId?: string | null
+    referenceType?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyInput = {
+    id?: string
+    userId: string
+    type: string
+    title: string
+    message: string
+    referenceId?: string | null
+    referenceType?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogCreateInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: string | null
+    createdAt?: Date | string
+    actor?: UserCreateNestedOneWithoutAuditLogsInput
+  }
+
+  export type AuditLogUncheckedCreateInput = {
+    id?: string
+    actorId?: string | null
+    action: string
+    entityType: string
+    entityId: string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actor?: UserUpdateOneWithoutAuditLogsNestedInput
+  }
+
+  export type AuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogCreateManyInput = {
+    id?: string
+    actorId?: string | null
+    action: string
+    entityType: string
+    entityId: string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -23555,6 +28145,24 @@ export namespace Prisma {
     none?: VoucherUsageWhereInput
   }
 
+  export type StoreAdminRequestListRelationFilter = {
+    every?: StoreAdminRequestWhereInput
+    some?: StoreAdminRequestWhereInput
+    none?: StoreAdminRequestWhereInput
+  }
+
+  export type NotificationListRelationFilter = {
+    every?: NotificationWhereInput
+    some?: NotificationWhereInput
+    none?: NotificationWhereInput
+  }
+
+  export type AuditLogListRelationFilter = {
+    every?: AuditLogWhereInput
+    some?: AuditLogWhereInput
+    none?: AuditLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -23573,6 +28181,18 @@ export namespace Prisma {
   }
 
   export type VoucherUsageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StoreAdminRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -24645,6 +29265,141 @@ export namespace Prisma {
     discount?: SortOrder
   }
 
+  export type EnumStoreAdminRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.StoreAdminRequestStatus | EnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStoreAdminRequestStatusFilter<$PrismaModel> | $Enums.StoreAdminRequestStatus
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type StoreAdminRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestedStoreId?: SortOrder
+    reason?: SortOrder
+    experience?: SortOrder
+    status?: SortOrder
+    reviewedById?: SortOrder
+    assignedStoreId?: SortOrder
+    rejectionReason?: SortOrder
+    reviewedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StoreAdminRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestedStoreId?: SortOrder
+    reason?: SortOrder
+    experience?: SortOrder
+    status?: SortOrder
+    reviewedById?: SortOrder
+    assignedStoreId?: SortOrder
+    rejectionReason?: SortOrder
+    reviewedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StoreAdminRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestedStoreId?: SortOrder
+    reason?: SortOrder
+    experience?: SortOrder
+    status?: SortOrder
+    reviewedById?: SortOrder
+    assignedStoreId?: SortOrder
+    rejectionReason?: SortOrder
+    reviewedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumStoreAdminRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StoreAdminRequestStatus | EnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStoreAdminRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.StoreAdminRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStoreAdminRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumStoreAdminRequestStatusFilter<$PrismaModel>
+  }
+
+  export type NotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    referenceId?: SortOrder
+    referenceType?: SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    referenceId?: SortOrder
+    referenceType?: SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    referenceId?: SortOrder
+    referenceType?: SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    actorId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    before?: SortOrder
+    after?: SortOrder
+    requestId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    actorId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    actorId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestId?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type StoreCreateNestedOneWithoutAdminsInput = {
     create?: XOR<StoreCreateWithoutAdminsInput, StoreUncheckedCreateWithoutAdminsInput>
     connectOrCreate?: StoreCreateOrConnectWithoutAdminsInput
@@ -24679,6 +29434,34 @@ export namespace Prisma {
     connect?: VoucherUsageWhereUniqueInput | VoucherUsageWhereUniqueInput[]
   }
 
+  export type StoreAdminRequestCreateNestedManyWithoutUserInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutUserInput, StoreAdminRequestUncheckedCreateWithoutUserInput> | StoreAdminRequestCreateWithoutUserInput[] | StoreAdminRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutUserInput | StoreAdminRequestCreateOrConnectWithoutUserInput[]
+    createMany?: StoreAdminRequestCreateManyUserInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
+  export type StoreAdminRequestCreateNestedManyWithoutReviewedByInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutReviewedByInput, StoreAdminRequestUncheckedCreateWithoutReviewedByInput> | StoreAdminRequestCreateWithoutReviewedByInput[] | StoreAdminRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutReviewedByInput | StoreAdminRequestCreateOrConnectWithoutReviewedByInput[]
+    createMany?: StoreAdminRequestCreateManyReviewedByInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
+  export type NotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type AuditLogCreateNestedManyWithoutActorInput = {
+    create?: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput> | AuditLogCreateWithoutActorInput[] | AuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
+    createMany?: AuditLogCreateManyActorInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
   export type AddressUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AddressCreateWithoutUserInput, AddressUncheckedCreateWithoutUserInput> | AddressCreateWithoutUserInput[] | AddressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutUserInput | AddressCreateOrConnectWithoutUserInput[]
@@ -24705,6 +29488,34 @@ export namespace Prisma {
     connectOrCreate?: VoucherUsageCreateOrConnectWithoutUserInput | VoucherUsageCreateOrConnectWithoutUserInput[]
     createMany?: VoucherUsageCreateManyUserInputEnvelope
     connect?: VoucherUsageWhereUniqueInput | VoucherUsageWhereUniqueInput[]
+  }
+
+  export type StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutUserInput, StoreAdminRequestUncheckedCreateWithoutUserInput> | StoreAdminRequestCreateWithoutUserInput[] | StoreAdminRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutUserInput | StoreAdminRequestCreateOrConnectWithoutUserInput[]
+    createMany?: StoreAdminRequestCreateManyUserInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
+  export type StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutReviewedByInput, StoreAdminRequestUncheckedCreateWithoutReviewedByInput> | StoreAdminRequestCreateWithoutReviewedByInput[] | StoreAdminRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutReviewedByInput | StoreAdminRequestCreateOrConnectWithoutReviewedByInput[]
+    createMany?: StoreAdminRequestCreateManyReviewedByInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
+  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type AuditLogUncheckedCreateNestedManyWithoutActorInput = {
+    create?: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput> | AuditLogCreateWithoutActorInput[] | AuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
+    createMany?: AuditLogCreateManyActorInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -24797,6 +29608,62 @@ export namespace Prisma {
     deleteMany?: VoucherUsageScalarWhereInput | VoucherUsageScalarWhereInput[]
   }
 
+  export type StoreAdminRequestUpdateManyWithoutUserNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutUserInput, StoreAdminRequestUncheckedCreateWithoutUserInput> | StoreAdminRequestCreateWithoutUserInput[] | StoreAdminRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutUserInput | StoreAdminRequestCreateOrConnectWithoutUserInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutUserInput | StoreAdminRequestUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: StoreAdminRequestCreateManyUserInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutUserInput | StoreAdminRequestUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutUserInput | StoreAdminRequestUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
+  export type StoreAdminRequestUpdateManyWithoutReviewedByNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutReviewedByInput, StoreAdminRequestUncheckedCreateWithoutReviewedByInput> | StoreAdminRequestCreateWithoutReviewedByInput[] | StoreAdminRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutReviewedByInput | StoreAdminRequestCreateOrConnectWithoutReviewedByInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutReviewedByInput | StoreAdminRequestUpsertWithWhereUniqueWithoutReviewedByInput[]
+    createMany?: StoreAdminRequestCreateManyReviewedByInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutReviewedByInput | StoreAdminRequestUpdateWithWhereUniqueWithoutReviewedByInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutReviewedByInput | StoreAdminRequestUpdateManyWithWhereWithoutReviewedByInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
+  export type NotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type AuditLogUpdateManyWithoutActorNestedInput = {
+    create?: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput> | AuditLogCreateWithoutActorInput[] | AuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutActorInput | AuditLogUpsertWithWhereUniqueWithoutActorInput[]
+    createMany?: AuditLogCreateManyActorInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutActorInput | AuditLogUpdateWithWhereUniqueWithoutActorInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutActorInput | AuditLogUpdateManyWithWhereWithoutActorInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type AddressUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AddressCreateWithoutUserInput, AddressUncheckedCreateWithoutUserInput> | AddressCreateWithoutUserInput[] | AddressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutUserInput | AddressCreateOrConnectWithoutUserInput[]
@@ -24853,6 +29720,62 @@ export namespace Prisma {
     deleteMany?: VoucherUsageScalarWhereInput | VoucherUsageScalarWhereInput[]
   }
 
+  export type StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutUserInput, StoreAdminRequestUncheckedCreateWithoutUserInput> | StoreAdminRequestCreateWithoutUserInput[] | StoreAdminRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutUserInput | StoreAdminRequestCreateOrConnectWithoutUserInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutUserInput | StoreAdminRequestUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: StoreAdminRequestCreateManyUserInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutUserInput | StoreAdminRequestUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutUserInput | StoreAdminRequestUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutReviewedByInput, StoreAdminRequestUncheckedCreateWithoutReviewedByInput> | StoreAdminRequestCreateWithoutReviewedByInput[] | StoreAdminRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutReviewedByInput | StoreAdminRequestCreateOrConnectWithoutReviewedByInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutReviewedByInput | StoreAdminRequestUpsertWithWhereUniqueWithoutReviewedByInput[]
+    createMany?: StoreAdminRequestCreateManyReviewedByInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutReviewedByInput | StoreAdminRequestUpdateWithWhereUniqueWithoutReviewedByInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutReviewedByInput | StoreAdminRequestUpdateManyWithWhereWithoutReviewedByInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutActorNestedInput = {
+    create?: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput> | AuditLogCreateWithoutActorInput[] | AuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutActorInput | AuditLogUpsertWithWhereUniqueWithoutActorInput[]
+    createMany?: AuditLogCreateManyActorInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutActorInput | AuditLogUpdateWithWhereUniqueWithoutActorInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutActorInput | AuditLogUpdateManyWithWhereWithoutActorInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type UserCreateNestedManyWithoutStoreInput = {
     create?: XOR<UserCreateWithoutStoreInput, UserUncheckedCreateWithoutStoreInput> | UserCreateWithoutStoreInput[] | UserUncheckedCreateWithoutStoreInput[]
     connectOrCreate?: UserCreateOrConnectWithoutStoreInput | UserCreateOrConnectWithoutStoreInput[]
@@ -24895,6 +29818,20 @@ export namespace Prisma {
     connect?: StockJournalWhereUniqueInput | StockJournalWhereUniqueInput[]
   }
 
+  export type StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutRequestedStoreInput, StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput> | StoreAdminRequestCreateWithoutRequestedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput | StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyRequestedStoreInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
+  export type StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutAssignedStoreInput, StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput> | StoreAdminRequestCreateWithoutAssignedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput | StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyAssignedStoreInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutStoreInput = {
     create?: XOR<UserCreateWithoutStoreInput, UserUncheckedCreateWithoutStoreInput> | UserCreateWithoutStoreInput[] | UserUncheckedCreateWithoutStoreInput[]
     connectOrCreate?: UserCreateOrConnectWithoutStoreInput | UserCreateOrConnectWithoutStoreInput[]
@@ -24935,6 +29872,20 @@ export namespace Prisma {
     connectOrCreate?: StockJournalCreateOrConnectWithoutStoreInput | StockJournalCreateOrConnectWithoutStoreInput[]
     createMany?: StockJournalCreateManyStoreInputEnvelope
     connect?: StockJournalWhereUniqueInput | StockJournalWhereUniqueInput[]
+  }
+
+  export type StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutRequestedStoreInput, StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput> | StoreAdminRequestCreateWithoutRequestedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput | StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyRequestedStoreInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+  }
+
+  export type StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutAssignedStoreInput, StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput> | StoreAdminRequestCreateWithoutAssignedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput | StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyAssignedStoreInputEnvelope
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -25029,6 +29980,34 @@ export namespace Prisma {
     deleteMany?: StockJournalScalarWhereInput | StockJournalScalarWhereInput[]
   }
 
+  export type StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutRequestedStoreInput, StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput> | StoreAdminRequestCreateWithoutRequestedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput | StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutRequestedStoreInput | StoreAdminRequestUpsertWithWhereUniqueWithoutRequestedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyRequestedStoreInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutRequestedStoreInput | StoreAdminRequestUpdateWithWhereUniqueWithoutRequestedStoreInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutRequestedStoreInput | StoreAdminRequestUpdateManyWithWhereWithoutRequestedStoreInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
+  export type StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutAssignedStoreInput, StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput> | StoreAdminRequestCreateWithoutAssignedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput | StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutAssignedStoreInput | StoreAdminRequestUpsertWithWhereUniqueWithoutAssignedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyAssignedStoreInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutAssignedStoreInput | StoreAdminRequestUpdateWithWhereUniqueWithoutAssignedStoreInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutAssignedStoreInput | StoreAdminRequestUpdateManyWithWhereWithoutAssignedStoreInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutStoreNestedInput = {
     create?: XOR<UserCreateWithoutStoreInput, UserUncheckedCreateWithoutStoreInput> | UserCreateWithoutStoreInput[] | UserUncheckedCreateWithoutStoreInput[]
     connectOrCreate?: UserCreateOrConnectWithoutStoreInput | UserCreateOrConnectWithoutStoreInput[]
@@ -25111,6 +30090,34 @@ export namespace Prisma {
     update?: StockJournalUpdateWithWhereUniqueWithoutStoreInput | StockJournalUpdateWithWhereUniqueWithoutStoreInput[]
     updateMany?: StockJournalUpdateManyWithWhereWithoutStoreInput | StockJournalUpdateManyWithWhereWithoutStoreInput[]
     deleteMany?: StockJournalScalarWhereInput | StockJournalScalarWhereInput[]
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutRequestedStoreInput, StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput> | StoreAdminRequestCreateWithoutRequestedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput | StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutRequestedStoreInput | StoreAdminRequestUpsertWithWhereUniqueWithoutRequestedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyRequestedStoreInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutRequestedStoreInput | StoreAdminRequestUpdateWithWhereUniqueWithoutRequestedStoreInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutRequestedStoreInput | StoreAdminRequestUpdateManyWithWhereWithoutRequestedStoreInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput = {
+    create?: XOR<StoreAdminRequestCreateWithoutAssignedStoreInput, StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput> | StoreAdminRequestCreateWithoutAssignedStoreInput[] | StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput[]
+    connectOrCreate?: StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput | StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput[]
+    upsert?: StoreAdminRequestUpsertWithWhereUniqueWithoutAssignedStoreInput | StoreAdminRequestUpsertWithWhereUniqueWithoutAssignedStoreInput[]
+    createMany?: StoreAdminRequestCreateManyAssignedStoreInputEnvelope
+    set?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    disconnect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    delete?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    connect?: StoreAdminRequestWhereUniqueInput | StoreAdminRequestWhereUniqueInput[]
+    update?: StoreAdminRequestUpdateWithWhereUniqueWithoutAssignedStoreInput | StoreAdminRequestUpdateWithWhereUniqueWithoutAssignedStoreInput[]
+    updateMany?: StoreAdminRequestUpdateManyWithWhereWithoutAssignedStoreInput | StoreAdminRequestUpdateManyWithWhereWithoutAssignedStoreInput[]
+    deleteMany?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutAddressesInput = {
@@ -25887,6 +30894,102 @@ export namespace Prisma {
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutVoucherUsagesInput, OrderUpdateWithoutVoucherUsagesInput>, OrderUncheckedUpdateWithoutVoucherUsagesInput>
   }
 
+  export type UserCreateNestedOneWithoutStoreAdminRequestsInput = {
+    create?: XOR<UserCreateWithoutStoreAdminRequestsInput, UserUncheckedCreateWithoutStoreAdminRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStoreAdminRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type StoreCreateNestedOneWithoutRequestedStoreAdminRequestsInput = {
+    create?: XOR<StoreCreateWithoutRequestedStoreAdminRequestsInput, StoreUncheckedCreateWithoutRequestedStoreAdminRequestsInput>
+    connectOrCreate?: StoreCreateOrConnectWithoutRequestedStoreAdminRequestsInput
+    connect?: StoreWhereUniqueInput
+  }
+
+  export type StoreCreateNestedOneWithoutAssignedStoreAdminRequestsInput = {
+    create?: XOR<StoreCreateWithoutAssignedStoreAdminRequestsInput, StoreUncheckedCreateWithoutAssignedStoreAdminRequestsInput>
+    connectOrCreate?: StoreCreateOrConnectWithoutAssignedStoreAdminRequestsInput
+    connect?: StoreWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReviewedStoreAdminRequestsInput = {
+    create?: XOR<UserCreateWithoutReviewedStoreAdminRequestsInput, UserUncheckedCreateWithoutReviewedStoreAdminRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewedStoreAdminRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumStoreAdminRequestStatusFieldUpdateOperationsInput = {
+    set?: $Enums.StoreAdminRequestStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutStoreAdminRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutStoreAdminRequestsInput, UserUncheckedCreateWithoutStoreAdminRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStoreAdminRequestsInput
+    upsert?: UserUpsertWithoutStoreAdminRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStoreAdminRequestsInput, UserUpdateWithoutStoreAdminRequestsInput>, UserUncheckedUpdateWithoutStoreAdminRequestsInput>
+  }
+
+  export type StoreUpdateOneWithoutRequestedStoreAdminRequestsNestedInput = {
+    create?: XOR<StoreCreateWithoutRequestedStoreAdminRequestsInput, StoreUncheckedCreateWithoutRequestedStoreAdminRequestsInput>
+    connectOrCreate?: StoreCreateOrConnectWithoutRequestedStoreAdminRequestsInput
+    upsert?: StoreUpsertWithoutRequestedStoreAdminRequestsInput
+    disconnect?: StoreWhereInput | boolean
+    delete?: StoreWhereInput | boolean
+    connect?: StoreWhereUniqueInput
+    update?: XOR<XOR<StoreUpdateToOneWithWhereWithoutRequestedStoreAdminRequestsInput, StoreUpdateWithoutRequestedStoreAdminRequestsInput>, StoreUncheckedUpdateWithoutRequestedStoreAdminRequestsInput>
+  }
+
+  export type StoreUpdateOneWithoutAssignedStoreAdminRequestsNestedInput = {
+    create?: XOR<StoreCreateWithoutAssignedStoreAdminRequestsInput, StoreUncheckedCreateWithoutAssignedStoreAdminRequestsInput>
+    connectOrCreate?: StoreCreateOrConnectWithoutAssignedStoreAdminRequestsInput
+    upsert?: StoreUpsertWithoutAssignedStoreAdminRequestsInput
+    disconnect?: StoreWhereInput | boolean
+    delete?: StoreWhereInput | boolean
+    connect?: StoreWhereUniqueInput
+    update?: XOR<XOR<StoreUpdateToOneWithWhereWithoutAssignedStoreAdminRequestsInput, StoreUpdateWithoutAssignedStoreAdminRequestsInput>, StoreUncheckedUpdateWithoutAssignedStoreAdminRequestsInput>
+  }
+
+  export type UserUpdateOneWithoutReviewedStoreAdminRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutReviewedStoreAdminRequestsInput, UserUncheckedCreateWithoutReviewedStoreAdminRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewedStoreAdminRequestsInput
+    upsert?: UserUpsertWithoutReviewedStoreAdminRequestsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewedStoreAdminRequestsInput, UserUpdateWithoutReviewedStoreAdminRequestsInput>, UserUncheckedUpdateWithoutReviewedStoreAdminRequestsInput>
+  }
+
+  export type UserCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    upsert?: UserUpsertWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type UserCreateNestedOneWithoutAuditLogsInput = {
+    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutAuditLogsNestedInput = {
+    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
+    upsert?: UserUpsertWithoutAuditLogsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -26195,6 +31298,23 @@ export namespace Prisma {
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumStoreAdminRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.StoreAdminRequestStatus | EnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStoreAdminRequestStatusFilter<$PrismaModel> | $Enums.StoreAdminRequestStatus
+  }
+
+  export type NestedEnumStoreAdminRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StoreAdminRequestStatus | EnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StoreAdminRequestStatus[] | ListEnumStoreAdminRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStoreAdminRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.StoreAdminRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStoreAdminRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumStoreAdminRequestStatusFilter<$PrismaModel>
+  }
+
   export type StoreCreateWithoutAdminsInput = {
     id?: string
     name: string
@@ -26210,6 +31330,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutStoreInput
     discounts?: DiscountCreateNestedManyWithoutStoreInput
     journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateWithoutAdminsInput = {
@@ -26227,6 +31349,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
     journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreCreateOrConnectWithoutAdminsInput = {
@@ -26414,6 +31538,146 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StoreAdminRequestCreateWithoutUserInput = {
+    id?: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requestedStore?: StoreCreateNestedOneWithoutRequestedStoreAdminRequestsInput
+    assignedStore?: StoreCreateNestedOneWithoutAssignedStoreAdminRequestsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedStoreAdminRequestsInput
+  }
+
+  export type StoreAdminRequestUncheckedCreateWithoutUserInput = {
+    id?: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateOrConnectWithoutUserInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    create: XOR<StoreAdminRequestCreateWithoutUserInput, StoreAdminRequestUncheckedCreateWithoutUserInput>
+  }
+
+  export type StoreAdminRequestCreateManyUserInputEnvelope = {
+    data: StoreAdminRequestCreateManyUserInput | StoreAdminRequestCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StoreAdminRequestCreateWithoutReviewedByInput = {
+    id?: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutStoreAdminRequestsInput
+    requestedStore?: StoreCreateNestedOneWithoutRequestedStoreAdminRequestsInput
+    assignedStore?: StoreCreateNestedOneWithoutAssignedStoreAdminRequestsInput
+  }
+
+  export type StoreAdminRequestUncheckedCreateWithoutReviewedByInput = {
+    id?: string
+    userId: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateOrConnectWithoutReviewedByInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    create: XOR<StoreAdminRequestCreateWithoutReviewedByInput, StoreAdminRequestUncheckedCreateWithoutReviewedByInput>
+  }
+
+  export type StoreAdminRequestCreateManyReviewedByInputEnvelope = {
+    data: StoreAdminRequestCreateManyReviewedByInput | StoreAdminRequestCreateManyReviewedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationCreateWithoutUserInput = {
+    id?: string
+    type: string
+    title: string
+    message: string
+    referenceId?: string | null
+    referenceType?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: string
+    title: string
+    message: string
+    referenceId?: string | null
+    referenceType?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateOrConnectWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationCreateManyUserInputEnvelope = {
+    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AuditLogCreateWithoutActorInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUncheckedCreateWithoutActorInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogCreateOrConnectWithoutActorInput = {
+    where: AuditLogWhereUniqueInput
+    create: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput>
+  }
+
+  export type AuditLogCreateManyActorInputEnvelope = {
+    data: AuditLogCreateManyActorInput | AuditLogCreateManyActorInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StoreUpsertWithoutAdminsInput = {
     update: XOR<StoreUpdateWithoutAdminsInput, StoreUncheckedUpdateWithoutAdminsInput>
     create: XOR<StoreCreateWithoutAdminsInput, StoreUncheckedCreateWithoutAdminsInput>
@@ -26440,6 +31704,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateWithoutAdminsInput = {
@@ -26457,6 +31723,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type AddressUpsertWithWhereUniqueWithoutUserInput = {
@@ -26606,6 +31874,118 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"VoucherUsage"> | Date | string
   }
 
+  export type StoreAdminRequestUpsertWithWhereUniqueWithoutUserInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    update: XOR<StoreAdminRequestUpdateWithoutUserInput, StoreAdminRequestUncheckedUpdateWithoutUserInput>
+    create: XOR<StoreAdminRequestCreateWithoutUserInput, StoreAdminRequestUncheckedCreateWithoutUserInput>
+  }
+
+  export type StoreAdminRequestUpdateWithWhereUniqueWithoutUserInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    data: XOR<StoreAdminRequestUpdateWithoutUserInput, StoreAdminRequestUncheckedUpdateWithoutUserInput>
+  }
+
+  export type StoreAdminRequestUpdateManyWithWhereWithoutUserInput = {
+    where: StoreAdminRequestScalarWhereInput
+    data: XOR<StoreAdminRequestUpdateManyMutationInput, StoreAdminRequestUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type StoreAdminRequestScalarWhereInput = {
+    AND?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+    OR?: StoreAdminRequestScalarWhereInput[]
+    NOT?: StoreAdminRequestScalarWhereInput | StoreAdminRequestScalarWhereInput[]
+    id?: StringFilter<"StoreAdminRequest"> | string
+    userId?: StringFilter<"StoreAdminRequest"> | string
+    requestedStoreId?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    reason?: StringFilter<"StoreAdminRequest"> | string
+    experience?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    status?: EnumStoreAdminRequestStatusFilter<"StoreAdminRequest"> | $Enums.StoreAdminRequestStatus
+    reviewedById?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    assignedStoreId?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    rejectionReason?: StringNullableFilter<"StoreAdminRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"StoreAdminRequest"> | Date | string | null
+    createdAt?: DateTimeFilter<"StoreAdminRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"StoreAdminRequest"> | Date | string
+  }
+
+  export type StoreAdminRequestUpsertWithWhereUniqueWithoutReviewedByInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    update: XOR<StoreAdminRequestUpdateWithoutReviewedByInput, StoreAdminRequestUncheckedUpdateWithoutReviewedByInput>
+    create: XOR<StoreAdminRequestCreateWithoutReviewedByInput, StoreAdminRequestUncheckedCreateWithoutReviewedByInput>
+  }
+
+  export type StoreAdminRequestUpdateWithWhereUniqueWithoutReviewedByInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    data: XOR<StoreAdminRequestUpdateWithoutReviewedByInput, StoreAdminRequestUncheckedUpdateWithoutReviewedByInput>
+  }
+
+  export type StoreAdminRequestUpdateManyWithWhereWithoutReviewedByInput = {
+    where: StoreAdminRequestScalarWhereInput
+    data: XOR<StoreAdminRequestUpdateManyMutationInput, StoreAdminRequestUncheckedUpdateManyWithoutReviewedByInput>
+  }
+
+  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationScalarWhereInput = {
+    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    OR?: NotificationScalarWhereInput[]
+    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    referenceId?: StringNullableFilter<"Notification"> | string | null
+    referenceType?: StringNullableFilter<"Notification"> | string | null
+    isRead?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+  }
+
+  export type AuditLogUpsertWithWhereUniqueWithoutActorInput = {
+    where: AuditLogWhereUniqueInput
+    update: XOR<AuditLogUpdateWithoutActorInput, AuditLogUncheckedUpdateWithoutActorInput>
+    create: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput>
+  }
+
+  export type AuditLogUpdateWithWhereUniqueWithoutActorInput = {
+    where: AuditLogWhereUniqueInput
+    data: XOR<AuditLogUpdateWithoutActorInput, AuditLogUncheckedUpdateWithoutActorInput>
+  }
+
+  export type AuditLogUpdateManyWithWhereWithoutActorInput = {
+    where: AuditLogScalarWhereInput
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutActorInput>
+  }
+
+  export type AuditLogScalarWhereInput = {
+    AND?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    OR?: AuditLogScalarWhereInput[]
+    NOT?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    id?: StringFilter<"AuditLog"> | string
+    actorId?: StringNullableFilter<"AuditLog"> | string | null
+    action?: StringFilter<"AuditLog"> | string
+    entityType?: StringFilter<"AuditLog"> | string
+    entityId?: StringFilter<"AuditLog"> | string
+    before?: JsonNullableFilter<"AuditLog">
+    after?: JsonNullableFilter<"AuditLog">
+    requestId?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }
+
   export type UserCreateWithoutStoreInput = {
     id?: string
     name: string
@@ -26626,6 +32006,10 @@ export namespace Prisma {
     carts?: CartItemCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutStoreInput = {
@@ -26648,6 +32032,10 @@ export namespace Prisma {
     carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutStoreInput = {
@@ -26852,6 +32240,82 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StoreAdminRequestCreateWithoutRequestedStoreInput = {
+    id?: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutStoreAdminRequestsInput
+    assignedStore?: StoreCreateNestedOneWithoutAssignedStoreAdminRequestsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedStoreAdminRequestsInput
+  }
+
+  export type StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput = {
+    id?: string
+    userId: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateOrConnectWithoutRequestedStoreInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    create: XOR<StoreAdminRequestCreateWithoutRequestedStoreInput, StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput>
+  }
+
+  export type StoreAdminRequestCreateManyRequestedStoreInputEnvelope = {
+    data: StoreAdminRequestCreateManyRequestedStoreInput | StoreAdminRequestCreateManyRequestedStoreInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StoreAdminRequestCreateWithoutAssignedStoreInput = {
+    id?: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutStoreAdminRequestsInput
+    requestedStore?: StoreCreateNestedOneWithoutRequestedStoreAdminRequestsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedStoreAdminRequestsInput
+  }
+
+  export type StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput = {
+    id?: string
+    userId: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateOrConnectWithoutAssignedStoreInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    create: XOR<StoreAdminRequestCreateWithoutAssignedStoreInput, StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput>
+  }
+
+  export type StoreAdminRequestCreateManyAssignedStoreInputEnvelope = {
+    data: StoreAdminRequestCreateManyAssignedStoreInput | StoreAdminRequestCreateManyAssignedStoreInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutStoreInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutStoreInput, UserUncheckedUpdateWithoutStoreInput>
@@ -27010,6 +32474,38 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"StockJournal"> | Date | string
   }
 
+  export type StoreAdminRequestUpsertWithWhereUniqueWithoutRequestedStoreInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    update: XOR<StoreAdminRequestUpdateWithoutRequestedStoreInput, StoreAdminRequestUncheckedUpdateWithoutRequestedStoreInput>
+    create: XOR<StoreAdminRequestCreateWithoutRequestedStoreInput, StoreAdminRequestUncheckedCreateWithoutRequestedStoreInput>
+  }
+
+  export type StoreAdminRequestUpdateWithWhereUniqueWithoutRequestedStoreInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    data: XOR<StoreAdminRequestUpdateWithoutRequestedStoreInput, StoreAdminRequestUncheckedUpdateWithoutRequestedStoreInput>
+  }
+
+  export type StoreAdminRequestUpdateManyWithWhereWithoutRequestedStoreInput = {
+    where: StoreAdminRequestScalarWhereInput
+    data: XOR<StoreAdminRequestUpdateManyMutationInput, StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreInput>
+  }
+
+  export type StoreAdminRequestUpsertWithWhereUniqueWithoutAssignedStoreInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    update: XOR<StoreAdminRequestUpdateWithoutAssignedStoreInput, StoreAdminRequestUncheckedUpdateWithoutAssignedStoreInput>
+    create: XOR<StoreAdminRequestCreateWithoutAssignedStoreInput, StoreAdminRequestUncheckedCreateWithoutAssignedStoreInput>
+  }
+
+  export type StoreAdminRequestUpdateWithWhereUniqueWithoutAssignedStoreInput = {
+    where: StoreAdminRequestWhereUniqueInput
+    data: XOR<StoreAdminRequestUpdateWithoutAssignedStoreInput, StoreAdminRequestUncheckedUpdateWithoutAssignedStoreInput>
+  }
+
+  export type StoreAdminRequestUpdateManyWithWhereWithoutAssignedStoreInput = {
+    where: StoreAdminRequestScalarWhereInput
+    data: XOR<StoreAdminRequestUpdateManyMutationInput, StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreInput>
+  }
+
   export type UserCreateWithoutAddressesInput = {
     id?: string
     name: string
@@ -27030,6 +32526,10 @@ export namespace Prisma {
     carts?: CartItemCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutAddressesInput = {
@@ -27052,6 +32552,10 @@ export namespace Prisma {
     carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutAddressesInput = {
@@ -27090,6 +32594,10 @@ export namespace Prisma {
     carts?: CartItemUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -27112,6 +32620,10 @@ export namespace Prisma {
     carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ProductCreateWithoutCategoryInput = {
@@ -27599,6 +33111,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutStoreInput
     discounts?: DiscountCreateNestedManyWithoutStoreInput
     journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateWithoutStocksInput = {
@@ -27616,6 +33130,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
     journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreCreateOrConnectWithoutStocksInput = {
@@ -27686,6 +33202,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateWithoutStocksInput = {
@@ -27703,6 +33221,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type ProductUpsertWithoutStocksInput = {
@@ -27768,6 +33288,10 @@ export namespace Prisma {
     addresses?: AddressCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutCartsInput = {
@@ -27790,6 +33314,10 @@ export namespace Prisma {
     addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutCartsInput = {
@@ -27849,6 +33377,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutStoreInput
     discounts?: DiscountCreateNestedManyWithoutStoreInput
     journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateWithoutCartsInput = {
@@ -27866,6 +33396,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
     journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreCreateOrConnectWithoutCartsInput = {
@@ -27904,6 +33436,10 @@ export namespace Prisma {
     addresses?: AddressUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCartsInput = {
@@ -27926,6 +33462,10 @@ export namespace Prisma {
     addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ProductUpsertWithoutCartsInput = {
@@ -27997,6 +33537,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateWithoutCartsInput = {
@@ -28014,6 +33556,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreCreateWithoutJournalsInput = {
@@ -28031,6 +33575,8 @@ export namespace Prisma {
     carts?: CartItemCreateNestedManyWithoutStoreInput
     orders?: OrderCreateNestedManyWithoutStoreInput
     discounts?: DiscountCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateWithoutJournalsInput = {
@@ -28048,6 +33594,8 @@ export namespace Prisma {
     carts?: CartItemUncheckedCreateNestedManyWithoutStoreInput
     orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreCreateOrConnectWithoutJournalsInput = {
@@ -28118,6 +33666,8 @@ export namespace Prisma {
     carts?: CartItemUpdateManyWithoutStoreNestedInput
     orders?: OrderUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateWithoutJournalsInput = {
@@ -28135,6 +33685,8 @@ export namespace Prisma {
     carts?: CartItemUncheckedUpdateManyWithoutStoreNestedInput
     orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type ProductUpsertWithoutJournalsInput = {
@@ -28195,6 +33747,8 @@ export namespace Prisma {
     carts?: CartItemCreateNestedManyWithoutStoreInput
     orders?: OrderCreateNestedManyWithoutStoreInput
     journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateWithoutDiscountsInput = {
@@ -28212,6 +33766,8 @@ export namespace Prisma {
     carts?: CartItemUncheckedCreateNestedManyWithoutStoreInput
     orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
     journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreCreateOrConnectWithoutDiscountsInput = {
@@ -28282,6 +33838,8 @@ export namespace Prisma {
     carts?: CartItemUpdateManyWithoutStoreNestedInput
     orders?: OrderUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateWithoutDiscountsInput = {
@@ -28299,6 +33857,8 @@ export namespace Prisma {
     carts?: CartItemUncheckedUpdateManyWithoutStoreNestedInput
     orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type ProductUpsertWithoutDiscountsInput = {
@@ -28408,6 +33968,10 @@ export namespace Prisma {
     addresses?: AddressCreateNestedManyWithoutUserInput
     carts?: CartItemCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -28430,6 +33994,10 @@ export namespace Prisma {
     addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
     carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
     voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -28452,6 +34020,8 @@ export namespace Prisma {
     carts?: CartItemCreateNestedManyWithoutStoreInput
     discounts?: DiscountCreateNestedManyWithoutStoreInput
     journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreUncheckedCreateWithoutOrdersInput = {
@@ -28469,6 +34039,8 @@ export namespace Prisma {
     carts?: CartItemUncheckedCreateNestedManyWithoutStoreInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
     journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
   }
 
   export type StoreCreateOrConnectWithoutOrdersInput = {
@@ -28587,6 +34159,10 @@ export namespace Prisma {
     addresses?: AddressUpdateManyWithoutUserNestedInput
     carts?: CartItemUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -28609,6 +34185,10 @@ export namespace Prisma {
     addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
     carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type StoreUpsertWithoutOrdersInput = {
@@ -28637,6 +34217,8 @@ export namespace Prisma {
     carts?: CartItemUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type StoreUncheckedUpdateWithoutOrdersInput = {
@@ -28654,6 +34236,8 @@ export namespace Prisma {
     carts?: CartItemUncheckedUpdateManyWithoutStoreNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
     journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
   }
 
   export type OrderItemUpsertWithWhereUniqueWithoutOrderInput = {
@@ -29154,6 +34738,10 @@ export namespace Prisma {
     addresses?: AddressCreateNestedManyWithoutUserInput
     carts?: CartItemCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutVoucherUsagesInput = {
@@ -29176,6 +34764,10 @@ export namespace Prisma {
     addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
     carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutVoucherUsagesInput = {
@@ -29326,6 +34918,10 @@ export namespace Prisma {
     addresses?: AddressUpdateManyWithoutUserNestedInput
     carts?: CartItemUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVoucherUsagesInput = {
@@ -29348,6 +34944,10 @@ export namespace Prisma {
     addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
     carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type OrderUpsertWithoutVoucherUsagesInput = {
@@ -29429,6 +35029,670 @@ export namespace Prisma {
     histories?: OrderStatusHistoryUncheckedUpdateManyWithoutOrderNestedInput
   }
 
+  export type UserCreateWithoutStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    store?: StoreCreateNestedOneWithoutAdminsInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    carts?: CartItemCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    storeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutStoreAdminRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutStoreAdminRequestsInput, UserUncheckedCreateWithoutStoreAdminRequestsInput>
+  }
+
+  export type StoreCreateWithoutRequestedStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    city: string
+    latitude: number
+    longitude: number
+    radiusKm?: number
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    admins?: UserCreateNestedManyWithoutStoreInput
+    stocks?: InventoryCreateNestedManyWithoutStoreInput
+    carts?: CartItemCreateNestedManyWithoutStoreInput
+    orders?: OrderCreateNestedManyWithoutStoreInput
+    discounts?: DiscountCreateNestedManyWithoutStoreInput
+    journals?: StockJournalCreateNestedManyWithoutStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutAssignedStoreInput
+  }
+
+  export type StoreUncheckedCreateWithoutRequestedStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    city: string
+    latitude: number
+    longitude: number
+    radiusKm?: number
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    admins?: UserUncheckedCreateNestedManyWithoutStoreInput
+    stocks?: InventoryUncheckedCreateNestedManyWithoutStoreInput
+    carts?: CartItemUncheckedCreateNestedManyWithoutStoreInput
+    orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
+    journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutAssignedStoreInput
+  }
+
+  export type StoreCreateOrConnectWithoutRequestedStoreAdminRequestsInput = {
+    where: StoreWhereUniqueInput
+    create: XOR<StoreCreateWithoutRequestedStoreAdminRequestsInput, StoreUncheckedCreateWithoutRequestedStoreAdminRequestsInput>
+  }
+
+  export type StoreCreateWithoutAssignedStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    city: string
+    latitude: number
+    longitude: number
+    radiusKm?: number
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    admins?: UserCreateNestedManyWithoutStoreInput
+    stocks?: InventoryCreateNestedManyWithoutStoreInput
+    carts?: CartItemCreateNestedManyWithoutStoreInput
+    orders?: OrderCreateNestedManyWithoutStoreInput
+    discounts?: DiscountCreateNestedManyWithoutStoreInput
+    journals?: StockJournalCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutRequestedStoreInput
+  }
+
+  export type StoreUncheckedCreateWithoutAssignedStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    city: string
+    latitude: number
+    longitude: number
+    radiusKm?: number
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    admins?: UserUncheckedCreateNestedManyWithoutStoreInput
+    stocks?: InventoryUncheckedCreateNestedManyWithoutStoreInput
+    carts?: CartItemUncheckedCreateNestedManyWithoutStoreInput
+    orders?: OrderUncheckedCreateNestedManyWithoutStoreInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutStoreInput
+    journals?: StockJournalUncheckedCreateNestedManyWithoutStoreInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutRequestedStoreInput
+  }
+
+  export type StoreCreateOrConnectWithoutAssignedStoreAdminRequestsInput = {
+    where: StoreWhereUniqueInput
+    create: XOR<StoreCreateWithoutAssignedStoreAdminRequestsInput, StoreUncheckedCreateWithoutAssignedStoreAdminRequestsInput>
+  }
+
+  export type UserCreateWithoutReviewedStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    store?: StoreCreateNestedOneWithoutAdminsInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    carts?: CartItemCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutReviewedStoreAdminRequestsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    storeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutReviewedStoreAdminRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReviewedStoreAdminRequestsInput, UserUncheckedCreateWithoutReviewedStoreAdminRequestsInput>
+  }
+
+  export type UserUpsertWithoutStoreAdminRequestsInput = {
+    update: XOR<UserUpdateWithoutStoreAdminRequestsInput, UserUncheckedUpdateWithoutStoreAdminRequestsInput>
+    create: XOR<UserCreateWithoutStoreAdminRequestsInput, UserUncheckedCreateWithoutStoreAdminRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutStoreAdminRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutStoreAdminRequestsInput, UserUncheckedUpdateWithoutStoreAdminRequestsInput>
+  }
+
+  export type UserUpdateWithoutStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    store?: StoreUpdateOneWithoutAdminsNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    carts?: CartItemUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    storeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type StoreUpsertWithoutRequestedStoreAdminRequestsInput = {
+    update: XOR<StoreUpdateWithoutRequestedStoreAdminRequestsInput, StoreUncheckedUpdateWithoutRequestedStoreAdminRequestsInput>
+    create: XOR<StoreCreateWithoutRequestedStoreAdminRequestsInput, StoreUncheckedCreateWithoutRequestedStoreAdminRequestsInput>
+    where?: StoreWhereInput
+  }
+
+  export type StoreUpdateToOneWithWhereWithoutRequestedStoreAdminRequestsInput = {
+    where?: StoreWhereInput
+    data: XOR<StoreUpdateWithoutRequestedStoreAdminRequestsInput, StoreUncheckedUpdateWithoutRequestedStoreAdminRequestsInput>
+  }
+
+  export type StoreUpdateWithoutRequestedStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    radiusKm?: FloatFieldUpdateOperationsInput | number
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    admins?: UserUpdateManyWithoutStoreNestedInput
+    stocks?: InventoryUpdateManyWithoutStoreNestedInput
+    carts?: CartItemUpdateManyWithoutStoreNestedInput
+    orders?: OrderUpdateManyWithoutStoreNestedInput
+    discounts?: DiscountUpdateManyWithoutStoreNestedInput
+    journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutAssignedStoreNestedInput
+  }
+
+  export type StoreUncheckedUpdateWithoutRequestedStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    radiusKm?: FloatFieldUpdateOperationsInput | number
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    admins?: UserUncheckedUpdateManyWithoutStoreNestedInput
+    stocks?: InventoryUncheckedUpdateManyWithoutStoreNestedInput
+    carts?: CartItemUncheckedUpdateManyWithoutStoreNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
+    journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    assignedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreNestedInput
+  }
+
+  export type StoreUpsertWithoutAssignedStoreAdminRequestsInput = {
+    update: XOR<StoreUpdateWithoutAssignedStoreAdminRequestsInput, StoreUncheckedUpdateWithoutAssignedStoreAdminRequestsInput>
+    create: XOR<StoreCreateWithoutAssignedStoreAdminRequestsInput, StoreUncheckedCreateWithoutAssignedStoreAdminRequestsInput>
+    where?: StoreWhereInput
+  }
+
+  export type StoreUpdateToOneWithWhereWithoutAssignedStoreAdminRequestsInput = {
+    where?: StoreWhereInput
+    data: XOR<StoreUpdateWithoutAssignedStoreAdminRequestsInput, StoreUncheckedUpdateWithoutAssignedStoreAdminRequestsInput>
+  }
+
+  export type StoreUpdateWithoutAssignedStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    radiusKm?: FloatFieldUpdateOperationsInput | number
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    admins?: UserUpdateManyWithoutStoreNestedInput
+    stocks?: InventoryUpdateManyWithoutStoreNestedInput
+    carts?: CartItemUpdateManyWithoutStoreNestedInput
+    orders?: OrderUpdateManyWithoutStoreNestedInput
+    discounts?: DiscountUpdateManyWithoutStoreNestedInput
+    journals?: StockJournalUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutRequestedStoreNestedInput
+  }
+
+  export type StoreUncheckedUpdateWithoutAssignedStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    radiusKm?: FloatFieldUpdateOperationsInput | number
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    admins?: UserUncheckedUpdateManyWithoutStoreNestedInput
+    stocks?: InventoryUncheckedUpdateManyWithoutStoreNestedInput
+    carts?: CartItemUncheckedUpdateManyWithoutStoreNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutStoreNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutStoreNestedInput
+    journals?: StockJournalUncheckedUpdateManyWithoutStoreNestedInput
+    requestedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreNestedInput
+  }
+
+  export type UserUpsertWithoutReviewedStoreAdminRequestsInput = {
+    update: XOR<UserUpdateWithoutReviewedStoreAdminRequestsInput, UserUncheckedUpdateWithoutReviewedStoreAdminRequestsInput>
+    create: XOR<UserCreateWithoutReviewedStoreAdminRequestsInput, UserUncheckedCreateWithoutReviewedStoreAdminRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReviewedStoreAdminRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReviewedStoreAdminRequestsInput, UserUncheckedUpdateWithoutReviewedStoreAdminRequestsInput>
+  }
+
+  export type UserUpdateWithoutReviewedStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    store?: StoreUpdateOneWithoutAdminsNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    carts?: CartItemUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReviewedStoreAdminRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    storeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserCreateWithoutNotificationsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    store?: StoreCreateNestedOneWithoutAdminsInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    carts?: CartItemCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    storeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type UserUpsertWithoutNotificationsInput = {
+    update: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type UserUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    store?: StoreUpdateOneWithoutAdminsNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    carts?: CartItemUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    storeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserCreateWithoutAuditLogsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    store?: StoreCreateNestedOneWithoutAdminsInput
+    addresses?: AddressCreateNestedManyWithoutUserInput
+    carts?: CartItemCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAuditLogsInput = {
+    id?: string
+    name: string
+    email: string
+    phone?: string | null
+    password?: string | null
+    passwordHash?: string | null
+    authProvider?: string
+    role?: $Enums.Role
+    isActive?: boolean
+    verifiedAt?: Date | string | null
+    avatarUrl?: string | null
+    referralCode?: string | null
+    referredBy?: string | null
+    storeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
+    carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
+    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAuditLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+  }
+
+  export type UserUpsertWithoutAuditLogsInput = {
+    update: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type UserUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    store?: StoreUpdateOneWithoutAdminsNestedInput
+    addresses?: AddressUpdateManyWithoutUserNestedInput
+    carts?: CartItemUpdateManyWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    storeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
+    carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type AddressCreateManyUserInput = {
     id?: string
     label: string
@@ -29493,6 +35757,56 @@ export namespace Prisma {
     orderId?: string | null
     code: string
     discount: number
+    createdAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateManyUserInput = {
+    id?: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateManyReviewedByInput = {
+    id?: string
+    userId: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationCreateManyUserInput = {
+    id?: string
+    type: string
+    title: string
+    message: string
+    referenceId?: string | null
+    referenceType?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type AuditLogCreateManyActorInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: string | null
     createdAt?: Date | string
   }
 
@@ -29703,6 +36017,156 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StoreAdminRequestUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requestedStore?: StoreUpdateOneWithoutRequestedStoreAdminRequestsNestedInput
+    assignedStore?: StoreUpdateOneWithoutAssignedStoreAdminRequestsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedStoreAdminRequestsNestedInput
+  }
+
+  export type StoreAdminRequestUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUpdateWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStoreAdminRequestsNestedInput
+    requestedStore?: StoreUpdateOneWithoutRequestedStoreAdminRequestsNestedInput
+    assignedStore?: StoreUpdateOneWithoutAssignedStoreAdminRequestsNestedInput
+  }
+
+  export type StoreAdminRequestUncheckedUpdateWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    referenceType?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUpdateWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    requestId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserCreateManyStoreInput = {
     id?: string
     name: string
@@ -29789,6 +36253,34 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type StoreAdminRequestCreateManyRequestedStoreInput = {
+    id?: string
+    userId: string
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    assignedStoreId?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StoreAdminRequestCreateManyAssignedStoreInput = {
+    id?: string
+    userId: string
+    requestedStoreId?: string | null
+    reason: string
+    experience?: string | null
+    status?: $Enums.StoreAdminRequestStatus
+    reviewedById?: string | null
+    rejectionReason?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type UserUpdateWithoutStoreInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -29809,6 +36301,10 @@ export namespace Prisma {
     carts?: CartItemUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStoreInput = {
@@ -29831,6 +36327,10 @@ export namespace Prisma {
     carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
+    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
+    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutStoreInput = {
@@ -30059,6 +36559,90 @@ export namespace Prisma {
     change?: IntFieldUpdateOperationsInput | number
     note?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUpdateWithoutRequestedStoreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStoreAdminRequestsNestedInput
+    assignedStore?: StoreUpdateOneWithoutAssignedStoreAdminRequestsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedStoreAdminRequestsNestedInput
+  }
+
+  export type StoreAdminRequestUncheckedUpdateWithoutRequestedStoreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutRequestedStoreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUpdateWithoutAssignedStoreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStoreAdminRequestsNestedInput
+    requestedStore?: StoreUpdateOneWithoutRequestedStoreAdminRequestsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedStoreAdminRequestsNestedInput
+  }
+
+  export type StoreAdminRequestUncheckedUpdateWithoutAssignedStoreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StoreAdminRequestUncheckedUpdateManyWithoutAssignedStoreInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestedStoreId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStoreAdminRequestStatusFieldUpdateOperationsInput | $Enums.StoreAdminRequestStatus
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductCreateManyCategoryInput = {

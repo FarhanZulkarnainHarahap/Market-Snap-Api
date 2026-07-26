@@ -36,6 +36,13 @@ enum VoucherScope {
   SHIPPING
 }
 
+enum StoreAdminRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -56,6 +63,10 @@ model User {
   carts        CartItem[]
   orders       Order[]
   voucherUsages VoucherUsage[]
+  storeAdminRequests StoreAdminRequest[] @relation("StoreAdminRequestUser")
+  reviewedStoreAdminRequests StoreAdminRequest[] @relation("StoreAdminRequestReviewer")
+  notifications Notification[]
+  auditLogs AuditLog[] @relation("AuditLogActor")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
@@ -74,6 +85,8 @@ model Store {
   orders    Order[]
   discounts Discount[]
   journals  StockJournal[]
+  requestedStoreAdminRequests StoreAdminRequest[] @relation("RequestedStore")
+  assignedStoreAdminRequests StoreAdminRequest[] @relation("AssignedStore")
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
@@ -274,4 +287,63 @@ model VoucherUsage {
 
   @@index([userId, voucherId])
   @@index([orderId])
+}
+
+model StoreAdminRequest {
+  id              String                  @id @default(cuid())
+  userId          String
+  requestedStoreId String?
+  reason          String
+  experience      String?
+  status          StoreAdminRequestStatus @default(PENDING)
+  reviewedById    String?
+  assignedStoreId String?
+  rejectionReason String?
+  reviewedAt      DateTime?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  user            User                    @relation("StoreAdminRequestUser", fields: [userId], references: [id])
+  requestedStore  Store?                  @relation("RequestedStore", fields: [requestedStoreId], references: [id])
+  assignedStore   Store?                  @relation("AssignedStore", fields: [assignedStoreId], references: [id])
+  reviewedBy      User?                   @relation("StoreAdminRequestReviewer", fields: [reviewedById], references: [id])
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@index([requestedStoreId])
+  @@index([assignedStoreId])
+}
+
+model Notification {
+  id            String   @id @default(cuid())
+  userId        String
+  type          String
+  title         String
+  message       String
+  referenceId   String?
+  referenceType String?
+  isRead        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+  @@index([referenceId, referenceType])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String
+  before     Json?
+  after      Json?
+  requestId  String?
+  createdAt  DateTime @default(now())
+
+  actor      User?    @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
 }

@@ -106,6 +106,20 @@ export const updateUserSchema = z.object({
   verified: z.coerce.boolean().optional()
 });
 
+export const createStoreAdminRequestSchema = z.object({
+  requestedStoreId: z.preprocess((value) => value === "" ? undefined : value, z.string().min(1).optional()),
+  reason: z.string().trim().min(20).max(700),
+  experience: z.preprocess((value) => value === "" ? undefined : value, z.string().trim().max(700).optional())
+});
+
+export const approveStoreAdminRequestSchema = z.object({
+  storeId: z.string().min(1)
+});
+
+export const rejectStoreAdminRequestSchema = z.object({
+  reason: z.string().trim().min(5).max(500)
+});
+
 export const emailVerificationRequestSchema = z.object({
   email: z.string().email()
 });

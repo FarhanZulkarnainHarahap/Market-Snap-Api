@@ -310,6 +310,45 @@ exports.Prisma.VoucherUsageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.StoreAdminRequestScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  requestedStoreId: 'requestedStoreId',
+  reason: 'reason',
+  experience: 'experience',
+  status: 'status',
+  reviewedById: 'reviewedById',
+  assignedStoreId: 'assignedStoreId',
+  rejectionReason: 'rejectionReason',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  referenceId: 'referenceId',
+  referenceType: 'referenceType',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  before: 'before',
+  after: 'after',
+  requestId: 'requestId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -362,6 +401,13 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.StoreAdminRequestStatus = exports.$Enums.StoreAdminRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Store: 'Store',
@@ -377,7 +423,10 @@ exports.Prisma.ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderStatusHistory: 'OrderStatusHistory',
-  VoucherUsage: 'VoucherUsage'
+  VoucherUsage: 'VoucherUsage',
+  StoreAdminRequest: 'StoreAdminRequest',
+  Notification: 'Notification',
+  AuditLog: 'AuditLog'
 };
 
 /**

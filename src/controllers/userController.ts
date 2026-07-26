@@ -25,7 +25,7 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
         return;
       }
     }
-    const user = await prisma.user.update({ where: { id: String(req.user?.id) }, data: profileData(req.body) });
+    const user = await prisma.user.update({ where: { id: String(req.user?.id) }, data: profileData(req.body, false) });
     res.json({ data: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
@@ -83,7 +83,7 @@ export async function deleteUser(req: Request, res: Response): Promise<void> {
   }
 }
 
-function profileData(body: Record<string, unknown>) {
+function profileData(body: Record<string, unknown>, allowRoleUpdate = true) {
   const password = typeof body.password === "string" && body.password ? body.password : undefined;
   return {
     name: body.name as string | undefined,
@@ -92,7 +92,7 @@ function profileData(body: Record<string, unknown>) {
     avatarUrl: body.avatarUrl as string | undefined,
     password: password ? null : undefined,
     passwordHash: password ? hashPassword(password) : undefined,
-    role: body.role ? prismaRole(String(body.role)) : undefined,
-    verifiedAt: body.verified === undefined ? undefined : body.verified ? new Date() : null
+    role: allowRoleUpdate && body.role ? prismaRole(String(body.role)) : undefined,
+    verifiedAt: allowRoleUpdate && body.verified !== undefined ? body.verified ? new Date() : null : undefined
   };
 }
