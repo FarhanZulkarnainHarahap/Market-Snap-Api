@@ -43,6 +43,21 @@ type CheckoutPayment = {
   status: string;
 };
 
+type CheckoutAddress = {
+  city?: string | null;
+  detail: string;
+  district?: string | null;
+  id: string;
+  label: string;
+  latitude: number;
+  longitude: number;
+  note?: string | null;
+  phone?: string | null;
+  postalCode?: string | null;
+  province?: string | null;
+  recipientName?: string | null;
+};
+
 type VoucherValidation = {
   discount: number;
   message: string;
@@ -102,7 +117,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(422).json({ message: "Metode pengiriman tidak tersedia." });
       return;
     }
-    const address = body.addressId ? await prisma.address.findFirst({ where: { id: body.addressId, userId } }) : null;
+    const address = await findCheckoutAddress(body.addressId, userId);
     if (shippingMethod.requiresAddress && !address && !locationFromQuery(body.location ?? {})) {
       res.status(422).json({ message: "Alamat pengiriman wajib dipilih." });
       return;
@@ -480,7 +495,7 @@ function paymentMethodOptions() {
 }
 
 async function createCheckoutOrder(input: {
-  address: Awaited<ReturnType<typeof prisma.address.findFirst>>;
+  address: CheckoutAddress | null;
   body: CreateOrderBody;
   deliveryDate: Date;
   items: CheckoutItem[];
@@ -599,7 +614,21 @@ function midtransItemDetails(items: CheckoutItem[], totals: { discount: number; 
   return details;
 }
 
-function addressSnapshot(address: NonNullable<Awaited<ReturnType<typeof prisma.address.findFirst>>>) {
+async function findCheckoutAddress(addressId: string | undefined, userId: string): Promise<CheckoutAddress | null> {
+  if (!addressId) return null;
+  return prisma.address.findFirst({
+    where: { id: addressId, userId },
+    select: {
+      detail: true,
+      id: true,
+      label: true,
+      latitude: true,
+      longitude: true
+    }
+  });
+}
+
+function addressSnapshot(address: CheckoutAddress) {
   return {
     city: address.city,
     detail: address.detail,
