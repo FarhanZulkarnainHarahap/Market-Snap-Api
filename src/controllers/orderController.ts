@@ -489,7 +489,7 @@ function shippingMethodOptions() {
 
 function paymentMethodOptions() {
   const manual = { id: "manual_transfer", label: "Transfer Manual", provider: "manual", channel: "MANUAL_TRANSFER", description: "Konfirmasi pembayaran manual dari admin." };
-  if (!midtransConfig.hasServerKey) return [manual];
+  if (!midtransConfig.hasServerKey || !midtransConfig.isKeyModeValid) return [manual];
   return [
     { id: "midtrans", label: "Midtrans Sandbox", provider: "midtrans", channel: "", description: "Bayar lewat halaman Midtrans Sandbox: VA, QRIS, e-wallet, kartu, atau gerai retail." },
     manual

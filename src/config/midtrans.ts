@@ -3,14 +3,17 @@ import { createHash, timingSafeEqual } from "crypto";
 const isProduction = String(process.env.MIDTRANS_IS_PRODUCTION ?? "false").toLowerCase() === "true";
 const defaultBaseUrl = isProduction ? "https://app.midtrans.com" : "https://app.sandbox.midtrans.com";
 const baseUrl = process.env.MIDTRANS_BASE_URL ?? defaultBaseUrl;
+const clientKey = process.env.MIDTRANS_CLIENT_KEY ?? "";
 const serverKey = process.env.MIDTRANS_SERVER_KEY ?? "";
 
 export const midtransConfig = {
   baseUrl,
-  clientKey: process.env.MIDTRANS_CLIENT_KEY ?? "",
+  clientKey,
   hasServerKey: Boolean(serverKey),
+  isKeyModeValid: !midtransConfigError(),
   isProduction,
-  merchantId: process.env.MIDTRANS_MERCHANT_ID ?? ""
+  merchantId: process.env.MIDTRANS_MERCHANT_ID ?? "",
+  validationMessage: midtransConfigError()
 };
 
 export type MidtransSnapTransaction = {
@@ -26,6 +29,9 @@ type MidtransItemDetail = {
 };
 
 export async function midtransFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const configError = midtransConfigError();
+  if (configError) throw new Error(configError);
+
   const auth = Buffer.from(`${serverKey}:`).toString("base64");
   const response = await fetch(`${baseUrl}${path}`, {
     ...init,
@@ -46,6 +52,19 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
   }
 
   return response.json() as Promise<T>;
+}
+
+function midtransConfigError(): string {
+  if (!serverKey) return "Konfigurasi Midtrans belum lengkap. MIDTRANS_SERVER_KEY wajib diisi.";
+  const serverSandbox = serverKey.startsWith("SB-Mid-server-");
+  const clientSandbox = !clientKey || clientKey.startsWith("SB-Mid-client-");
+  if (!isProduction && (!serverSandbox || !clientSandbox)) {
+    return "Mode Midtrans sandbox aktif, tetapi key bukan sandbox. Gunakan MIDTRANS_SERVER_KEY SB-Mid-server-* dan MIDTRANS_CLIENT_KEY SB-Mid-client-*.";
+  }
+  if (isProduction && (serverSandbox || clientSandbox)) {
+    return "Mode Midtrans production aktif, tetapi key masih sandbox. Gunakan key production atau set MIDTRANS_IS_PRODUCTION=false.";
+  }
+  return "";
 }
 
 export async function createMidtransSnapTransaction(input: {
