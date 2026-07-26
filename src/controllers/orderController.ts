@@ -34,6 +34,15 @@ type CheckoutItem = {
   category: string;
 };
 
+type CheckoutPayment = {
+  channel: string;
+  externalId: string | null;
+  invoiceUrl: string | null;
+  method: "manual_transfer" | "midtrans";
+  orderNumber: string;
+  status: string;
+};
+
 type VoucherValidation = {
   discount: number;
   message: string;
@@ -136,58 +145,28 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(422).json({ message: "Metode pembayaran tidak tersedia." });
       return;
     }
-    await assertCheckoutSchemaReady();
     const payment = await paymentInvoice(body, orderNumber(), total, userEmail, items, { shippingCost: shipping.cost, serviceFee, discount: voucher.discount });
     const orderNo = payment.orderNumber;
     const paymentDeadline = new Date(Date.now() + 60 * 60 * 1000);
 
-    const order = await prisma.$transaction(async (tx) => {
-      const created = await tx.order.create({
-        data: {
-          addressId: address?.id,
-          addressSnapshot: address ? addressSnapshot(address) : undefined,
-          courierName: shipping.provider,
-          deliveryDate,
-          deliverySlot: body.deliverySlot,
-          discountTotal: voucher.discount,
-          estimatedArrival: estimatedArrival(deliveryDate, shippingMethod.id),
-          orderNote: cleanText(body.orderNote),
-          orderNumber: orderNo,
-          paymentChannel: payment.channel,
-          paymentDeadline,
-          paymentExternalId: payment.externalId,
-          paymentInvoiceUrl: payment.invoiceUrl,
-          paymentMethod: payment.method,
-          serviceFee,
-          shippingCost: shipping.cost,
-          shippingMethod: shippingMethod.id,
-          shippingProvider: shipping.provider,
-          status: "WAITING_PAYMENT",
-          storeId: store.id,
-          total,
-          userId,
-          voucherCode: voucher.voucher?.code,
-          voucherId: voucher.voucher?.id
-        }
-      });
-
-      for (const item of items) {
-        await tx.orderItem.create({ data: { orderId: created.id, productId: item.productId, quantity: item.quantity, price: item.price } });
-        await tx.inventory.update({ where: { storeId_productId: { storeId: store.id, productId: item.productId } }, data: { quantity: { decrement: item.quantity } } });
-        await tx.stockJournal.create({ data: { storeId: store.id, productId: item.productId, change: -item.quantity, note: `Order ${created.orderNumber}` } });
-      }
-
-      if (voucher.voucher && voucher.discount > 0) {
-        await tx.voucherUsage.create({ data: { code: voucher.voucher.code, discount: voucher.discount, orderId: created.id, userId, voucherId: voucher.voucher.id } });
-      }
-
-      await tx.orderStatusHistory.create({ data: { orderId: created.id, status: "WAITING_PAYMENT", description: "Pesanan dibuat dan menunggu pembayaran." } });
-
-      const cartIds = items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
-      if (cartIds.length) await tx.cartItem.deleteMany({ where: { id: { in: cartIds }, userId } });
-      else await tx.cartItem.deleteMany({ where: { userId, storeId: store.id, productId: { in: items.map((item) => item.productId) } } });
-
-      return created;
+    const order = await createCheckoutOrder({
+      address,
+      body,
+      deliveryDate,
+      items,
+      orderNo,
+      payment,
+      paymentDeadline,
+      serviceFee,
+      shipping,
+      shippingMethod,
+      store,
+      total,
+      userId,
+      voucher
+    }).catch((error) => {
+      if (!isCheckoutSchemaMissing(error)) throw error;
+      return createLegacyCheckoutOrder({ items, orderNo, paymentDeadline, shippingCost: shipping.cost, storeId: store.id, total, userId });
     });
 
     res.status(201).json({ data: { ...order, status: statusLabels[order.status] }, shipping, payment: { ...payment, orderNumber: undefined } });
@@ -468,7 +447,7 @@ async function shippingQuote(body: CreateOrderBody, method: ReturnType<typeof sh
   return { cost: method.cost, provider: "market-snap", detail: null };
 }
 
-async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: number, email: string, items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }) {
+async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: number, email: string, items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }): Promise<CheckoutPayment> {
   const methods = paymentMethodOptions();
   const selected = methods.find((method) => method.id === body.paymentChannel);
   if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
@@ -485,22 +464,6 @@ async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: nu
   return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method, orderNumber: orderNo, status: "PENDING" };
 }
 
-async function assertCheckoutSchemaReady() {
-  await Promise.all([
-    prisma.order.findFirst({
-      select: {
-        addressId: true,
-        id: true,
-        paymentInvoiceUrl: true,
-        paymentMethod: true
-      },
-      take: 1
-    }),
-    prisma.orderStatusHistory.findFirst({ select: { id: true }, take: 1 }),
-    prisma.voucherUsage.findFirst({ select: { id: true }, take: 1 })
-  ]);
-}
-
 function shippingMethodOptions() {
   return [
     { id: "standard", label: "Pengiriman Standar", description: "Estimasi reguler dari cabang terdekat.", eta: "2-4 jam", cost: Number(process.env.SHIPPING_STANDARD_COST ?? 10000), requiresAddress: true },
@@ -512,15 +475,115 @@ function shippingMethodOptions() {
 function paymentMethodOptions() {
   if (!midtransConfig.hasServerKey) return [{ id: "manual_transfer", label: "Transfer Manual", provider: "manual", channel: "MANUAL_TRANSFER", description: "Konfirmasi pembayaran manual dari admin." }];
   return [
-    { id: "bca_va", label: "BCA Virtual Account", provider: "midtrans", channel: "bca_va", description: "Bayar dari m-BCA, ATM, atau internet banking." },
-    { id: "echannel", label: "Mandiri Bill Payment", provider: "midtrans", channel: "echannel", description: "Bayar dari Livin, ATM, atau internet banking Mandiri." },
-    { id: "bni_va", label: "BNI Virtual Account", provider: "midtrans", channel: "bni_va", description: "BNI Mobile, ATM, dan internet banking." },
-    { id: "bri_va", label: "BRI Virtual Account", provider: "midtrans", channel: "bri_va", description: "BRImo, ATM, dan internet banking." },
-    { id: "qris", label: "QRIS", provider: "midtrans", channel: "qris", description: "Scan QR dari aplikasi pembayaran favorit." },
-    { id: "gopay", label: "GoPay", provider: "midtrans", channel: "gopay", description: "Bayar cepat lewat GoPay." },
-    { id: "credit_card", label: "Kartu Kredit / Debit", provider: "midtrans", channel: "credit_card", description: "Visa, Mastercard, dan kartu debit online." },
-    { id: "alfamart", label: "Gerai Retail", provider: "midtrans", channel: "alfamart", description: "Bayar melalui gerai retail yang tersedia." }
+    { id: "midtrans", label: "Midtrans Payment", provider: "midtrans", channel: "", description: "Pilih VA, QRIS, e-wallet, kartu, atau gerai retail di halaman Midtrans." }
   ];
+}
+
+async function createCheckoutOrder(input: {
+  address: Awaited<ReturnType<typeof prisma.address.findFirst>>;
+  body: CreateOrderBody;
+  deliveryDate: Date;
+  items: CheckoutItem[];
+  orderNo: string;
+  payment: CheckoutPayment;
+  paymentDeadline: Date;
+  serviceFee: number;
+  shipping: Awaited<ReturnType<typeof shippingQuote>>;
+  shippingMethod: ReturnType<typeof shippingMethodOptions>[number];
+  store: NonNullable<Awaited<ReturnType<typeof resolveStore>>>;
+  total: number;
+  userId: string;
+  voucher: VoucherValidation;
+}) {
+  return prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
+      data: {
+        addressId: input.address?.id,
+        addressSnapshot: input.address ? addressSnapshot(input.address) : undefined,
+        courierName: input.shipping.provider,
+        deliveryDate: input.deliveryDate,
+        deliverySlot: input.body.deliverySlot,
+        discountTotal: input.voucher.discount,
+        estimatedArrival: estimatedArrival(input.deliveryDate, input.shippingMethod.id),
+        orderNote: cleanText(input.body.orderNote),
+        orderNumber: input.orderNo,
+        paymentChannel: input.payment.channel,
+        paymentDeadline: input.paymentDeadline,
+        paymentExternalId: input.payment.externalId,
+        paymentInvoiceUrl: input.payment.invoiceUrl,
+        paymentMethod: input.payment.method,
+        serviceFee: input.serviceFee,
+        shippingCost: input.shipping.cost,
+        shippingMethod: input.shippingMethod.id,
+        shippingProvider: input.shipping.provider,
+        status: "WAITING_PAYMENT",
+        storeId: input.store.id,
+        total: input.total,
+        userId: input.userId,
+        voucherCode: input.voucher.voucher?.code,
+        voucherId: input.voucher.voucher?.id
+      },
+      select: orderResponseSelect
+    });
+
+    await persistOrderSideEffects(tx, { items: input.items, orderId: created.id, orderNumber: created.orderNumber, storeId: input.store.id, userId: input.userId });
+
+    if (input.voucher.voucher && input.voucher.discount > 0) {
+      await tx.voucherUsage.create({ data: { code: input.voucher.voucher.code, discount: input.voucher.discount, orderId: created.id, userId: input.userId, voucherId: input.voucher.voucher.id } });
+    }
+
+    await tx.orderStatusHistory.create({ data: { orderId: created.id, status: "WAITING_PAYMENT", description: "Pesanan dibuat dan menunggu pembayaran." } });
+    return created;
+  });
+}
+
+async function createLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo: string; paymentDeadline: Date; shippingCost: number; storeId: string; total: number; userId: string }) {
+  return prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
+      data: {
+        orderNumber: input.orderNo,
+        paymentDeadline: input.paymentDeadline,
+        shippingCost: input.shippingCost,
+        status: "WAITING_PAYMENT",
+        storeId: input.storeId,
+        total: input.total,
+        userId: input.userId
+      },
+      select: orderResponseSelect
+    });
+    await persistOrderSideEffects(tx, { items: input.items, orderId: created.id, orderNumber: created.orderNumber, storeId: input.storeId, userId: input.userId });
+    return created;
+  });
+}
+
+async function persistOrderSideEffects(tx: Prisma.TransactionClient, input: { items: CheckoutItem[]; orderId: string; orderNumber: string; storeId: string; userId: string }) {
+  for (const item of input.items) {
+    await tx.orderItem.create({ data: { orderId: input.orderId, productId: item.productId, quantity: item.quantity, price: item.price } });
+    await tx.inventory.update({ where: { storeId_productId: { storeId: input.storeId, productId: item.productId } }, data: { quantity: { decrement: item.quantity } } });
+    await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: -item.quantity, note: `Order ${input.orderNumber}` } });
+  }
+
+  const cartIds = input.items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
+  if (cartIds.length) await tx.cartItem.deleteMany({ where: { id: { in: cartIds }, userId: input.userId } });
+  else await tx.cartItem.deleteMany({ where: { userId: input.userId, storeId: input.storeId, productId: { in: input.items.map((item) => item.productId) } } });
+}
+
+const orderResponseSelect = {
+  createdAt: true,
+  id: true,
+  orderNumber: true,
+  paymentDeadline: true,
+  shippingCost: true,
+  status: true,
+  storeId: true,
+  total: true,
+  updatedAt: true,
+  userId: true
+} satisfies Prisma.OrderSelect;
+
+function isCheckoutSchemaMissing(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  return message.includes("does not exist in the current database") || message.includes("column") || message.includes("OrderStatusHistory") || message.includes("VoucherUsage") || message.includes("addressId") || message.includes("paymentInvoiceUrl");
 }
 
 function midtransItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }) {
