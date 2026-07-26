@@ -35,7 +35,7 @@ export const createOrderSchema = z.object({
   deliverySlot: z.string().optional(),
   voucherCode: z.string().optional(),
   weightGram: z.coerce.number().positive().optional(),
-  paymentMethod: z.enum(["manual_transfer", "xendit"]).optional(),
+  paymentMethod: z.enum(["manual_transfer", "midtrans"]).optional(),
   paymentChannel: z.string().optional(),
   orderNote: z.string().max(500).optional(),
   storeId: z.string().optional()

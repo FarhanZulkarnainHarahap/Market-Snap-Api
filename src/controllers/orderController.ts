@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import type { OrderStatus, Prisma } from "../../prisma/generated/prisma/client.js";
+import { createMidtransSnapTransaction, midtransConfig, verifyMidtransSignature } from "../config/midtrans.js";
 import { prisma } from "../config/prisma.js";
 import { calculateDomesticShippingCost, rajaongkirConfig } from "../config/rajaongkir.js";
-import { createXenditInvoice, xenditConfig } from "../config/xendit.js";
 import { distanceKm } from "../utils/distance.js";
 import { handleControllerError, locationFromQuery, mapStore, orderNumber } from "../utils/controllerHelpers.js";
 
@@ -17,7 +17,7 @@ type CreateOrderBody = {
   deliverySlot?: string;
   voucherCode?: string;
   weightGram?: number;
-  paymentMethod?: "manual_transfer" | "xendit";
+  paymentMethod?: "manual_transfer" | "midtrans";
   paymentChannel?: string;
   orderNote?: string;
   addressId?: string;
@@ -39,6 +39,17 @@ type VoucherValidation = {
   message: string;
   valid: boolean;
   voucher?: { id: string; code: string };
+};
+
+type MidtransNotificationBody = {
+  fraud_status?: string;
+  gross_amount?: string;
+  order_id?: string;
+  payment_type?: string;
+  signature_key?: string;
+  status_code?: string;
+  transaction_id?: string;
+  transaction_status?: string;
 };
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -125,7 +136,8 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(422).json({ message: "Metode pembayaran tidak tersedia." });
       return;
     }
-    const payment = await paymentInvoice(body, orderNumber(), total, userEmail);
+    await assertCheckoutSchemaReady();
+    const payment = await paymentInvoice(body, orderNumber(), total, userEmail, items, { shippingCost: shipping.cost, serviceFee, discount: voucher.discount });
     const orderNo = payment.orderNumber;
     const paymentDeadline = new Date(Date.now() + 60 * 60 * 1000);
 
@@ -179,6 +191,58 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     });
 
     res.status(201).json({ data: { ...order, status: statusLabels[order.status] }, shipping, payment: { ...payment, orderNumber: undefined } });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
+
+export async function handleMidtransNotification(req: Request, res: Response): Promise<void> {
+  try {
+    const body = req.body as MidtransNotificationBody;
+    if (!midtransConfig.hasServerKey) {
+      res.status(503).json({ message: "Konfigurasi Midtrans belum lengkap." });
+      return;
+    }
+    if (!verifyMidtransSignature({ grossAmount: body.gross_amount, orderId: body.order_id, signatureKey: body.signature_key, statusCode: body.status_code })) {
+      res.status(403).json({ message: "Signature Midtrans tidak valid." });
+      return;
+    }
+
+    const orderNo = String(body.order_id ?? "");
+    const nextStatus = statusFromMidtrans(body.transaction_status, body.fraud_status);
+    if (!orderNo || !nextStatus) {
+      res.json({ message: "Notifikasi Midtrans diabaikan." });
+      return;
+    }
+
+    const order = await prisma.$transaction(async (tx) => {
+      const exists = await tx.order.findUnique({ where: { orderNumber: orderNo }, include: { items: true } });
+      if (!exists) return null;
+      if (nextStatus === "CANCELLED" && exists.status !== "CANCELLED") {
+        for (const item of exists.items) {
+          await tx.inventory.update({ where: { storeId_productId: { storeId: exists.storeId, productId: item.productId } }, data: { quantity: { increment: item.quantity } } });
+          await tx.stockJournal.create({ data: { storeId: exists.storeId, productId: item.productId, change: item.quantity, note: `Pembatalan ${exists.orderNumber}` } });
+        }
+      }
+      const updated = await tx.order.update({
+        where: { id: exists.id },
+        data: {
+          paymentChannel: body.payment_type ?? exists.paymentChannel,
+          paymentExternalId: body.transaction_id ?? exists.paymentExternalId,
+          status: nextStatus
+        }
+      });
+      if (exists.status !== nextStatus) {
+        await tx.orderStatusHistory.create({ data: { orderId: updated.id, status: nextStatus, description: midtransHistoryDescription(nextStatus) } });
+      }
+      return updated;
+    });
+
+    if (!order) {
+      res.status(404).json({ message: "Order tidak ditemukan." });
+      return;
+    }
+    res.json({ message: "Notifikasi Midtrans diproses.", data: { id: order.id, status: statusLabels[order.status] } });
   } catch (error) {
     handleControllerError(res, error);
   }
@@ -404,15 +468,37 @@ async function shippingQuote(body: CreateOrderBody, method: ReturnType<typeof sh
   return { cost: method.cost, provider: "market-snap", detail: null };
 }
 
-async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: number, email: string) {
+async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: number, email: string, items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }) {
   const methods = paymentMethodOptions();
   const selected = methods.find((method) => method.id === body.paymentChannel);
   if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
-  const method = selected.provider === "xendit" ? "xendit" : "manual_transfer";
+  const method = selected.provider === "midtrans" ? "midtrans" : "manual_transfer";
   if (method === "manual_transfer") return { channel: selected.channel, externalId: null, invoiceUrl: null, method, orderNumber: orderNo, status: "MANUAL" };
-  if (!xenditConfig.hasSecretKey) throw new Error("Konfigurasi Xendit belum lengkap");
-  const invoice = await createXenditInvoice({ orderNumber: orderNo, amount, payerEmail: email, description: `Pembayaran Market Snap ${orderNo}`, paymentChannels: [selected.channel] });
-  return { channel: selected.channel, externalId: invoice.external_id, invoiceUrl: invoice.invoice_url, method, orderNumber: orderNo, status: invoice.status };
+  if (!midtransConfig.hasServerKey) throw new Error("Konfigurasi Midtrans belum lengkap.");
+  const snap = await createMidtransSnapTransaction({
+    amount,
+    itemDetails: midtransItemDetails(items, totals),
+    orderNumber: orderNo,
+    payerEmail: email,
+    paymentChannel: selected.channel
+  });
+  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method, orderNumber: orderNo, status: "PENDING" };
+}
+
+async function assertCheckoutSchemaReady() {
+  await Promise.all([
+    prisma.order.findFirst({
+      select: {
+        addressId: true,
+        id: true,
+        paymentInvoiceUrl: true,
+        paymentMethod: true
+      },
+      take: 1
+    }),
+    prisma.orderStatusHistory.findFirst({ select: { id: true }, take: 1 }),
+    prisma.voucherUsage.findFirst({ select: { id: true }, take: 1 })
+  ]);
 }
 
 function shippingMethodOptions() {
@@ -424,17 +510,30 @@ function shippingMethodOptions() {
 }
 
 function paymentMethodOptions() {
-  if (!xenditConfig.hasSecretKey) return [{ id: "manual_transfer", label: "Transfer Manual", provider: "manual", channel: "MANUAL_TRANSFER", description: "Konfirmasi pembayaran manual dari admin." }];
+  if (!midtransConfig.hasServerKey) return [{ id: "manual_transfer", label: "Transfer Manual", provider: "manual", channel: "MANUAL_TRANSFER", description: "Konfirmasi pembayaran manual dari admin." }];
   return [
-    { id: "va-bca", label: "BCA Virtual Account", provider: "xendit", channel: "BCA", description: "Bayar dari m-BCA, ATM, atau internet banking." },
-    { id: "va-mandiri", label: "Mandiri Virtual Account", provider: "xendit", channel: "MANDIRI", description: "Livin, ATM, dan transfer bank." },
-    { id: "va-bni", label: "BNI Virtual Account", provider: "xendit", channel: "BNI", description: "BNI Mobile, ATM, dan internet banking." },
-    { id: "va-bri", label: "BRI Virtual Account", provider: "xendit", channel: "BRI", description: "BRImo, ATM, dan transfer bank." },
-    { id: "qris", label: "QRIS", provider: "xendit", channel: "QRIS", description: "Scan QR dari aplikasi pembayaran favorit." },
-    { id: "ewallet-ovo", label: "OVO", provider: "xendit", channel: "OVO", description: "Bayar memakai saldo OVO." },
-    { id: "card", label: "Kartu Kredit / Debit", provider: "xendit", channel: "CREDIT_CARD", description: "Visa, Mastercard, dan kartu debit online." },
-    { id: "retail", label: "Gerai Retail", provider: "xendit", channel: "ALFAMART", description: "Bayar melalui gerai retail yang tersedia." }
+    { id: "bca_va", label: "BCA Virtual Account", provider: "midtrans", channel: "bca_va", description: "Bayar dari m-BCA, ATM, atau internet banking." },
+    { id: "echannel", label: "Mandiri Bill Payment", provider: "midtrans", channel: "echannel", description: "Bayar dari Livin, ATM, atau internet banking Mandiri." },
+    { id: "bni_va", label: "BNI Virtual Account", provider: "midtrans", channel: "bni_va", description: "BNI Mobile, ATM, dan internet banking." },
+    { id: "bri_va", label: "BRI Virtual Account", provider: "midtrans", channel: "bri_va", description: "BRImo, ATM, dan internet banking." },
+    { id: "qris", label: "QRIS", provider: "midtrans", channel: "qris", description: "Scan QR dari aplikasi pembayaran favorit." },
+    { id: "gopay", label: "GoPay", provider: "midtrans", channel: "gopay", description: "Bayar cepat lewat GoPay." },
+    { id: "credit_card", label: "Kartu Kredit / Debit", provider: "midtrans", channel: "credit_card", description: "Visa, Mastercard, dan kartu debit online." },
+    { id: "alfamart", label: "Gerai Retail", provider: "midtrans", channel: "alfamart", description: "Bayar melalui gerai retail yang tersedia." }
   ];
+}
+
+function midtransItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }) {
+  const details = items.map((item) => ({
+    id: item.productId.slice(0, 50),
+    name: item.name.slice(0, 50),
+    price: item.price,
+    quantity: item.quantity
+  }));
+  if (totals.shippingCost > 0) details.push({ id: "shipping", name: "Biaya pengiriman", price: totals.shippingCost, quantity: 1 });
+  if (totals.serviceFee > 0) details.push({ id: "service-fee", name: "Biaya layanan", price: totals.serviceFee, quantity: 1 });
+  if (totals.discount > 0) details.push({ id: "discount", name: "Diskon voucher", price: -totals.discount, quantity: 1 });
+  return details;
 }
 
 function addressSnapshot(address: NonNullable<Awaited<ReturnType<typeof prisma.address.findFirst>>>) {
@@ -480,6 +579,21 @@ function historyDescription(status: OrderStatus) {
     WAITING_PAYMENT_CONFIRMATION: "Pembayaran menunggu konfirmasi."
   };
   return descriptions[status];
+}
+
+function statusFromMidtrans(transactionStatus?: string, fraudStatus?: string): OrderStatus | null {
+  if (transactionStatus === "settlement") return "PROCESSING";
+  if (transactionStatus === "capture") return fraudStatus === "challenge" ? "WAITING_PAYMENT_CONFIRMATION" : "PROCESSING";
+  if (transactionStatus === "pending") return "WAITING_PAYMENT";
+  if (["cancel", "deny", "expire", "failure"].includes(String(transactionStatus))) return "CANCELLED";
+  return null;
+}
+
+function midtransHistoryDescription(status: OrderStatus) {
+  if (status === "PROCESSING") return "Pembayaran Midtrans berhasil dan pesanan masuk proses cabang.";
+  if (status === "WAITING_PAYMENT_CONFIRMATION") return "Pembayaran Midtrans membutuhkan pemeriksaan lanjutan.";
+  if (status === "CANCELLED") return "Pembayaran Midtrans dibatalkan atau kedaluwarsa.";
+  return historyDescription(status);
 }
 
 function periodStart(period: string) {
