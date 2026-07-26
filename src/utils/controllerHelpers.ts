@@ -67,7 +67,18 @@ export function paginate<T>(items: T[], page: unknown = 1, limit: unknown = 8) {
   const safePage = Math.max(Number(page) || 1, 1);
   const safeLimit = Math.min(Math.max(Number(limit) || 8, 1), 50);
   const start = (safePage - 1) * safeLimit;
-  return { data: items.slice(start, start + safeLimit), meta: { page: safePage, limit: safeLimit, total: items.length } };
+  const totalPages = Math.max(1, Math.ceil(items.length / safeLimit));
+  return {
+    data: items.slice(start, start + safeLimit),
+    meta: {
+      page: safePage,
+      limit: safeLimit,
+      total: items.length,
+      totalPages,
+      hasNextPage: safePage < totalPages,
+      hasPreviousPage: safePage > 1
+    }
+  };
 }
 
 export function locationFromQuery(query: QueryLike) {

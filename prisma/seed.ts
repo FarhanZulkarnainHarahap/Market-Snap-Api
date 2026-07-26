@@ -96,7 +96,10 @@ async function seedProducts(categoryByName: Map<string, string>) {
       create: { name: record.name, description: descriptionFor(record.name, record.category), price: record.price, unit: record.unit, categoryId }
     });
     await prisma.productImage.deleteMany({ where: { productId: product.id } });
-    await prisma.productImage.create({ data: { productId: product.id, url: record.image } });
+    await prisma.productImage.createMany({
+      data: galleryForSeedProduct(record).map((url) => ({ productId: product.id, url })),
+      skipDuplicates: true
+    });
     await seedStocks(product.id);
     created.push(product);
   }
@@ -136,10 +139,24 @@ async function normalizeSeedProductImages() {
   });
   for (const product of products) {
     const image = imageForProductName(product.name, product.category.name);
-    if (!image || product.images[0]?.url === image) continue;
+    if (!image || (product.images[0]?.url === image && product.images.length >= 3)) continue;
     await prisma.productImage.deleteMany({ where: { productId: product.id } });
-    await prisma.productImage.create({ data: { productId: product.id, url: image } });
+    await prisma.productImage.createMany({
+      data: galleryForExistingProduct(product.name, product.category.name, image).map((url) => ({ productId: product.id, url })),
+      skipDuplicates: true
+    });
   }
+}
+
+function galleryForSeedProduct(record: (typeof productCatalog)[number]) {
+  return galleryForExistingProduct(record.name, record.category, record.image);
+}
+
+function galleryForExistingProduct(name: string, category: string, primaryImage: string) {
+  const related = productCatalog
+    .filter((product) => product.category === category && product.name !== name)
+    .map((product) => product.image);
+  return Array.from(new Set([primaryImage, ...related])).slice(0, 4);
 }
 
 function imageForProductName(name: string, category: string) {

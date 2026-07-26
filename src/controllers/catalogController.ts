@@ -46,7 +46,8 @@ export async function getProducts(req: Request, res: Response): Promise<void> {
   try {
     const { store, inRange } = await resolveStore(req.query);
     const products = await filteredProducts(req, store.id);
-    const sorted = sortProducts(products, String(req.query.sort ?? "featured"));
+    const filtered = filterMappedProducts(products, req.query);
+    const sorted = sortProducts(filtered, String(req.query.sort ?? req.query.sortBy ?? "featured"));
     res.json({ ...paginate(sorted, req.query.page, req.query.limit), store, serviceable: inRange });
   } catch (error) {
     handleControllerError(res, error);
@@ -56,7 +57,7 @@ export async function getProducts(req: Request, res: Response): Promise<void> {
 export async function getProductDetail(req: Request, res: Response): Promise<void> {
   try {
     const { store } = await resolveStore(req.query);
-    const product = await prisma.product.findUnique({ where: { id: String(req.params.id) }, include: productInclude(store.id) });
+    const product = await findProductByIdOrSlug(String(req.params.id), store.id);
     if (!product) {
       res.status(404).json({ message: "Produk tidak ditemukan" });
       return;
@@ -99,14 +100,21 @@ function productInclude(storeId: string) {
 
 function mapProduct(product: ProductRow) {
   const discount = product.discounts[0];
+  const images = product.images
+    .map((image, index) => ({ altText: `${product.name} ${index + 1}`, id: image.id, position: index, url: image.url }))
+    .sort((a, b) => a.position - b.position);
+  const primaryImage = images[0] ?? { altText: product.name, id: "fallback", position: 0, url: "/product.png" };
   return {
     id: product.id,
+    slug: slugify(product.name),
     name: product.name,
     category: product.category.name,
     price: product.price,
     unit: product.unit,
     description: product.description ?? undefined,
-    image: product.images[0]?.url ?? "/product.png",
+    image: primaryImage.url,
+    images,
+    primaryImage,
     discount: discount ? discountLabel(discount) : null,
     organic: Boolean(discount),
     stock: product.stocks[0]?.quantity ?? 0
@@ -123,8 +131,39 @@ function sortProducts(items: ReturnType<typeof mapProduct>[], sort: string) {
   const copy = [...items];
   if (sort === "price_asc") return copy.sort((a, b) => a.price - b.price);
   if (sort === "price_desc") return copy.sort((a, b) => b.price - a.price);
+  if (sort === "discount_desc") return copy.sort((a, b) => Number(Boolean(b.discount)) - Number(Boolean(a.discount)));
   if (sort === "stock") return copy.sort((a, b) => b.stock - a.stock);
-  return copy;
+  return copy.sort((a, b) => a.name.localeCompare(b.name, "id"));
+}
+
+function filterMappedProducts(items: ReturnType<typeof mapProduct>[], query: Request["query"]) {
+  const minPrice = Number(query.minPrice);
+  const maxPrice = Number(query.maxPrice);
+  const promo = String(query.promo ?? "").toLowerCase() === "true";
+  const inStock = String(query.inStock ?? "").toLowerCase() === "true";
+  return items.filter((item) => {
+    if (Number.isFinite(minPrice) && item.price < minPrice) return false;
+    if (Number.isFinite(maxPrice) && item.price > maxPrice) return false;
+    if (promo && !item.discount) return false;
+    if (inStock && item.stock < 1) return false;
+    return true;
+  });
+}
+
+async function findProductByIdOrSlug(value: string, storeId: string) {
+  const byId = await prisma.product.findUnique({ where: { id: value }, include: productInclude(storeId) });
+  if (byId) return byId;
+  const products = await prisma.product.findMany({ include: productInclude(storeId) });
+  return products.find((product) => slugify(product.name) === value) ?? null;
+}
+
+function slugify(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 type ProductRow = {
@@ -134,7 +173,7 @@ type ProductRow = {
   price: number;
   unit: string;
   category: { name: string };
-  images: { url: string }[];
+  images: { id: string; url: string }[];
   discounts: { type: "PERCENTAGE" | "NOMINAL" | "BOGO"; value: number }[];
   stocks: { quantity: number }[];
 };
