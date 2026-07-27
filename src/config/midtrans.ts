@@ -45,10 +45,20 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
 
   if (!response.ok) {
     const detail = await response.text().catch(() => "");
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Midtrans request failed", response.status, detail);
-    }
-    throw new Error("Pembayaran belum dapat diproses. Periksa konfigurasi Midtrans.");
+
+    console.error("Midtrans request failed", {
+      status: response.status,
+      detail,
+      baseUrl,
+      isProduction,
+      hasServerKey: Boolean(serverKey),
+      serverKeyPrefix: serverKey.slice(0, 6),
+      serverKeyLength: serverKey.length,
+    });
+
+    throw new Error(
+      "Pembayaran belum dapat diproses. Periksa konfigurasi Midtrans.",
+    );
   }
 
   return response.json() as Promise<T>;

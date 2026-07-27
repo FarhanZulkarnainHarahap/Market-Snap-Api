@@ -17,7 +17,7 @@ type CreateOrderBody = {
   deliverySlot?: string;
   voucherCode?: string;
   weightGram?: number;
-  paymentMethod?: "manual_transfer" | "midtrans";
+  paymentMethod?: "midtrans";
   paymentChannel?: string;
   orderNote?: string;
   addressId?: string;
@@ -38,7 +38,7 @@ type CheckoutPayment = {
   channel: string;
   externalId: string | null;
   invoiceUrl: string | null;
-  method: "manual_transfer" | "midtrans";
+  method: "midtrans";
   orderNumber: string;
   status: string;
 };
@@ -466,8 +466,6 @@ async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: nu
   const methods = paymentMethodOptions();
   const selected = methods.find((method) => method.id === body.paymentChannel);
   if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
-  const method = selected.provider === "midtrans" ? "midtrans" : "manual_transfer";
-  if (method === "manual_transfer") return { channel: selected.channel, externalId: null, invoiceUrl: null, method, orderNumber: orderNo, status: "MANUAL" };
   if (!midtransConfig.hasServerKey) throw new Error("Konfigurasi Midtrans belum lengkap.");
   const snap = await createMidtransSnapTransaction({
     amount,
@@ -476,7 +474,7 @@ async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: nu
     payerEmail: email,
     paymentChannel: selected.channel
   });
-  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method, orderNumber: orderNo, status: "PENDING" };
+  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method: "midtrans", orderNumber: orderNo, status: "PENDING" };
 }
 
 function shippingMethodOptions() {
@@ -488,11 +486,24 @@ function shippingMethodOptions() {
 }
 
 function paymentMethodOptions() {
-  const manual = { id: "manual_transfer", label: "Transfer Manual", provider: "manual", channel: "MANUAL_TRANSFER", description: "Konfirmasi pembayaran manual dari admin." };
-  if (!midtransConfig.hasServerKey || !midtransConfig.isKeyModeValid) return [manual];
+  if (
+    !midtransConfig.hasServerKey ||
+    !midtransConfig.isKeyModeValid
+  ) {
+    return [];
+  }
+
   return [
-    { id: "midtrans", label: "Midtrans Sandbox", provider: "midtrans", channel: "", description: "Bayar lewat halaman Midtrans Sandbox: VA, QRIS, e-wallet, kartu, atau gerai retail." },
-    manual
+    {
+      id: "midtrans",
+      label: midtransConfig.isProduction
+        ? "Midtrans"
+        : "Midtrans Sandbox",
+      provider: "midtrans",
+      channel: "",
+      description:
+        "Bayar aman melalui VA, QRIS, e-wallet, kartu, atau gerai retail.",
+    },
   ];
 }
 
