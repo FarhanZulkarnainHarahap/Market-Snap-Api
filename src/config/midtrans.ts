@@ -56,14 +56,6 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
 
 function midtransConfigError(): string {
   if (!serverKey) return "Konfigurasi Midtrans belum lengkap. MIDTRANS_SERVER_KEY wajib diisi.";
-  const serverSandbox = serverKey.startsWith("SB-Mid-server-");
-  const clientSandbox = !clientKey || clientKey.startsWith("SB-Mid-client-");
-  if (!isProduction && (!serverSandbox || !clientSandbox)) {
-    return "Mode Midtrans sandbox aktif, tetapi key bukan sandbox. Gunakan MIDTRANS_SERVER_KEY SB-Mid-server-* dan MIDTRANS_CLIENT_KEY SB-Mid-client-*.";
-  }
-  if (isProduction && (serverSandbox || clientSandbox)) {
-    return "Mode Midtrans production aktif, tetapi key masih sandbox. Gunakan key production atau set MIDTRANS_IS_PRODUCTION=false.";
-  }
   return "";
 }
 
