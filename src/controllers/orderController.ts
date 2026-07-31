@@ -85,6 +85,8 @@ const statusLabels: Record<OrderStatus, string> = {
   WAITING_PAYMENT_CONFIRMATION: "Menunggu Konfirmasi Pembayaran"
 };
 
+const deliverySlots = ["08:00 - 10:00", "10:00 - 12:00", "14:00 - 16:00", "18:00 - 20:00"];
+
 export async function getCheckoutOptions(_req: Request, res: Response): Promise<void> {
   res.json({
     data: {
@@ -742,11 +744,12 @@ function safeDate(value?: string) {
 }
 
 function isPastSchedule(date: Date, slot: string) {
+  if (!deliverySlots.includes(slot)) return true;
   const end = slot.split("-").at(-1)?.trim() ?? "";
   const [hours = "0", minutes = "0"] = end.split(":");
   const scheduledEnd = new Date(date);
   scheduledEnd.setHours(Number(hours), Number(minutes), 0, 0);
-  return scheduledEnd.getTime() < Date.now();
+  return scheduledEnd.getTime() <= Date.now();
 }
 
 function cleanText(value: unknown) {
