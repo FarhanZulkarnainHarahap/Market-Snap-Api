@@ -3,8 +3,8 @@ import { createHash, timingSafeEqual } from "crypto";
 const isProduction = String(process.env.MIDTRANS_IS_PRODUCTION ?? "false").toLowerCase() === "true";
 const defaultBaseUrl = isProduction ? "https://app.midtrans.com" : "https://app.sandbox.midtrans.com";
 const baseUrl = process.env.MIDTRANS_BASE_URL ?? defaultBaseUrl;
-const clientKey = process.env.MIDTRANS_CLIENT_KEY ?? "";
-const serverKey = process.env.MIDTRANS_SERVER_KEY ?? "";
+const clientKey = (isProduction ? process.env.MIDTRANS_CLIENT_KEY : process.env.MIDTRANS_SANDBOX_CLIENT_KEY ?? process.env.MIDTRANS_CLIENT_KEY) ?? "";
+const serverKey = (isProduction ? process.env.MIDTRANS_SERVER_KEY : process.env.MIDTRANS_SANDBOX_SERVER_KEY ?? process.env.MIDTRANS_SERVER_KEY) ?? "";
 
 export const midtransConfig = {
   baseUrl,
