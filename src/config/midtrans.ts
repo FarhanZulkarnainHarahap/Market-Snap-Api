@@ -69,6 +69,9 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
 
 function midtransConfigError(): string {
   if (!serverKey) return "Konfigurasi Midtrans belum lengkap. MIDTRANS_SERVER_KEY wajib diisi.";
+  if (!isProduction && serverKey.startsWith("Mid-server-")) {
+    return "Konfigurasi Midtrans sandbox salah. MIDTRANS_SERVER_KEY production terpasang di endpoint sandbox. Pakai Server Key sandbox yang cocok dengan dashboard sandbox.";
+  }
   return "";
 }
 
