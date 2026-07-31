@@ -140,7 +140,7 @@ Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
 
 - Memilih store terdekat dari `location`.
 - Menghitung ongkir RajaOngkir jika `destinationId` dikirim.
-- Membuat transaksi Snap Midtrans saat `MIDTRANS_SERVER_KEY` tersedia, lalu mengembalikan `payment.token` dan `payment.invoiceUrl` untuk halaman pembayaran.
+- Membuat transaksi Snap Midtrans saat `MIDTRANS_SERVER_KEY` tersedia, lalu mengembalikan `payment.invoiceUrl` dari `redirect_url` Midtrans untuk halaman pembayaran.
 - Menerima notification webhook Midtrans di `/payments/midtrans/notification` untuk update status order otomatis.
 - Menyimpan `shippingCost`, `total`, `paymentDeadline`, dan order items.
 
@@ -163,19 +163,18 @@ curl -X POST https://your-market-snap-api.vercel.app/orders \
   }'
 ```
 
-Response akan membawa data order, detail shipping, dan object payment dari Snap Midtrans jika berhasil dibuat:
+Response akan membawa data order, detail shipping, dan object payment dari `redirect_url` Snap Midtrans jika berhasil dibuat:
 
 ```json
 {
   "payment": {
     "method": "midtrans",
-    "token": "SNAP_TRANSACTION_TOKEN",
-    "invoiceUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/SNAP_TRANSACTION_TOKEN"
+    "invoiceUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/TRANSACTION_ID"
   }
 }
 ```
 
-Untuk sandbox, isi `MIDTRANS_SERVER_KEY` dengan Server Key sandbox dan biarkan `MIDTRANS_IS_PRODUCTION=false`. Backend akan memanggil `https://app.sandbox.midtrans.com/snap/v1/transactions` memakai Basic Auth `base64(MIDTRANS_SERVER_KEY + ":")`.
+Untuk sandbox, isi `MIDTRANS_SERVER_KEY` dengan Server Key sandbox dan biarkan `MIDTRANS_IS_PRODUCTION=false`. Backend akan memanggil `https://app.sandbox.midtrans.com/snap/v1/transactions` memakai Basic Auth `base64(MIDTRANS_SERVER_KEY + ":")`, lalu frontend mengarahkan customer ke `payment.invoiceUrl`.
 
 ## Main Endpoints
 
