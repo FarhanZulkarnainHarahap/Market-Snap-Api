@@ -41,6 +41,7 @@ type CheckoutPayment = {
   method: "midtrans";
   orderNumber: string;
   status: string;
+  token: string | null;
 };
 
 type CheckoutAddress = {
@@ -474,7 +475,7 @@ async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: nu
     payerEmail: email,
     paymentChannel: selected.channel
   });
-  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method: "midtrans", orderNumber: orderNo, status: "PENDING" };
+  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method: "midtrans", orderNumber: orderNo, status: "PENDING", token: snap.token };
 }
 
 function shippingMethodOptions() {
