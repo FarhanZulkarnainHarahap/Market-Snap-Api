@@ -475,7 +475,8 @@ async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: nu
     payerEmail: email,
     paymentChannel: selected.channel
   });
-  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method: "midtrans", orderNumber: orderNo, status: "PENDING", token: snap.token };
+  const invoiceUrl = snap.redirect_url || `${midtransConfig.baseUrl}/snap/v2/vtweb/${snap.token}`;
+  return { channel: selected.channel, externalId: orderNo, invoiceUrl, method: "midtrans", orderNumber: orderNo, status: "PENDING", token: snap.token };
 }
 
 function shippingMethodOptions() {

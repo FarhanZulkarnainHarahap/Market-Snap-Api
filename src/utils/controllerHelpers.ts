@@ -89,5 +89,6 @@ export function locationFromQuery(query: QueryLike) {
 
 export function orderNumber(): string {
   const date = new Date().toISOString().slice(2, 10).replaceAll("-", "");
-  return `ORD-${date}-${Date.now().toString().slice(-4)}`;
+  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `ORD-${date}-${Date.now()}-${random}`;
 }
