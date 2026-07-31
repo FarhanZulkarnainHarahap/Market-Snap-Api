@@ -45,6 +45,7 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
 
   if (!response.ok) {
     const detail = await response.text().catch(() => "");
+    const midtransMessage = midtransErrorMessage(detail);
 
     console.error("Midtrans request failed", {
       status: response.status,
@@ -57,7 +58,9 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
     });
 
     throw new Error(
-      "Pembayaran belum dapat diproses. Periksa konfigurasi Midtrans.",
+      midtransMessage
+        ? `Pembayaran Midtrans gagal: ${midtransMessage}`
+        : "Pembayaran belum dapat diproses. Periksa konfigurasi Midtrans.",
     );
   }
 
@@ -67,6 +70,17 @@ export async function midtransFetch<T>(path: string, init?: RequestInit): Promis
 function midtransConfigError(): string {
   if (!serverKey) return "Konfigurasi Midtrans belum lengkap. MIDTRANS_SERVER_KEY wajib diisi.";
   return "";
+}
+
+function midtransErrorMessage(detail: string): string {
+  if (!detail) return "";
+  try {
+    const parsed = JSON.parse(detail) as { error_messages?: unknown };
+    if (Array.isArray(parsed.error_messages)) return parsed.error_messages.map(String).join(" ");
+  } catch {
+    return detail.slice(0, 180);
+  }
+  return detail.slice(0, 180);
 }
 
 export async function createMidtransSnapTransaction(input: {
@@ -83,6 +97,9 @@ export async function createMidtransSnapTransaction(input: {
       transaction_details: {
         gross_amount: input.amount,
         order_id: input.orderNumber
+      },
+      credit_card: {
+        secure: true
       },
       customer_details: {
         email: input.payerEmail || undefined,
