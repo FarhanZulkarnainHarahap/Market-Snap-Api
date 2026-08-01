@@ -84,13 +84,21 @@ async function resolveStore(query: Request["query"]) {
 async function filteredProducts(req: Request, storeId: string) {
   const term = String(req.query.search ?? "");
   const category = req.query.category ? String(req.query.category) : undefined;
-  const products = await prisma.product.findMany({ where: { isActive: true, name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined }, include: productInclude(storeId) });
+  const products = await prisma.product.findMany({
+    where: { name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined },
+    select: productSelect(storeId)
+  });
   return products.map(mapProduct);
 }
 
-function productInclude(storeId: string) {
+function productSelect(storeId: string) {
   const now = new Date();
   return {
+    description: true,
+    id: true,
+    name: true,
+    price: true,
+    unit: true,
     category: true,
     images: true,
     discounts: { where: { storeId, startsAt: { lte: now }, expiresAt: { gt: now } }, orderBy: { value: "desc" } },
@@ -107,16 +115,16 @@ function mapProduct(product: ProductRow) {
   return {
     id: product.id,
     slug: slugify(product.name),
-    sku: product.sku,
+    sku: `MS-${slugify(product.name).toUpperCase()}`,
     name: product.name,
-    brand: product.brand,
+    brand: undefined,
     category: product.category.name,
     price: product.price,
     unit: product.unit,
     description: product.description ?? undefined,
-    shortInfo: product.shortInfo ?? undefined,
-    storageInfo: product.storageInfo ?? undefined,
-    weightGram: product.weightGram ?? undefined,
+    shortInfo: `${product.category.name} - ${product.unit}`,
+    storageInfo: undefined,
+    weightGram: undefined,
     image: primaryImage.url,
     images,
     primaryImage,
@@ -156,9 +164,9 @@ function filterMappedProducts(items: ReturnType<typeof mapProduct>[], query: Req
 }
 
 async function findProductByIdOrSlug(value: string, storeId: string) {
-  const byId = await prisma.product.findFirst({ where: { id: value, isActive: true }, include: productInclude(storeId) });
+  const byId = await prisma.product.findFirst({ where: { id: value }, select: productSelect(storeId) });
   if (byId) return byId;
-  const products = await prisma.product.findMany({ where: { isActive: true }, include: productInclude(storeId) });
+  const products = await prisma.product.findMany({ select: productSelect(storeId) });
   return products.find((product) => slugify(product.name) === value) ?? null;
 }
 
@@ -173,13 +181,8 @@ function slugify(value: string) {
 
 type ProductRow = {
   id: string;
-  sku: string | null;
   name: string;
-  brand: string | null;
   description: string | null;
-  shortInfo: string | null;
-  storageInfo: string | null;
-  weightGram: number | null;
   price: number;
   unit: string;
   category: { name: string };

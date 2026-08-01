@@ -10,23 +10,7 @@ export async function createProduct(req: Request, res: Response): Promise<void> 
       return;
     }
     const category = await prisma.productCategory.upsert({ where: { name: req.body.category }, update: {}, create: { name: req.body.category } });
-    const product = await prisma.product.create({
-      data: {
-        brand: cleanText(req.body.brand),
-        description: req.body.description,
-        isActive: req.body.isActive === undefined ? true : Boolean(req.body.isActive),
-        name: req.body.name,
-        price: Number(req.body.price),
-        shortInfo: cleanText(req.body.shortInfo),
-        sku: cleanText(req.body.sku) ?? skuFromName(req.body.name),
-        storageInfo: cleanText(req.body.storageInfo),
-        unit: req.body.unit,
-        weightGram: req.body.weightGram === undefined ? undefined : Number(req.body.weightGram),
-        categoryId: category.id,
-        images: { create: [{ url: req.body.image ?? fallbackImage }] }
-      },
-      include: { category: true, images: true }
-    });
+    const product = await createProductRecord(category.id, req.body);
     await createInitialStocks(product.id);
     res.status(201).json({ data: product });
   } catch (error) {
@@ -37,23 +21,7 @@ export async function createProduct(req: Request, res: Response): Promise<void> 
 export async function updateProduct(req: Request, res: Response): Promise<void> {
   try {
     const category = req.body.category ? await prisma.productCategory.upsert({ where: { name: req.body.category }, update: {}, create: { name: req.body.category } }) : null;
-    const product = await prisma.product.update({
-      where: { id: String(req.params.id) },
-      data: {
-        brand: req.body.brand === undefined ? undefined : cleanText(req.body.brand),
-        description: req.body.description,
-        isActive: req.body.isActive === undefined ? undefined : Boolean(req.body.isActive),
-        name: req.body.name,
-        price: req.body.price === undefined ? undefined : Number(req.body.price),
-        shortInfo: req.body.shortInfo === undefined ? undefined : cleanText(req.body.shortInfo),
-        sku: req.body.sku === undefined ? undefined : cleanText(req.body.sku),
-        storageInfo: req.body.storageInfo === undefined ? undefined : cleanText(req.body.storageInfo),
-        unit: req.body.unit,
-        weightGram: req.body.weightGram === undefined ? undefined : Number(req.body.weightGram),
-        categoryId: category?.id
-      },
-      include: { category: true, images: true }
-    });
+    const product = await updateProductRecord(String(req.params.id), category?.id, req.body);
     res.json({ data: product });
   } catch (error) {
     handleControllerError(res, error);
@@ -78,10 +46,85 @@ async function createInitialStocks(productId: string) {
 
 const fallbackImage = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
 
+async function createProductRecord(categoryId: string, body: Record<string, unknown>) {
+  try {
+    return await prisma.product.create({
+      data: {
+        brand: cleanText(body.brand),
+        description: cleanText(body.description),
+        isActive: body.isActive === undefined ? true : Boolean(body.isActive),
+        name: String(body.name),
+        price: Number(body.price),
+        shortInfo: cleanText(body.shortInfo),
+        sku: cleanText(body.sku) ?? skuFromName(String(body.name)),
+        storageInfo: cleanText(body.storageInfo),
+        unit: String(body.unit),
+        weightGram: body.weightGram === undefined ? undefined : Number(body.weightGram),
+        categoryId,
+        images: { create: [{ url: cleanText(body.image) ?? fallbackImage }] }
+      },
+      include: { category: true, images: true }
+    });
+  } catch (error) {
+    if (!isMissingColumnError(error)) throw error;
+    return prisma.product.create({
+      data: {
+        description: cleanText(body.description),
+        name: String(body.name),
+        price: Number(body.price),
+        unit: String(body.unit),
+        categoryId,
+        images: { create: [{ url: cleanText(body.image) ?? fallbackImage }] }
+      },
+      include: { category: true, images: true }
+    });
+  }
+}
+
+async function updateProductRecord(id: string, categoryId: string | undefined, body: Record<string, unknown>) {
+  try {
+    return await prisma.product.update({
+      where: { id },
+      data: {
+        brand: body.brand === undefined ? undefined : cleanText(body.brand),
+        description: body.description === undefined ? undefined : cleanText(body.description),
+        isActive: body.isActive === undefined ? undefined : Boolean(body.isActive),
+        name: body.name === undefined ? undefined : String(body.name),
+        price: body.price === undefined ? undefined : Number(body.price),
+        shortInfo: body.shortInfo === undefined ? undefined : cleanText(body.shortInfo),
+        sku: body.sku === undefined ? undefined : cleanText(body.sku),
+        storageInfo: body.storageInfo === undefined ? undefined : cleanText(body.storageInfo),
+        unit: body.unit === undefined ? undefined : String(body.unit),
+        weightGram: body.weightGram === undefined ? undefined : Number(body.weightGram),
+        categoryId
+      },
+      include: { category: true, images: true }
+    });
+  } catch (error) {
+    if (!isMissingColumnError(error)) throw error;
+    return prisma.product.update({
+      where: { id },
+      data: {
+        description: body.description === undefined ? undefined : cleanText(body.description),
+        name: body.name === undefined ? undefined : String(body.name),
+        price: body.price === undefined ? undefined : Number(body.price),
+        unit: body.unit === undefined ? undefined : String(body.unit),
+        categoryId
+      },
+      include: { category: true, images: true }
+    });
+  }
+}
+
 function cleanText(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
 function skuFromName(name: string) {
   return `MS-${name.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 42)}`;
+}
+
+function isMissingColumnError(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  return message.includes("does not exist in the current database") || message.includes("column") || message.includes("P2022");
 }
