@@ -12,48 +12,114 @@ const stores = [
   { id: "rawamangun", name: "Market Snap Rawamangun", city: "Jakarta Timur", latitude: -6.1931, longitude: 106.8876, radiusKm: 11, isMain: false }
 ];
 
-const categories = ["Buah", "Sayur", "Dairy & Telur", "Roti & Bakery", "Minuman", "Sembako", "Kebersihan"];
+const categories = [
+  "Sayur", "Buah", "Daging", "Ayam", "Seafood", "Susu dan Dairy", "Roti", "Telur", "Frozen Food", "Minuman",
+  "Snack", "Bumbu Dapur", "Beras dan Bahan Pokok", "Makanan Instan", "Produk Organik", "Kebutuhan Bayi",
+  "Personal Care", "Home Care", "Pet Supplies", "Promo Hari Ini"
+];
+
+type ProductSeed = {
+  brand: string;
+  category: string;
+  image: string;
+  maxPrice: number;
+  minPrice: number;
+  name: string;
+  sku: string;
+  storageInfo: string;
+  unit: string;
+  weightGram: number;
+};
 
 const productCatalog = [
-  { name: "Apel Fuji Premium", category: "Buah", unit: "1 kg", minPrice: 36000, maxPrice: 46000, image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=700&q=80" },
-  { name: "Pisang Cavendish", category: "Buah", unit: "1 sisir", minPrice: 22000, maxPrice: 34000, image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=700&q=80" },
-  { name: "Jeruk Manis Lokal", category: "Buah", unit: "1 kg", minPrice: 18000, maxPrice: 32000, image: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&w=700&q=80" },
-  { name: "Anggur Red Globe", category: "Buah", unit: "500 g", minPrice: 28000, maxPrice: 45000, image: "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=700&q=80" },
-  { name: "Alpukat Mentega", category: "Buah", unit: "1 buah", minPrice: 9000, maxPrice: 18000, image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=700&q=80" },
-  { name: "Strawberry Fresh Pack", category: "Buah", unit: "250 g", minPrice: 26000, maxPrice: 42000, image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=700&q=80" },
-  { name: "Lemon California", category: "Buah", unit: "500 g", minPrice: 19000, maxPrice: 35000, image: "https://images.unsplash.com/photo-1590502593747-42a996133562?auto=format&fit=crop&w=700&q=80" },
-  { name: "Nanas Madu", category: "Buah", unit: "1 buah", minPrice: 17000, maxPrice: 29000, image: "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?auto=format&fit=crop&w=700&q=80" },
-  { name: "Bayam Hijau Segar", category: "Sayur", unit: "250 g", minPrice: 6000, maxPrice: 12000, image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=700&q=80" },
-  { name: "Wortel Berastagi", category: "Sayur", unit: "500 g", minPrice: 8000, maxPrice: 16000, image: "https://images.unsplash.com/photo-1445282768818-728615cc910a?auto=format&fit=crop&w=700&q=80" },
-  { name: "Brokoli Hijau", category: "Sayur", unit: "500 g", minPrice: 15000, maxPrice: 28000, image: "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=700&q=80" },
-  { name: "Tomat Merah", category: "Sayur", unit: "500 g", minPrice: 9000, maxPrice: 18000, image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=700&q=80" },
-  { name: "Kentang Dieng", category: "Sayur", unit: "1 kg", minPrice: 16000, maxPrice: 28000, image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=700&q=80" },
-  { name: "Selada Romaine", category: "Sayur", unit: "250 g", minPrice: 10000, maxPrice: 22000, image: "https://images.unsplash.com/photo-1622205313162-be1d5712a43f?auto=format&fit=crop&w=700&q=80" },
-  { name: "Timun Jepang", category: "Sayur", unit: "500 g", minPrice: 9000, maxPrice: 18000, image: "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?auto=format&fit=crop&w=700&q=80" },
-  { name: "Paprika Mix", category: "Sayur", unit: "3 pcs", minPrice: 21000, maxPrice: 38000, image: "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=700&q=80" },
-  { name: "Telur Ayam Negeri", category: "Dairy & Telur", unit: "10 pcs", minPrice: 23000, maxPrice: 33000, image: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&w=700&q=80" },
-  { name: "Telur Omega", category: "Dairy & Telur", unit: "10 pcs", minPrice: 32000, maxPrice: 47000, image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=700&q=80" },
-  { name: "Susu UHT Full Cream", category: "Dairy & Telur", unit: "1 L", minPrice: 17000, maxPrice: 26000, image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=700&q=80" },
-  { name: "Greek Yogurt Plain", category: "Dairy & Telur", unit: "500 g", minPrice: 30000, maxPrice: 52000, image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=700&q=80" },
-  { name: "Keju Cheddar Slice", category: "Dairy & Telur", unit: "170 g", minPrice: 25000, maxPrice: 42000, image: "https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=700&q=80" },
-  { name: "Mentega Tawar", category: "Dairy & Telur", unit: "200 g", minPrice: 24000, maxPrice: 39000, image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=700&q=80" },
-  { name: "Roti Tawar Gandum", category: "Roti & Bakery", unit: "1 pack", minPrice: 14000, maxPrice: 24000, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=700&q=80" },
-  { name: "Croissant Butter", category: "Roti & Bakery", unit: "2 pcs", minPrice: 22000, maxPrice: 38000, image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=700&q=80" },
-  { name: "Donat Gula Halus", category: "Roti & Bakery", unit: "4 pcs", minPrice: 18000, maxPrice: 32000, image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=700&q=80" },
-  { name: "Bagel Wijen", category: "Roti & Bakery", unit: "3 pcs", minPrice: 22000, maxPrice: 36000, image: "https://images.unsplash.com/photo-1585478259715-876acc5be8eb?auto=format&fit=crop&w=700&q=80" },
-  { name: "Air Mineral Botol", category: "Minuman", unit: "600 ml", minPrice: 3000, maxPrice: 7000, image: "https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&w=700&q=80" },
-  { name: "Jus Jeruk Fresh", category: "Minuman", unit: "1 L", minPrice: 22000, maxPrice: 38000, image: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=700&q=80" },
-  { name: "Teh Hijau Botol", category: "Minuman", unit: "500 ml", minPrice: 7000, maxPrice: 14000, image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=700&q=80" },
-  { name: "Kopi Susu Dingin", category: "Minuman", unit: "250 ml", minPrice: 12000, maxPrice: 24000, image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=700&q=80" },
-  { name: "Beras Pulen Premium", category: "Sembako", unit: "5 kg", minPrice: 62000, maxPrice: 88000, image: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=700&q=80" },
-  { name: "Minyak Goreng Sunflower", category: "Sembako", unit: "2 L", minPrice: 33000, maxPrice: 52000, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=700&q=80" },
-  { name: "Gula Pasir Kristal", category: "Sembako", unit: "1 kg", minPrice: 15000, maxPrice: 23000, image: "https://images.unsplash.com/photo-1581268497089-7a975fb491a3?auto=format&fit=crop&w=700&q=80" },
-  { name: "Tepung Terigu Serbaguna", category: "Sembako", unit: "1 kg", minPrice: 11000, maxPrice: 19000, image: "https://images.unsplash.com/photo-1627485937980-221c88ac04f9?auto=format&fit=crop&w=700&q=80" },
-  { name: "Tisu Dapur Roll", category: "Kebersihan", unit: "2 roll", minPrice: 14000, maxPrice: 26000, image: "https://images.unsplash.com/photo-1583947581924-860bda6a26df?auto=format&fit=crop&w=700&q=80" },
-  { name: "Sabun Cuci Piring Lemon", category: "Kebersihan", unit: "750 ml", minPrice: 13000, maxPrice: 24000, image: "https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=700&q=80" },
-  { name: "Deterjen Cair", category: "Kebersihan", unit: "1 L", minPrice: 24000, maxPrice: 42000, image: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=700&q=80" },
-  { name: "Pembersih Lantai", category: "Kebersihan", unit: "800 ml", minPrice: 16000, maxPrice: 29000, image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=700&q=80" }
-] as const;
+  p("Apel Fuji Premium", "Buah", "1 kg", 36000, 46000, 1000, "Orchard Snap", "Simpan di kulkas agar tetap renyah."),
+  p("Pisang Cavendish", "Buah", "1 sisir", 22000, 34000, 1200, "Tropic Fresh", "Simpan di suhu ruang dan jauhkan dari panas."),
+  p("Jeruk Manis Lokal", "Buah", "1 kg", 18000, 32000, 1000, "Nusantara Fruit", "Simpan di tempat sejuk atau kulkas."),
+  p("Anggur Red Globe", "Buah", "500 g", 28000, 45000, 500, "Orchard Snap", "Simpan tertutup di chiller."),
+  p("Alpukat Mentega", "Buah", "1 buah", 9000, 18000, 280, "Tropic Fresh", "Matangkan di suhu ruang lalu simpan dingin."),
+  p("Strawberry Fresh Pack", "Buah", "250 g", 26000, 42000, 250, "Berry Lane", "Simpan di chiller dan konsumsi 2 hari."),
+  p("Lemon California", "Buah", "500 g", 19000, 35000, 500, "Citrus Co", "Simpan di kulkas untuk aroma maksimal."),
+  p("Nanas Madu", "Buah", "1 buah", 17000, 29000, 900, "Tropic Fresh", "Simpan di suhu ruang sebelum dipotong."),
+  p("Mangga Harum Manis", "Buah", "1 kg", 24000, 42000, 1000, "Nusantara Fruit", "Simpan matang di chiller."),
+  p("Semangka Merah Potong", "Buah", "1 pack", 18000, 32000, 700, "Fresh Cut", "Wajib simpan dingin."),
+  p("Bayam Hijau Segar", "Sayur", "250 g", 6000, 12000, 250, "Green Basket", "Simpan dengan tisu lembap di chiller."),
+  p("Wortel Berastagi", "Sayur", "500 g", 8000, 16000, 500, "Green Basket", "Simpan di laci sayur kulkas."),
+  p("Brokoli Hijau", "Sayur", "500 g", 15000, 28000, 500, "Green Basket", "Simpan dingin dan gunakan dalam 3 hari."),
+  p("Tomat Merah", "Sayur", "500 g", 9000, 18000, 500, "Nusantara Farm", "Simpan suhu ruang sampai matang."),
+  p("Kentang Dieng", "Sayur", "1 kg", 16000, 28000, 1000, "Nusantara Farm", "Simpan kering, gelap, dan berventilasi."),
+  p("Selada Romaine", "Sayur", "250 g", 10000, 22000, 250, "Green Basket", "Simpan dingin dalam wadah tertutup."),
+  p("Timun Jepang", "Sayur", "500 g", 9000, 18000, 500, "Green Basket", "Simpan di chiller."),
+  p("Paprika Mix", "Sayur", "3 pcs", 21000, 38000, 450, "Color Farm", "Simpan di laci sayur kulkas."),
+  p("Kangkung Hidroponik", "Sayur", "250 g", 7000, 13000, 250, "Urban Farm", "Simpan dingin dengan akar tetap lembap."),
+  p("Pakcoy Organik", "Produk Organik", "300 g", 13000, 25000, 300, "Urban Farm", "Simpan dingin dalam pouch berlubang."),
+  p("Daging Sapi Slice", "Daging", "250 g", 42000, 62000, 250, "Butcher Select", "Simpan beku bila tidak langsung dimasak."),
+  p("Daging Sapi Giling", "Daging", "500 g", 52000, 78000, 500, "Butcher Select", "Simpan di freezer setelah diterima."),
+  p("Rendang Beef Cubes", "Daging", "500 g", 56000, 84000, 500, "Butcher Select", "Simpan beku dan thawing di chiller."),
+  p("Sosis Sapi Premium", "Daging", "500 g", 35000, 52000, 500, "Deli Snap", "Simpan dingin 0-4C."),
+  p("Ayam Broiler Utuh", "Ayam", "1 ekor", 38000, 56000, 1200, "Poultry Fresh", "Simpan beku untuk stok lebih lama."),
+  p("Dada Ayam Fillet", "Ayam", "500 g", 36000, 52000, 500, "Poultry Fresh", "Simpan dingin dan masak hari yang sama."),
+  p("Paha Ayam Boneless", "Ayam", "500 g", 33000, 49000, 500, "Poultry Fresh", "Simpan beku bila belum dipakai."),
+  p("Sayap Ayam Marinasi", "Ayam", "500 g", 31000, 45000, 500, "Poultry Fresh", "Simpan dingin dan masak maksimal besok."),
+  p("Udang Vaname Kupas", "Seafood", "250 g", 39000, 62000, 250, "Ocean Snap", "Simpan beku setelah diterima."),
+  p("Ikan Salmon Fillet", "Seafood", "200 g", 68000, 98000, 200, "Ocean Snap", "Simpan beku atau chiller 0-2C."),
+  p("Cumi Ring Frozen", "Seafood", "500 g", 47000, 69000, 500, "Ocean Snap", "Simpan beku."),
+  p("Ikan Dori Fillet", "Seafood", "500 g", 41000, 61000, 500, "Ocean Snap", "Simpan beku."),
+  p("Susu UHT Full Cream", "Susu dan Dairy", "1 L", 17000, 26000, 1030, "Dairy Valley", "Simpan suhu ruang, dinginkan setelah dibuka."),
+  p("Greek Yogurt Plain", "Susu dan Dairy", "500 g", 30000, 52000, 500, "Dairy Valley", "Simpan chiller 0-4C."),
+  p("Keju Cheddar Slice", "Susu dan Dairy", "170 g", 25000, 42000, 170, "Dairy Valley", "Simpan dingin setelah dibuka."),
+  p("Mentega Tawar", "Susu dan Dairy", "200 g", 24000, 39000, 200, "Dairy Valley", "Simpan di kulkas."),
+  p("Roti Tawar Gandum", "Roti", "1 pack", 14000, 24000, 450, "Bakehouse", "Simpan tertutup, habiskan 3 hari."),
+  p("Croissant Butter", "Roti", "2 pcs", 22000, 38000, 180, "Bakehouse", "Hangatkan sebelum disajikan."),
+  p("Donat Gula Halus", "Roti", "4 pcs", 18000, 32000, 300, "Bakehouse", "Simpan tertutup di suhu ruang."),
+  p("Bagel Wijen", "Roti", "3 pcs", 22000, 36000, 360, "Bakehouse", "Simpan tertutup dan panggang sebentar."),
+  p("Telur Ayam Negeri", "Telur", "10 pcs", 23000, 33000, 650, "Eggcellent", "Simpan di rak telur kulkas."),
+  p("Telur Omega", "Telur", "10 pcs", 32000, 47000, 650, "Eggcellent", "Simpan dingin agar kualitas stabil."),
+  p("Telur Bebek", "Telur", "6 pcs", 26000, 39000, 480, "Eggcellent", "Simpan dingin."),
+  p("Telur Puyuh", "Telur", "24 pcs", 13000, 22000, 300, "Eggcellent", "Simpan di chiller."),
+  p("Nugget Ayam", "Frozen Food", "500 g", 34000, 52000, 500, "Freezer Lane", "Simpan beku -18C."),
+  p("Kentang Goreng Shoestring", "Frozen Food", "1 kg", 36000, 56000, 1000, "Freezer Lane", "Simpan beku."),
+  p("Dimsum Ayam Frozen", "Frozen Food", "12 pcs", 42000, 65000, 480, "Freezer Lane", "Simpan beku dan kukus saat saji."),
+  p("Bakso Sapi Frozen", "Frozen Food", "500 g", 32000, 49000, 500, "Freezer Lane", "Simpan beku."),
+  p("Air Mineral Botol", "Minuman", "600 ml", 3000, 7000, 600, "Clear Spring", "Simpan di suhu ruang."),
+  p("Jus Jeruk Fresh", "Minuman", "1 L", 22000, 38000, 1030, "Fresh Sip", "Simpan dingin dan habiskan 2 hari."),
+  p("Teh Hijau Botol", "Minuman", "500 ml", 7000, 14000, 500, "Fresh Sip", "Simpan dingin untuk rasa terbaik."),
+  p("Kopi Susu Dingin", "Minuman", "250 ml", 12000, 24000, 250, "Fresh Sip", "Wajib simpan chiller."),
+  p("Keripik Kentang Original", "Snack", "120 g", 14000, 26000, 120, "Snacky", "Simpan kering dan tertutup."),
+  p("Granola Bar Madu", "Snack", "6 pcs", 28000, 45000, 240, "Healthy Bite", "Simpan di tempat kering."),
+  p("Kacang Almond Panggang", "Snack", "200 g", 36000, 58000, 200, "Healthy Bite", "Simpan kedap udara."),
+  p("Biskuit Gandum", "Snack", "300 g", 18000, 32000, 300, "Snacky", "Simpan tertutup."),
+  p("Bawang Merah Kupas", "Bumbu Dapur", "250 g", 17000, 30000, 250, "Dapur Snap", "Simpan dingin dalam wadah tertutup."),
+  p("Bawang Putih Kating", "Bumbu Dapur", "250 g", 15000, 27000, 250, "Dapur Snap", "Simpan kering dan berventilasi."),
+  p("Cabai Rawit Merah", "Bumbu Dapur", "100 g", 9000, 18000, 100, "Dapur Snap", "Simpan di chiller."),
+  p("Jahe Merah", "Bumbu Dapur", "250 g", 12000, 24000, 250, "Dapur Snap", "Simpan kering."),
+  p("Beras Pulen Premium", "Beras dan Bahan Pokok", "5 kg", 62000, 88000, 5000, "Staple House", "Simpan dalam wadah tertutup."),
+  p("Minyak Goreng Sunflower", "Beras dan Bahan Pokok", "2 L", 33000, 52000, 2000, "Staple House", "Simpan jauh dari sinar matahari."),
+  p("Gula Pasir Kristal", "Beras dan Bahan Pokok", "1 kg", 15000, 23000, 1000, "Staple House", "Simpan kering."),
+  p("Tepung Terigu Serbaguna", "Beras dan Bahan Pokok", "1 kg", 11000, 19000, 1000, "Staple House", "Simpan tertutup setelah dibuka."),
+  p("Mie Instan Goreng", "Makanan Instan", "5 pack", 15000, 26000, 425, "Cepat Saji", "Simpan di tempat kering."),
+  p("Bubur Instan Ayam", "Makanan Instan", "4 sachet", 18000, 30000, 320, "Cepat Saji", "Simpan kering."),
+  p("Sup Krim Jagung Instan", "Makanan Instan", "3 sachet", 16000, 28000, 210, "Cepat Saji", "Simpan kering."),
+  p("Pasta Saus Bolognese", "Makanan Instan", "1 pack", 29000, 45000, 380, "Cepat Saji", "Simpan suhu ruang."),
+  p("Beras Merah Organik", "Produk Organik", "1 kg", 33000, 52000, 1000, "Organic Field", "Simpan dalam wadah kedap."),
+  p("Madu Hutan Organik", "Produk Organik", "350 ml", 58000, 89000, 520, "Organic Field", "Simpan suhu ruang."),
+  p("Tofu Sutra Organik", "Produk Organik", "300 g", 19000, 32000, 300, "Organic Field", "Simpan chiller."),
+  p("Puree Bayi Wortel", "Kebutuhan Bayi", "120 g", 18000, 32000, 120, "Baby Bowl", "Simpan dingin setelah dibuka."),
+  p("Biskuit Bayi Beras", "Kebutuhan Bayi", "150 g", 22000, 36000, 150, "Baby Bowl", "Simpan tertutup."),
+  p("Popok Bayi M", "Kebutuhan Bayi", "24 pcs", 56000, 88000, 900, "Baby Bowl", "Simpan di tempat kering."),
+  p("Sabun Mandi Cair", "Personal Care", "450 ml", 24000, 39000, 450, "Care Daily", "Simpan tertutup."),
+  p("Sampo Aloe Vera", "Personal Care", "330 ml", 26000, 44000, 330, "Care Daily", "Simpan suhu ruang."),
+  p("Pasta Gigi Herbal", "Personal Care", "160 g", 18000, 31000, 160, "Care Daily", "Simpan kering."),
+  p("Tisu Dapur Roll", "Home Care", "2 roll", 14000, 26000, 380, "Home Spark", "Simpan kering."),
+  p("Sabun Cuci Piring Lemon", "Home Care", "750 ml", 13000, 24000, 750, "Home Spark", "Simpan tertutup."),
+  p("Deterjen Cair", "Home Care", "1 L", 24000, 42000, 1000, "Home Spark", "Simpan jauh dari anak-anak."),
+  p("Pembersih Lantai", "Home Care", "800 ml", 16000, 29000, 800, "Home Spark", "Simpan tertutup."),
+  p("Makanan Kucing Tuna", "Pet Supplies", "1 kg", 48000, 72000, 1000, "Pet Pantry", "Simpan kering dan tertutup."),
+  p("Pasir Kucing Wangi", "Pet Supplies", "5 L", 39000, 62000, 2500, "Pet Pantry", "Simpan kering."),
+  p("Snack Anjing Dental", "Pet Supplies", "180 g", 28000, 44000, 180, "Pet Pantry", "Simpan tertutup."),
+  p("Paket Hemat Sayur Sop", "Promo Hari Ini", "1 paket", 26000, 42000, 900, "Market Snap", "Simpan sayuran di chiller."),
+  p("Paket Sarapan Keluarga", "Promo Hari Ini", "1 paket", 52000, 78000, 1600, "Market Snap", "Simpan sesuai item di dalam paket."),
+  p("Bundle Buah Bekal Anak", "Promo Hari Ini", "1 paket", 42000, 68000, 1200, "Market Snap", "Simpan buah di chiller.")
+];
 
 async function main() {
   await seedStores();
@@ -92,8 +158,31 @@ async function seedProducts(categoryByName: Map<string, string>) {
     if (!categoryId) continue;
     const product = await prisma.product.upsert({
       where: { name: record.name },
-      update: { description: descriptionFor(record.name, record.category), price: record.price, unit: record.unit, categoryId },
-      create: { name: record.name, description: descriptionFor(record.name, record.category), price: record.price, unit: record.unit, categoryId }
+      update: {
+        brand: record.brand,
+        description: descriptionFor(record),
+        isActive: true,
+        price: record.price,
+        shortInfo: shortInfoFor(record),
+        sku: record.sku,
+        storageInfo: record.storageInfo,
+        unit: record.unit,
+        weightGram: record.weightGram,
+        categoryId
+      },
+      create: {
+        brand: record.brand,
+        categoryId,
+        description: descriptionFor(record),
+        isActive: true,
+        name: record.name,
+        price: record.price,
+        shortInfo: shortInfoFor(record),
+        sku: record.sku,
+        storageInfo: record.storageInfo,
+        unit: record.unit,
+        weightGram: record.weightGram
+      }
     });
     await prisma.productImage.deleteMany({ where: { productId: product.id } });
     await prisma.productImage.createMany({
@@ -130,11 +219,18 @@ async function retireOldSeedProducts(activeNames: Set<string>) {
     await prisma.productImage.deleteMany({ where: { productId: product.id } });
     await prisma.product.delete({ where: { id: product.id } });
   }
+  await prisma.product.updateMany({
+    where: {
+      description: { contains: "Market Snap" },
+      name: { notIn: Array.from(activeNames) }
+    },
+    data: { isActive: false }
+  });
 }
 
 async function normalizeSeedProductImages() {
   const products = await prisma.product.findMany({
-    where: { description: { contains: "Market Snap" } },
+    where: { description: { contains: "Market Snap" }, isActive: true },
     include: { category: true, images: true }
   });
   for (const product of products) {
@@ -217,6 +313,31 @@ function visual(keyword: string, productName: (typeof productCatalog)[number]["n
   const product = productCatalog.find((item) => item.name === productName);
   if (!product) throw new Error(`Visual produk tidak ditemukan: ${productName}`);
   return { keyword, image: product.image };
+}
+
+function p(name: string, category: string, unit: string, minPrice: number, maxPrice: number, weightGram: number, brand: string, storageInfo: string): ProductSeed {
+  const slug = slugify(name);
+  return {
+    brand,
+    category,
+    image: `/products/${slug}.svg`,
+    maxPrice,
+    minPrice,
+    name,
+    sku: `MS-${slug.toUpperCase().slice(0, 42)}`,
+    storageInfo,
+    unit,
+    weightGram
+  };
+}
+
+function slugify(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 async function seedStocks(productId: string) {
@@ -314,9 +435,13 @@ async function seedOrders(products: { id: string; price: number }[]) {
   }
 }
 
-function descriptionFor(name: string, category: string) {
+function descriptionFor(product: ProductSeed) {
   const freshness = faker.helpers.arrayElement(["segar", "berkualitas", "terkurasi", "siap pakai"]);
-  return `${name} ${freshness} dari kategori ${category} untuk kebutuhan harian Market Snap. Stok mengikuti cabang terdekat dan diperbarui melalui inventory toko.`;
+  return `${product.name} ${freshness} dari kategori ${product.category} untuk kebutuhan harian Market Snap. Brand ${product.brand}, berat ${product.weightGram} gram, dan stok mengikuti cabang terdekat. ${product.storageInfo}`;
+}
+
+function shortInfoFor(product: ProductSeed) {
+  return `${product.brand} - ${product.unit} - ${product.weightGram} g`;
 }
 
 function isMissingColumnError(error: unknown) {

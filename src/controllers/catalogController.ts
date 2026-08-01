@@ -84,7 +84,7 @@ async function resolveStore(query: Request["query"]) {
 async function filteredProducts(req: Request, storeId: string) {
   const term = String(req.query.search ?? "");
   const category = req.query.category ? String(req.query.category) : undefined;
-  const products = await prisma.product.findMany({ where: { name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined }, include: productInclude(storeId) });
+  const products = await prisma.product.findMany({ where: { isActive: true, name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined }, include: productInclude(storeId) });
   return products.map(mapProduct);
 }
 
@@ -107,11 +107,16 @@ function mapProduct(product: ProductRow) {
   return {
     id: product.id,
     slug: slugify(product.name),
+    sku: product.sku,
     name: product.name,
+    brand: product.brand,
     category: product.category.name,
     price: product.price,
     unit: product.unit,
     description: product.description ?? undefined,
+    shortInfo: product.shortInfo ?? undefined,
+    storageInfo: product.storageInfo ?? undefined,
+    weightGram: product.weightGram ?? undefined,
     image: primaryImage.url,
     images,
     primaryImage,
@@ -151,9 +156,9 @@ function filterMappedProducts(items: ReturnType<typeof mapProduct>[], query: Req
 }
 
 async function findProductByIdOrSlug(value: string, storeId: string) {
-  const byId = await prisma.product.findUnique({ where: { id: value }, include: productInclude(storeId) });
+  const byId = await prisma.product.findFirst({ where: { id: value, isActive: true }, include: productInclude(storeId) });
   if (byId) return byId;
-  const products = await prisma.product.findMany({ include: productInclude(storeId) });
+  const products = await prisma.product.findMany({ where: { isActive: true }, include: productInclude(storeId) });
   return products.find((product) => slugify(product.name) === value) ?? null;
 }
 
@@ -168,8 +173,13 @@ function slugify(value: string) {
 
 type ProductRow = {
   id: string;
+  sku: string | null;
   name: string;
+  brand: string | null;
   description: string | null;
+  shortInfo: string | null;
+  storageInfo: string | null;
+  weightGram: number | null;
   price: number;
   unit: string;
   category: { name: string };

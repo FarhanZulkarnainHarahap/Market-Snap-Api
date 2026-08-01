@@ -130,8 +130,14 @@ model ProductCategory {
 
 model Product {
   id          String          @id @default(cuid())
+  sku         String?         @unique
   name        String          @unique
+  brand       String?
+  shortInfo   String?
   description String?
+  storageInfo String?
+  weightGram  Int?
+  isActive    Boolean         @default(true)
   price       Int
   unit        String
   categoryId  String

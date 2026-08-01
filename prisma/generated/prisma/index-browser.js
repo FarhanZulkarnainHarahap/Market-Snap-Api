@@ -180,8 +180,14 @@ exports.Prisma.ProductCategoryScalarFieldEnum = {
 
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
+  sku: 'sku',
   name: 'name',
+  brand: 'brand',
+  shortInfo: 'shortInfo',
   description: 'description',
+  storageInfo: 'storageInfo',
+  weightGram: 'weightGram',
+  isActive: 'isActive',
   price: 'price',
   unit: 'unit',
   categoryId: 'categoryId',
