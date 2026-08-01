@@ -155,6 +155,27 @@ npm run prisma:migrate
 npm run db:seed
 ```
 
+### Indonesia Store Coverage Seed
+
+To seed 3 Market Snap stores for every kecamatan in Indonesia, run the dedicated store seed after products exist:
+
+```bash
+npm run db:seed:stores:indonesia
+```
+
+The script reads administrative regions from `https://wilayah.id/api`, then upserts 3 stores per district into `Store`. It also creates inventory rows for existing products by default so catalog stock works for each generated store.
+
+Useful controls:
+
+```env
+STORES_PER_DISTRICT=3
+INDONESIA_STORE_LIMIT_DISTRICTS=0
+SEED_INDONESIA_STORE_INVENTORY=true
+WILAYAH_API_BASE_URL=https://wilayah.id/api
+```
+
+Set `INDONESIA_STORE_LIMIT_DISTRICTS=10` for a small dry run, or `SEED_INDONESIA_STORE_INVENTORY=false` if you only want store rows.
+
 Contoh request:
 
 ```bash
