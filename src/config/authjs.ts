@@ -22,7 +22,7 @@ export const authJsHandler = ExpressAuth({
 
       try {
         const name = cleanString(profile?.name ?? user.name) || email.split("@")[0] || "Market Snap User";
-        const avatarUrl = cleanString(profile?.picture ?? user.image) || undefined;
+        const avatarUrl = avatarFromOAuthProfile(profile, user.image);
         const emailVerified = profile?.email_verified !== false;
         const existing = await prisma.user.findUnique({ where: { email } });
         if (existing && accountProvider(existing) !== provider) {
@@ -86,7 +86,7 @@ export const authJsHandler = ExpressAuth({
           Facebook({
             authorization: {
               params: {
-                scope: "public_profile"
+                scope: "email public_profile"
               }
             },
             clientId: String(env("AUTH_FACEBOOK_ID")),
@@ -151,6 +151,19 @@ function authJsBaseUrl(): string {
 
 function cleanString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function avatarFromOAuthProfile(profile: Record<string, unknown> | undefined, userImage: unknown): string | undefined {
+  return cleanString(profile?.picture) || readNestedString(profile, ["picture", "data", "url"]) || cleanString(userImage) || undefined;
+}
+
+function readNestedString(value: unknown, path: string[]): string {
+  let current: unknown = value;
+  for (const key of path) {
+    if (!current || typeof current !== "object") return "";
+    current = (current as Record<string, unknown>)[key];
+  }
+  return cleanString(current);
 }
 
 function fallbackEmail(provider: "facebook" | "google", providerAccountId: string): string {
