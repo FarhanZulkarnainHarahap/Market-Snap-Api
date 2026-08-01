@@ -51,7 +51,7 @@ export async function handleXenditInvoiceWebhook(req: Request, res: Response): P
     }
     const result = await reconcileXenditInvoice({ orderNumber: invoice.external_id, invoice });
     if (!result) {
-      res.status(404).json({ message: "Order tidak ditemukan." });
+      res.json({ message: "Webhook Xendit diterima, order belum ditemukan." });
       return;
     }
     res.json({ message: "Webhook Xendit diproses.", data: paymentStatusPayload(result) });
