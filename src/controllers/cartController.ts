@@ -36,7 +36,9 @@ export async function addCartItem(req: Request, res: Response): Promise<void> {
     const quantity = Number(body.quantity ?? 1);
     const existing = await findCart(String(req.user?.id), product.id, store.id);
     if (inventory < quantity + (existing?.quantity ?? 0)) return outOfStock(res);
-    const item = await prisma.cartItem.upsert({ where: { userId_productId_storeId: { userId: String(req.user?.id), productId: product.id, storeId: store.id } }, update: { quantity: { increment: quantity } }, create: { userId: String(req.user?.id), productId: product.id, storeId: store.id, quantity }, include: cartInclude });
+    const item = existing
+      ? await prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: { increment: quantity } }, include: cartInclude })
+      : await prisma.cartItem.create({ data: { userId: String(req.user?.id), productId: product.id, storeId: store.id, quantity }, include: cartInclude });
     res.status(existing ? 200 : 201).json({ data: await enrichCartItem(item) });
   } catch (error) {
     handleControllerError(res, error);
@@ -128,7 +130,7 @@ async function mainStore() {
 }
 
 async function findCart(userId: string, productId: string, storeId: string) {
-  return prisma.cartItem.findUnique({ where: { userId_productId_storeId: { userId, productId, storeId } } });
+  return prisma.cartItem.findFirst({ where: { userId, productId, storeId } });
 }
 
 async function enrichCartItem(item: CartRow) {
@@ -199,7 +201,7 @@ function validateVoucher(voucher: Awaited<ReturnType<typeof prisma.voucher.findU
 }
 
 async function stockFor(storeId: string, productId: string): Promise<number> {
-  return prisma.inventory.findUnique({ where: { storeId_productId: { storeId, productId } } }).then((item) => item?.quantity ?? 0);
+  return prisma.inventory.findFirst({ where: { storeId, productId } }).then((item) => item?.quantity ?? 0);
 }
 
 function notFound(res: Response, message: string): void {
