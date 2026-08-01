@@ -1,13 +1,9 @@
--- Split payment state from order fulfillment state and persist Midtrans metadata.
+-- Split payment state from order fulfillment state and persist payment metadata.
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'EXPIRED', 'CANCELLED', 'REFUNDED');
 
 ALTER TABLE "Order"
   ADD COLUMN "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
   ADD COLUMN "paymentRedirectUrl" TEXT,
-  ADD COLUMN "midtransTransactionId" TEXT,
-  ADD COLUMN "midtransTransactionStatus" TEXT,
-  ADD COLUMN "midtransFraudStatus" TEXT,
-  ADD COLUMN "midtransStatusCode" TEXT,
   ADD COLUMN "paidAt" TIMESTAMP(3),
   ADD COLUMN "paymentExpiredAt" TIMESTAMP(3),
   ADD COLUMN "paymentStockRestoredAt" TIMESTAMP(3);

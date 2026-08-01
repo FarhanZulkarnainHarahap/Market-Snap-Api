@@ -3694,7 +3694,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -5081,7 +5081,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Store", 'DateTime'>
     readonly updatedAt: FieldRef<"Store", 'DateTime'>
   }
-    
+
 
   // Custom InputTypes
   /**
@@ -16099,10 +16099,6 @@ export namespace Prisma {
     paymentExternalId: string | null
     xenditInvoiceId: string | null
     xenditInvoiceStatus: string | null
-    midtransTransactionId: string | null
-    midtransTransactionStatus: string | null
-    midtransFraudStatus: string | null
-    midtransStatusCode: string | null
     paidAt: Date | null
     paymentExpiredAt: Date | null
     paymentStockRestoredAt: Date | null
@@ -16142,10 +16138,6 @@ export namespace Prisma {
     paymentExternalId: string | null
     xenditInvoiceId: string | null
     xenditInvoiceStatus: string | null
-    midtransTransactionId: string | null
-    midtransTransactionStatus: string | null
-    midtransFraudStatus: string | null
-    midtransStatusCode: string | null
     paidAt: Date | null
     paymentExpiredAt: Date | null
     paymentStockRestoredAt: Date | null
@@ -16186,10 +16178,6 @@ export namespace Prisma {
     paymentExternalId: number
     xenditInvoiceId: number
     xenditInvoiceStatus: number
-    midtransTransactionId: number
-    midtransTransactionStatus: number
-    midtransFraudStatus: number
-    midtransStatusCode: number
     paidAt: number
     paymentExpiredAt: number
     paymentStockRestoredAt: number
@@ -16245,10 +16233,6 @@ export namespace Prisma {
     paymentExternalId?: true
     xenditInvoiceId?: true
     xenditInvoiceStatus?: true
-    midtransTransactionId?: true
-    midtransTransactionStatus?: true
-    midtransFraudStatus?: true
-    midtransStatusCode?: true
     paidAt?: true
     paymentExpiredAt?: true
     paymentStockRestoredAt?: true
@@ -16288,10 +16272,6 @@ export namespace Prisma {
     paymentExternalId?: true
     xenditInvoiceId?: true
     xenditInvoiceStatus?: true
-    midtransTransactionId?: true
-    midtransTransactionStatus?: true
-    midtransFraudStatus?: true
-    midtransStatusCode?: true
     paidAt?: true
     paymentExpiredAt?: true
     paymentStockRestoredAt?: true
@@ -16332,10 +16312,6 @@ export namespace Prisma {
     paymentExternalId?: true
     xenditInvoiceId?: true
     xenditInvoiceStatus?: true
-    midtransTransactionId?: true
-    midtransTransactionStatus?: true
-    midtransFraudStatus?: true
-    midtransStatusCode?: true
     paidAt?: true
     paymentExpiredAt?: true
     paymentStockRestoredAt?: true
@@ -16463,10 +16439,6 @@ export namespace Prisma {
     paymentExternalId: string | null
     xenditInvoiceId: string | null
     xenditInvoiceStatus: string | null
-    midtransTransactionId: string | null
-    midtransTransactionStatus: string | null
-    midtransFraudStatus: string | null
-    midtransStatusCode: string | null
     paidAt: Date | null
     paymentExpiredAt: Date | null
     paymentStockRestoredAt: Date | null
@@ -16526,10 +16498,6 @@ export namespace Prisma {
     paymentExternalId?: boolean
     xenditInvoiceId?: boolean
     xenditInvoiceStatus?: boolean
-    midtransTransactionId?: boolean
-    midtransTransactionStatus?: boolean
-    midtransFraudStatus?: boolean
-    midtransStatusCode?: boolean
     paidAt?: boolean
     paymentExpiredAt?: boolean
     paymentStockRestoredAt?: boolean
@@ -16576,10 +16544,6 @@ export namespace Prisma {
     paymentExternalId?: boolean
     xenditInvoiceId?: boolean
     xenditInvoiceStatus?: boolean
-    midtransTransactionId?: boolean
-    midtransTransactionStatus?: boolean
-    midtransFraudStatus?: boolean
-    midtransStatusCode?: boolean
     paidAt?: boolean
     paymentExpiredAt?: boolean
     paymentStockRestoredAt?: boolean
@@ -16622,10 +16586,6 @@ export namespace Prisma {
     paymentExternalId?: boolean
     xenditInvoiceId?: boolean
     xenditInvoiceStatus?: boolean
-    midtransTransactionId?: boolean
-    midtransTransactionStatus?: boolean
-    midtransFraudStatus?: boolean
-    midtransStatusCode?: boolean
     paidAt?: boolean
     paymentExpiredAt?: boolean
     paymentStockRestoredAt?: boolean
@@ -16668,10 +16628,6 @@ export namespace Prisma {
     paymentExternalId?: boolean
     xenditInvoiceId?: boolean
     xenditInvoiceStatus?: boolean
-    midtransTransactionId?: boolean
-    midtransTransactionStatus?: boolean
-    midtransFraudStatus?: boolean
-    midtransStatusCode?: boolean
     paidAt?: boolean
     paymentExpiredAt?: boolean
     paymentStockRestoredAt?: boolean
@@ -16687,7 +16643,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "userId" | "storeId" | "addressId" | "addressSnapshot" | "deliveryDate" | "deliverySlot" | "shippingMethod" | "shippingProvider" | "shippingCost" | "serviceFee" | "discountTotal" | "voucherId" | "voucherCode" | "paymentMethod" | "paymentProvider" | "paymentChannel" | "paymentStatus" | "paymentRedirectUrl" | "paymentInvoiceUrl" | "paymentExternalId" | "xenditInvoiceId" | "xenditInvoiceStatus" | "midtransTransactionId" | "midtransTransactionStatus" | "midtransFraudStatus" | "midtransStatusCode" | "paidAt" | "paymentExpiredAt" | "paymentStockRestoredAt" | "trackingNumber" | "courierName" | "estimatedArrival" | "orderNote" | "status" | "total" | "paymentProofUrl" | "paymentDeadline" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "userId" | "storeId" | "addressId" | "addressSnapshot" | "deliveryDate" | "deliverySlot" | "shippingMethod" | "shippingProvider" | "shippingCost" | "serviceFee" | "discountTotal" | "voucherId" | "voucherCode" | "paymentMethod" | "paymentProvider" | "paymentChannel" | "paymentStatus" | "paymentRedirectUrl" | "paymentInvoiceUrl" | "paymentExternalId" | "xenditInvoiceId" | "xenditInvoiceStatus" | "paidAt" | "paymentExpiredAt" | "paymentStockRestoredAt" | "trackingNumber" | "courierName" | "estimatedArrival" | "orderNote" | "status" | "total" | "paymentProofUrl" | "paymentDeadline" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
@@ -16739,10 +16695,6 @@ export namespace Prisma {
       paymentExternalId: string | null
       xenditInvoiceId: string | null
       xenditInvoiceStatus: string | null
-      midtransTransactionId: string | null
-      midtransTransactionStatus: string | null
-      midtransFraudStatus: string | null
-      midtransStatusCode: string | null
       paidAt: Date | null
       paymentExpiredAt: Date | null
       paymentStockRestoredAt: Date | null
@@ -17208,10 +17160,6 @@ export namespace Prisma {
     readonly paymentExternalId: FieldRef<"Order", 'String'>
     readonly xenditInvoiceId: FieldRef<"Order", 'String'>
     readonly xenditInvoiceStatus: FieldRef<"Order", 'String'>
-    readonly midtransTransactionId: FieldRef<"Order", 'String'>
-    readonly midtransTransactionStatus: FieldRef<"Order", 'String'>
-    readonly midtransFraudStatus: FieldRef<"Order", 'String'>
-    readonly midtransStatusCode: FieldRef<"Order", 'String'>
     readonly paidAt: FieldRef<"Order", 'DateTime'>
     readonly paymentExpiredAt: FieldRef<"Order", 'DateTime'>
     readonly paymentStockRestoredAt: FieldRef<"Order", 'DateTime'>
@@ -24714,10 +24662,6 @@ export namespace Prisma {
     paymentExternalId: 'paymentExternalId',
     xenditInvoiceId: 'xenditInvoiceId',
     xenditInvoiceStatus: 'xenditInvoiceStatus',
-    midtransTransactionId: 'midtransTransactionId',
-    midtransTransactionStatus: 'midtransTransactionStatus',
-    midtransFraudStatus: 'midtransFraudStatus',
-    midtransStatusCode: 'midtransStatusCode',
     paidAt: 'paidAt',
     paymentExpiredAt: 'paymentExpiredAt',
     paymentStockRestoredAt: 'paymentStockRestoredAt',
@@ -24992,10 +24936,12 @@ export namespace Prisma {
   export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
 
 
+
   /**
    * Reference to a field of type 'PaymentStatus[]'
    */
   export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
+
 
 
   /**
@@ -25963,10 +25909,6 @@ export namespace Prisma {
     paymentExternalId?: StringNullableFilter<"Order"> | string | null
     xenditInvoiceId?: StringNullableFilter<"Order"> | string | null
     xenditInvoiceStatus?: StringNullableFilter<"Order"> | string | null
-    midtransTransactionId?: StringNullableFilter<"Order"> | string | null
-    midtransTransactionStatus?: StringNullableFilter<"Order"> | string | null
-    midtransFraudStatus?: StringNullableFilter<"Order"> | string | null
-    midtransStatusCode?: StringNullableFilter<"Order"> | string | null
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     paymentExpiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     paymentStockRestoredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -26012,10 +25954,6 @@ export namespace Prisma {
     paymentExternalId?: SortOrderInput | SortOrder
     xenditInvoiceId?: SortOrderInput | SortOrder
     xenditInvoiceStatus?: SortOrderInput | SortOrder
-    midtransTransactionId?: SortOrderInput | SortOrder
-    midtransTransactionStatus?: SortOrderInput | SortOrder
-    midtransFraudStatus?: SortOrderInput | SortOrder
-    midtransStatusCode?: SortOrderInput | SortOrder
     paidAt?: SortOrderInput | SortOrder
     paymentExpiredAt?: SortOrderInput | SortOrder
     paymentStockRestoredAt?: SortOrderInput | SortOrder
@@ -26064,10 +26002,6 @@ export namespace Prisma {
     paymentExternalId?: StringNullableFilter<"Order"> | string | null
     xenditInvoiceId?: StringNullableFilter<"Order"> | string | null
     xenditInvoiceStatus?: StringNullableFilter<"Order"> | string | null
-    midtransTransactionId?: StringNullableFilter<"Order"> | string | null
-    midtransTransactionStatus?: StringNullableFilter<"Order"> | string | null
-    midtransFraudStatus?: StringNullableFilter<"Order"> | string | null
-    midtransStatusCode?: StringNullableFilter<"Order"> | string | null
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     paymentExpiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     paymentStockRestoredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -26113,10 +26047,6 @@ export namespace Prisma {
     paymentExternalId?: SortOrderInput | SortOrder
     xenditInvoiceId?: SortOrderInput | SortOrder
     xenditInvoiceStatus?: SortOrderInput | SortOrder
-    midtransTransactionId?: SortOrderInput | SortOrder
-    midtransTransactionStatus?: SortOrderInput | SortOrder
-    midtransFraudStatus?: SortOrderInput | SortOrder
-    midtransStatusCode?: SortOrderInput | SortOrder
     paidAt?: SortOrderInput | SortOrder
     paymentExpiredAt?: SortOrderInput | SortOrder
     paymentStockRestoredAt?: SortOrderInput | SortOrder
@@ -26165,10 +26095,6 @@ export namespace Prisma {
     paymentExternalId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     xenditInvoiceId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     xenditInvoiceStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    midtransTransactionId?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    midtransTransactionStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    midtransFraudStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    midtransStatusCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paidAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     paymentExpiredAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     paymentStockRestoredAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
@@ -27640,10 +27566,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -27689,10 +27611,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -27734,10 +27652,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27783,10 +27697,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27830,10 +27740,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -27872,10 +27778,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27916,10 +27818,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29376,10 +29274,6 @@ export namespace Prisma {
     paymentExternalId?: SortOrder
     xenditInvoiceId?: SortOrder
     xenditInvoiceStatus?: SortOrder
-    midtransTransactionId?: SortOrder
-    midtransTransactionStatus?: SortOrder
-    midtransFraudStatus?: SortOrder
-    midtransStatusCode?: SortOrder
     paidAt?: SortOrder
     paymentExpiredAt?: SortOrder
     paymentStockRestoredAt?: SortOrder
@@ -29426,10 +29320,6 @@ export namespace Prisma {
     paymentExternalId?: SortOrder
     xenditInvoiceId?: SortOrder
     xenditInvoiceStatus?: SortOrder
-    midtransTransactionId?: SortOrder
-    midtransTransactionStatus?: SortOrder
-    midtransFraudStatus?: SortOrder
-    midtransStatusCode?: SortOrder
     paidAt?: SortOrder
     paymentExpiredAt?: SortOrder
     paymentStockRestoredAt?: SortOrder
@@ -29469,10 +29359,6 @@ export namespace Prisma {
     paymentExternalId?: SortOrder
     xenditInvoiceId?: SortOrder
     xenditInvoiceStatus?: SortOrder
-    midtransTransactionId?: SortOrder
-    midtransTransactionStatus?: SortOrder
-    midtransFraudStatus?: SortOrder
-    midtransStatusCode?: SortOrder
     paidAt?: SortOrder
     paymentExpiredAt?: SortOrder
     paymentStockRestoredAt?: SortOrder
@@ -31869,10 +31755,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -31916,10 +31798,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -32276,10 +32154,6 @@ export namespace Prisma {
     paymentExternalId?: StringNullableFilter<"Order"> | string | null
     xenditInvoiceId?: StringNullableFilter<"Order"> | string | null
     xenditInvoiceStatus?: StringNullableFilter<"Order"> | string | null
-    midtransTransactionId?: StringNullableFilter<"Order"> | string | null
-    midtransTransactionStatus?: StringNullableFilter<"Order"> | string | null
-    midtransFraudStatus?: StringNullableFilter<"Order"> | string | null
-    midtransStatusCode?: StringNullableFilter<"Order"> | string | null
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     paymentExpiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     paymentStockRestoredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -32573,10 +32447,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -32620,10 +32490,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -34798,10 +34664,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -34846,10 +34708,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -34943,10 +34801,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -34991,10 +34845,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35078,10 +34928,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -35126,10 +34972,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -35186,10 +35028,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35234,10 +35072,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35368,10 +35202,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -35416,10 +35246,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -35578,10 +35404,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35626,10 +35448,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36362,10 +36180,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -36544,10 +36358,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36591,10 +36401,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36637,10 +36443,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36891,10 +36693,6 @@ export namespace Prisma {
     paymentExternalId?: string | null
     xenditInvoiceId?: string | null
     xenditInvoiceStatus?: string | null
-    midtransTransactionId?: string | null
-    midtransTransactionStatus?: string | null
-    midtransFraudStatus?: string | null
-    midtransStatusCode?: string | null
     paidAt?: Date | string | null
     paymentExpiredAt?: Date | string | null
     paymentStockRestoredAt?: Date | string | null
@@ -37100,10 +36898,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37147,10 +36941,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37193,10 +36983,6 @@ export namespace Prisma {
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

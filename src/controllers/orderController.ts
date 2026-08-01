@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import type { OrderStatus, Prisma } from "../../prisma/generated/prisma/client.js";
 import { prisma } from "../config/prisma.js";
 import { calculateDomesticShippingCost, rajaongkirConfig } from "../config/rajaongkir.js";
-import { createMidtransSnapTransaction, midtransConfig } from "../services/midtrans.service.js";
 import { createXenditInvoice, xenditConfig, type XenditInvoiceItem } from "../services/xendit.service.js";
 import { distanceKm } from "../utils/distance.js";
 import { handleControllerError, locationFromQuery, mapStore, orderNumber } from "../utils/controllerHelpers.js";
@@ -18,7 +17,7 @@ type CreateOrderBody = {
   deliverySlot?: string;
   voucherCode?: string;
   weightGram?: number;
-  paymentMethod?: "midtrans" | "xendit";
+  paymentMethod?: "xendit";
   paymentChannel?: string;
   orderNote?: string;
   addressId?: string;
@@ -39,7 +38,7 @@ type CheckoutPayment = {
   channel: string;
   externalId: string | null;
   invoiceUrl: string | null;
-  method: "midtrans" | "xendit";
+  method: "xendit";
   orderNumber: string;
   redirectUrl: string | null;
   status: string;
@@ -463,37 +462,20 @@ function initialPayment(body: CreateOrderBody, orderNo: string): CheckoutPayment
   const methods = paymentMethodOptions();
   const selected = methods.find((method) => method.id === body.paymentChannel);
   if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
-  const method = selected.provider === "xendit" ? "xendit" : "midtrans";
-  if (method === "xendit" && !xenditConfig.hasSecretKey) throw new Error("Konfigurasi Xendit belum lengkap.");
-  if (method === "midtrans" && !midtransConfig.hasServerKey) throw new Error("Konfigurasi Midtrans belum lengkap.");
-  return { channel: selected.channel, externalId: orderNo, invoiceUrl: null, method, orderNumber: orderNo, redirectUrl: null, status: "PENDING" };
+  if (!xenditConfig.hasSecretKey) throw new Error("Konfigurasi Xendit belum lengkap.");
+  return { channel: selected.channel, externalId: orderNo, invoiceUrl: null, method: "xendit", orderNumber: orderNo, redirectUrl: null, status: "PENDING" };
 }
 
 async function createPaymentSession(input: { amount: number; email: string; items: CheckoutItem[]; orderNumber: string; payment: CheckoutPayment; totals: { discount: number; serviceFee: number; shippingCost: number } }): Promise<CheckoutPayment> {
-  if (input.payment.method === "xendit") {
-    const invoice = await createXenditInvoice({
-      amount: input.amount,
-      customerEmail: input.email,
-      description: `Market-Snap order ${input.orderNumber}`,
-      externalId: input.orderNumber,
-      items: xenditItemDetails(input.items, input.totals)
-    });
-    if (!invoice.invoice_url) throw new Error("Xendit tidak mengembalikan invoice_url.");
-    return { ...input.payment, externalId: invoice.id, invoiceUrl: invoice.invoice_url, redirectUrl: invoice.invoice_url, status: invoice.status, token: invoice.id };
-  }
-
-  const itemDetails = midtransItemDetails(input.items, input.totals);
-  const itemGross = itemDetails.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  if (itemGross !== input.amount) throw new Error("Total item Midtrans tidak sama dengan total order.");
-  const snap = await createMidtransSnapTransaction({
+  const invoice = await createXenditInvoice({
     amount: input.amount,
-    itemDetails,
-    orderNumber: input.orderNumber,
-    payerEmail: input.email,
-    paymentChannel: input.payment.channel || undefined
+    customerEmail: input.email,
+    description: `Market-Snap order ${input.orderNumber}`,
+    externalId: input.orderNumber,
+    items: xenditItemDetails(input.items, input.totals)
   });
-  if (!snap.redirect_url) throw new Error("Midtrans tidak mengembalikan redirect_url.");
-  return { ...input.payment, externalId: snap.token ?? input.payment.externalId, invoiceUrl: snap.redirect_url, redirectUrl: snap.redirect_url, token: snap.token };
+  if (!invoice.invoice_url) throw new Error("Xendit tidak mengembalikan invoice_url.");
+  return { ...input.payment, externalId: invoice.id, invoiceUrl: invoice.invoice_url, redirectUrl: invoice.invoice_url, status: invoice.status, token: invoice.id };
 }
 
 function shippingMethodOptions() {
@@ -505,26 +487,13 @@ function shippingMethodOptions() {
 }
 
 function paymentMethodOptions() {
-  if (xenditConfig.hasSecretKey) {
-    return [
-      {
-        id: "xendit",
-        label: "Xendit Test Mode",
-        provider: "xendit",
-        channel: "",
-        description: "Bayar melalui Xendit Payment Link test mode."
-      }
-    ];
-  }
-
-  if (!midtransConfig.hasServerKey || !midtransConfig.isKeyModeValid) return [];
-
+  if (!xenditConfig.hasSecretKey) return [];
   return [{
-    id: "midtrans",
-    label: midtransConfig.isProduction ? "Midtrans" : "Midtrans Sandbox",
-    provider: "midtrans",
+    id: "xendit",
+    label: "Xendit Test Mode",
+    provider: "xendit",
     channel: "",
-    description: "Bayar aman melalui VA, QRIS, e-wallet, kartu, atau gerai retail."
+    description: "Bayar melalui Xendit Payment Link test mode."
   }];
 }
 
@@ -640,7 +609,7 @@ async function markPaymentSessionFailed(orderId: string) {
       }
     });
     if (order.status !== "CANCELLED") {
-      await tx.orderStatusHistory.create({ data: { orderId: order.id, status: "CANCELLED", description: "Sesi pembayaran Midtrans gagal dibuat." } });
+      await tx.orderStatusHistory.create({ data: { orderId: order.id, status: "CANCELLED", description: "Sesi pembayaran Xendit gagal dibuat." } });
     }
   });
 }
@@ -702,7 +671,7 @@ function invoicePayload(order: Prisma.OrderGetPayload<{ include: { items: { incl
     grandTotal: order.total,
     paymentMethod: order.paymentMethod,
     paymentChannel: order.paymentChannel,
-    transactionId: order.xenditInvoiceId ?? order.midtransTransactionId ?? order.paymentExternalId,
+    transactionId: order.xenditInvoiceId ?? order.paymentExternalId,
     createdAt: order.createdAt.toISOString(),
     paidAt: order.paymentStatus === "PAID" ? order.paidAt?.toISOString() ?? null : null
   };
@@ -711,19 +680,6 @@ function invoicePayload(order: Prisma.OrderGetPayload<{ include: { items: { incl
 function isCheckoutSchemaMissing(error: unknown) {
   const message = error instanceof Error ? error.message : "";
   return message.includes("does not exist in the current database") || message.includes("column") || message.includes("OrderStatusHistory") || message.includes("VoucherUsage") || message.includes("addressId") || message.includes("paymentInvoiceUrl");
-}
-
-function midtransItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }) {
-  const details = items.map((item) => ({
-    id: item.productId.slice(0, 50),
-    name: item.name.slice(0, 50),
-    price: item.price,
-    quantity: item.quantity
-  }));
-  if (totals.shippingCost > 0) details.push({ id: "shipping", name: "Biaya pengiriman", price: totals.shippingCost, quantity: 1 });
-  if (totals.serviceFee > 0) details.push({ id: "service-fee", name: "Biaya layanan", price: totals.serviceFee, quantity: 1 });
-  if (totals.discount > 0) details.push({ id: "discount", name: "Diskon voucher", price: -totals.discount, quantity: 1 });
-  return details;
 }
 
 function xenditItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }): XenditInvoiceItem[] {
@@ -795,21 +751,6 @@ function historyDescription(status: OrderStatus) {
     WAITING_PAYMENT_CONFIRMATION: "Pembayaran menunggu konfirmasi."
   };
   return descriptions[status];
-}
-
-function statusFromMidtrans(transactionStatus?: string, fraudStatus?: string): OrderStatus | null {
-  if (transactionStatus === "settlement") return "PROCESSING";
-  if (transactionStatus === "capture") return fraudStatus === "challenge" ? "WAITING_PAYMENT_CONFIRMATION" : "PROCESSING";
-  if (transactionStatus === "pending") return "WAITING_PAYMENT";
-  if (["cancel", "deny", "expire", "failure"].includes(String(transactionStatus))) return "CANCELLED";
-  return null;
-}
-
-function midtransHistoryDescription(status: OrderStatus) {
-  if (status === "PROCESSING") return "Pembayaran Midtrans berhasil dan pesanan masuk proses cabang.";
-  if (status === "WAITING_PAYMENT_CONFIRMATION") return "Pembayaran Midtrans membutuhkan pemeriksaan lanjutan.";
-  if (status === "CANCELLED") return "Pembayaran Midtrans dibatalkan atau kedaluwarsa.";
-  return historyDescription(status);
 }
 
 function periodStart(period: string) {

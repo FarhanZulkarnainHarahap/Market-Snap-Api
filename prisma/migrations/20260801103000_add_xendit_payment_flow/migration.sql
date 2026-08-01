@@ -1,4 +1,4 @@
--- Add Xendit-specific payment metadata without removing existing Midtrans fields.
+-- Add Xendit-specific payment metadata.
 ALTER TABLE "Order"
   ADD COLUMN "paymentProvider" TEXT,
   ADD COLUMN "xenditInvoiceId" TEXT,

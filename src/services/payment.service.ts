@@ -1,6 +1,5 @@
 import type { OrderStatus, PaymentStatus, Prisma } from "../../prisma/generated/prisma/client.js";
 import { prisma } from "../config/prisma.js";
-import type { MidtransTransactionStatus } from "./midtrans.service.js";
 import type { XenditInvoice } from "./xendit.service.js";
 
 export type PaymentReconcileResult = {
@@ -13,92 +12,7 @@ export type PaymentReconcileResult = {
   transactionStatus: string | null;
 };
 
-type ReconcileInput = {
-  expectedGrossAmount?: string | number;
-  orderNumber: string;
-  status: MidtransTransactionStatus;
-};
-
 const finalFailureStatuses: PaymentStatus[] = ["FAILED", "EXPIRED", "CANCELLED"];
-
-export async function reconcileMidtransPayment(input: ReconcileInput): Promise<PaymentReconcileResult | null> {
-  return prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUnique({
-      where: { orderNumber: input.orderNumber },
-      include: { items: true }
-    });
-    if (!order) return null;
-
-    assertGrossAmountMatches(order.total, input.status.gross_amount ?? input.expectedGrossAmount);
-    const mapped = mapMidtransStatus(input.status);
-    const metadata = midtransMetadata(input.status);
-    if (!mapped) {
-      const updated = await tx.order.update({
-        where: { id: order.id },
-        data: metadata,
-        select: paymentResultSelect
-      });
-      return paymentResult(updated);
-    }
-
-    if (!shouldApplyPaymentStatus(order.paymentStatus, mapped.paymentStatus)) {
-      const updated = await tx.order.update({
-        where: { id: order.id },
-        data: metadata,
-        select: paymentResultSelect
-      });
-      return paymentResult(updated);
-    }
-
-    const now = new Date();
-    const orderStatus = mapped.orderStatus ?? order.status;
-    const paidAt = mapped.paymentStatus === "PAID" ? order.paidAt ?? transactionDate(input.status.transaction_time) ?? now : order.paidAt;
-    const paymentExpiredAt = mapped.paymentStatus === "EXPIRED" ? order.paymentExpiredAt ?? transactionDate(input.status.expiry_time) ?? now : order.paymentExpiredAt;
-    const shouldRestoreStock = shouldRestoreOrderStock(order.paymentStatus, mapped.paymentStatus, order.paymentStockRestoredAt);
-
-    if (shouldRestoreStock) {
-      for (const item of order.items) {
-        await tx.inventory.update({
-          where: { storeId_productId: { storeId: order.storeId, productId: item.productId } },
-          data: { quantity: { increment: item.quantity } }
-        });
-        await tx.stockJournal.create({
-          data: {
-            storeId: order.storeId,
-            productId: item.productId,
-            change: item.quantity,
-            note: `Restore stok pembayaran ${order.orderNumber}`
-          }
-        });
-      }
-    }
-
-    const updated = await tx.order.update({
-      where: { id: order.id },
-      data: {
-        ...metadata,
-        paidAt,
-        paymentExpiredAt,
-        paymentStatus: mapped.paymentStatus,
-        paymentStockRestoredAt: shouldRestoreStock ? now : order.paymentStockRestoredAt,
-        status: orderStatus
-      },
-      select: paymentResultSelect
-    });
-
-    if (order.status !== orderStatus) {
-      await tx.orderStatusHistory.create({
-        data: {
-          orderId: order.id,
-          status: orderStatus,
-          description: midtransHistoryDescription(mapped.paymentStatus, orderStatus)
-        }
-      });
-    }
-
-    return paymentResult(updated);
-  });
-}
 
 export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; orderNumber: string }): Promise<PaymentReconcileResult | null> {
   return prisma.$transaction(async (tx) => {
@@ -177,23 +91,6 @@ export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; or
   });
 }
 
-export function mapMidtransStatus(status: MidtransTransactionStatus): { orderStatus: OrderStatus | null; paymentStatus: PaymentStatus } | null {
-  const transactionStatus = String(status.transaction_status ?? "");
-  const statusCode = String(status.status_code ?? "");
-  const fraudStatus = String(status.fraud_status ?? "");
-
-  if (transactionStatus === "pending") return { paymentStatus: "PENDING", orderStatus: "WAITING_PAYMENT" };
-  if (transactionStatus === "settlement" && statusCode === "200") return { paymentStatus: "PAID", orderStatus: "PROCESSING" };
-  if (transactionStatus === "capture" && statusCode === "200" && fraudStatus === "accept") return { paymentStatus: "PAID", orderStatus: "PROCESSING" };
-  if (transactionStatus === "capture" && fraudStatus === "challenge") return { paymentStatus: "PENDING", orderStatus: "WAITING_PAYMENT_CONFIRMATION" };
-  if (transactionStatus === "capture" && fraudStatus === "deny") return { paymentStatus: "FAILED", orderStatus: "CANCELLED" };
-  if (transactionStatus === "deny" || transactionStatus === "failure") return { paymentStatus: "FAILED", orderStatus: "CANCELLED" };
-  if (transactionStatus === "expire") return { paymentStatus: "EXPIRED", orderStatus: "CANCELLED" };
-  if (transactionStatus === "cancel") return { paymentStatus: "CANCELLED", orderStatus: "CANCELLED" };
-  if (transactionStatus === "refund" || transactionStatus === "partial_refund") return { paymentStatus: "REFUNDED", orderStatus: null };
-  return null;
-}
-
 export function mapXenditInvoiceStatus(status?: string): { orderStatus: OrderStatus | null; paymentStatus: PaymentStatus } | null {
   if (status === "PENDING") return { paymentStatus: "PENDING", orderStatus: "WAITING_PAYMENT" };
   if (status === "PAID" || status === "SETTLED") return { paymentStatus: "PAID", orderStatus: "PROCESSING" };
@@ -235,27 +132,6 @@ function shouldRestoreOrderStock(current: PaymentStatus, next: PaymentStatus, re
   return true;
 }
 
-function midtransMetadata(status: MidtransTransactionStatus): Prisma.OrderUpdateInput {
-  return {
-    midtransFraudStatus: status.fraud_status ?? null,
-    midtransStatusCode: status.status_code ?? null,
-    midtransTransactionId: status.transaction_id ?? null,
-    midtransTransactionStatus: status.transaction_status ?? null,
-    paymentChannel: status.payment_type ?? undefined,
-    paymentExternalId: status.transaction_id ?? undefined
-  };
-}
-
-function midtransHistoryDescription(paymentStatus: PaymentStatus, orderStatus: OrderStatus): string {
-  if (paymentStatus === "PAID") return "Pembayaran Midtrans berhasil dan pesanan masuk proses cabang.";
-  if (paymentStatus === "PENDING" && orderStatus === "WAITING_PAYMENT_CONFIRMATION") return "Pembayaran Midtrans membutuhkan pemeriksaan lanjutan.";
-  if (paymentStatus === "FAILED") return "Pembayaran Midtrans gagal.";
-  if (paymentStatus === "EXPIRED") return "Pembayaran Midtrans kedaluwarsa.";
-  if (paymentStatus === "CANCELLED") return "Pembayaran Midtrans dibatalkan.";
-  if (paymentStatus === "REFUNDED") return "Pembayaran Midtrans direfund.";
-  return "Pesanan menunggu pembayaran Midtrans.";
-}
-
 function xenditHistoryDescription(paymentStatus: PaymentStatus, orderStatus: OrderStatus): string {
   if (paymentStatus === "PAID") return "Pembayaran Xendit berhasil dan pesanan masuk proses cabang.";
   if (paymentStatus === "EXPIRED") return "Invoice Xendit kedaluwarsa.";
@@ -275,7 +151,6 @@ const paymentResultSelect = {
   orderNumber: true,
   paidAt: true,
   paymentStatus: true,
-  midtransTransactionStatus: true,
   xenditInvoiceStatus: true,
   status: true
 } satisfies Prisma.OrderSelect;
@@ -288,6 +163,6 @@ function paymentResult(order: Prisma.OrderGetPayload<{ select: typeof paymentRes
     orderStatus: order.status,
     paidAt: order.paidAt,
     paymentStatus: order.paymentStatus,
-    transactionStatus: order.midtransTransactionStatus ?? order.xenditInvoiceStatus
+    transactionStatus: order.xenditInvoiceStatus
   };
 }

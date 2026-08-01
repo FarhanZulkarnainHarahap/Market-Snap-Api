@@ -24,8 +24,8 @@ Frontend terpisah ada di repo `market-snap-web` dan membaca API melalui `NEXT_PU
 - Zod validation untuk request body.
 - Multer upload untuk avatar, foto produk, dan bukti pembayaran.
 - Prisma config untuk PostgreSQL.
-- Config integrasi Cloudinary, RajaOngkir, Resend, dan Midtrans.
-- Checkout order terhubung ke RajaOngkir untuk ongkir dan Midtrans untuk pembayaran.
+- Config integrasi Cloudinary, RajaOngkir, Resend, dan Xendit.
+- Checkout order terhubung ke RajaOngkir untuk ongkir dan Xendit untuk pembayaran.
 - Vercel serverless entrypoint untuk deploy API sebagai repo terpisah.
 
 ## Tech Stack
@@ -39,7 +39,7 @@ Frontend terpisah ada di repo `market-snap-web` dan membaca API melalui `NEXT_PU
 | Database | PostgreSQL |
 | Validation | Zod |
 | Upload | Multer |
-| Integrations | Cloudinary, RajaOngkir, Resend, Midtrans |
+| Integrations | Cloudinary, RajaOngkir, Resend, Xendit |
 
 ## Folder Structure
 
@@ -52,7 +52,7 @@ api
 ├── src
 │   ├── app.ts                # Local server entry
 │   ├── server.ts             # Express app export
-│   ├── config                # Prisma, Cloudinary, RajaOngkir, Resend, Midtrans
+│   ├── config                # Prisma, Cloudinary, RajaOngkir, Resend, Xendit
 │   ├── controllers           # Request handlers
 │   ├── middleware            # Auth role, multer, zod, error handler
 │   ├── routers               # REST route modules
@@ -97,10 +97,6 @@ RAJAONGKIR_ORIGIN_ID=""
 RAJAONGKIR_DEFAULT_COURIER=jne:jnt:sicepat
 RAJAONGKIR_DEFAULT_WEIGHT_GRAM=1000
 RESEND_API_KEY=""
-MIDTRANS_MERCHANT_ID=""
-MIDTRANS_CLIENT_KEY=""
-MIDTRANS_SERVER_KEY=""
-MIDTRANS_IS_PRODUCTION=false
 XENDIT_SECRET_KEY=""
 XENDIT_CALLBACK_TOKEN=""
 XENDIT_INVOICE_DURATION_SECONDS=3600
@@ -144,9 +140,9 @@ Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
 - Memilih store terdekat dari `location`.
 - Menghitung ongkir RajaOngkir jika `destinationId` dikirim.
 - Menghitung ulang subtotal, diskon, ongkir, service fee, dan total di backend.
-- Membuat transaksi Snap Midtrans saat `MIDTRANS_SERVER_KEY` tersedia, lalu mengembalikan `payment.redirectUrl` dari `redirect_url` Midtrans untuk halaman pembayaran.
-- Menerima notification webhook Midtrans di `/payments/midtrans/notification` untuk rekonsiliasi payment status otomatis.
-- Menyimpan `shippingCost`, `total`, `paymentDeadline`, `paymentStatus`, `paymentRedirectUrl`, metadata Midtrans, dan order items.
+- Membuat invoice Xendit saat `XENDIT_SECRET_KEY` tersedia, lalu mengembalikan `payment.redirectUrl` dari `invoice_url` Xendit untuk halaman pembayaran.
+- Menerima webhook invoice Xendit di `/payments/xendit/invoice` untuk rekonsiliasi payment status otomatis.
+- Menyimpan `shippingCost`, `total`, `paymentDeadline`, `paymentStatus`, `paymentRedirectUrl`, metadata Xendit, dan order items.
 
 Contoh request:
 
@@ -159,7 +155,7 @@ curl -X POST https://your-market-snap-api.vercel.app/orders \
     "destinationId": "41068",
     "courier": "jne",
     "weightGram": 1000,
-    "paymentMethod": "midtrans",
+    "paymentMethod": "xendit",
     "location": { "lat": -6.2608, "lng": 106.8107 },
     "items": [
       { "productId": "PRODUCT_ID", "quantity": 2, "price": 50000 }
@@ -167,7 +163,7 @@ curl -X POST https://your-market-snap-api.vercel.app/orders \
   }'
 ```
 
-Response akan membawa data order, detail shipping, dan object payment dari `redirect_url` Snap Midtrans jika berhasil dibuat:
+Response akan membawa data order, detail shipping, dan object payment dari `invoice_url` Xendit jika berhasil dibuat:
 
 ```json
 {
@@ -178,53 +174,13 @@ Response akan membawa data order, detail shipping, dan object payment dari `redi
     "paymentStatus": "PENDING"
   },
   "payment": {
-    "method": "midtrans",
-    "redirectUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/TRANSACTION_ID",
-    "invoiceUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/TRANSACTION_ID",
+    "method": "xendit",
+    "redirectUrl": "https://checkout.xendit.co/web/INVOICE_ID",
+    "invoiceUrl": "https://checkout.xendit.co/web/INVOICE_ID",
     "expiresAt": "2026-08-01T10:00:00.000Z"
   }
 }
 ```
-
-Untuk sandbox, isi `MIDTRANS_SERVER_KEY` dengan Server Key sandbox dan biarkan `MIDTRANS_IS_PRODUCTION=false`. Backend akan memanggil `https://app.sandbox.midtrans.com/snap/v1/transactions` memakai Basic Auth `base64(MIDTRANS_SERVER_KEY + ":")`, lalu frontend mengarahkan customer ke `payment.redirectUrl`.
-
-### Midtrans Dashboard
-
-Local sandbox:
-
-```txt
-Finish Redirect URL:
-http://localhost:3000/payment/finish
-
-Unfinish Redirect URL:
-http://localhost:3000/payment/pending
-
-Error Redirect URL:
-http://localhost:3000/payment/error
-
-Payment Notification URL:
-<API_PUBLIC_URL>/payments/midtrans/notification
-```
-
-Production:
-
-```txt
-Finish Redirect URL:
-https://market-snap.web.id/payment/finish
-
-Unfinish Redirect URL:
-https://market-snap.web.id/payment/pending
-
-Error Redirect URL:
-https://market-snap.web.id/payment/error
-
-Payment Notification URL:
-<DOMAIN_BACKEND_PRODUCTION>/payments/midtrans/notification
-```
-
-Gunakan `WEB_ORIGIN=http://localhost:3000` untuk lokal dan `WEB_ORIGIN=https://market-snap.web.id` untuk production. Jangan hardcode domain production di source code. Domain backend production tidak ditebak oleh aplikasi; isi Dashboard Midtrans dengan domain API publik yang benar dari environment/deployment.
-
-Webhook Midtrans harus HTTPS di production, dapat diakses public, tidak mengarah ke localhost saat diuji dari Midtrans, tidak dilindungi middleware login, dan merespons HTTP 200 setelah notification valid berhasil diproses. Backend selalu memvalidasi signature, memanggil Midtrans Get Status API, mencocokkan gross amount dengan total order, dan memakai `paymentStatus` terpisah dari `status` proses pesanan.
 
 ### Xendit Test Mode
 
@@ -348,7 +304,7 @@ Cart and checkout
       ↓
 RajaOngkir shipping quote
       ↓
-Manual payment proof / Midtrans payment
+Xendit payment link
       ↓
 Store admin order processing
       ↓
