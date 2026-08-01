@@ -72,7 +72,8 @@ export const authJsHandler = ExpressAuth({
         Google({
           authorization: {
             params: {
-              prompt: "select_account"
+              prompt: "select_account",
+              scope: "openid email profile"
             }
           },
           clientId: String(env("GOOGLE_CLIENT_ID")),
