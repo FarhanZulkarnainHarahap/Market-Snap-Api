@@ -470,7 +470,7 @@ async function createPaymentSession(input: { amount: number; email: string; item
   const invoice = await createXenditInvoice({
     amount: input.amount,
     customerEmail: input.email,
-    description: `Market-Snap order ${input.orderNumber}`,
+    description: xenditInvoiceDescription(input.items),
     externalId: input.orderNumber,
     items: xenditItemDetails(input.items, input.totals)
   });
@@ -692,6 +692,14 @@ function xenditItemDetails(items: CheckoutItem[], totals: { discount: number; se
   if (totals.shippingCost > 0) details.push({ name: "Biaya pengiriman", price: totals.shippingCost, quantity: 1, category: "Shipping" });
   if (totals.serviceFee > 0) details.push({ name: "Biaya layanan", price: totals.serviceFee, quantity: 1, category: "Service Fee" });
   return details;
+}
+
+function xenditInvoiceDescription(items: CheckoutItem[]): string {
+  const products = items.map((item) => `${item.name} - ${item.productId}`);
+  if (!products.length) return "Market-Snap order";
+  const [first, ...rest] = products;
+  const suffix = rest.length ? ` + ${rest.length} produk lainnya` : "";
+  return `${first}${suffix}`.slice(0, 255);
 }
 
 async function findCheckoutAddress(addressId: string | undefined, userId: string): Promise<CheckoutAddress | null> {
