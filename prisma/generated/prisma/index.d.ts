@@ -129,6 +129,18 @@ export const OrderStatus: {
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 
+export const PaymentStatus: {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+};
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
 export const DiscountType: {
   PERCENTAGE: 'PERCENTAGE',
   NOMINAL: 'NOMINAL',
@@ -165,6 +177,10 @@ export const Role: typeof $Enums.Role
 export type OrderStatus = $Enums.OrderStatus
 
 export const OrderStatus: typeof $Enums.OrderStatus
+
+export type PaymentStatus = $Enums.PaymentStatus
+
+export const PaymentStatus: typeof $Enums.PaymentStatus
 
 export type DiscountType = $Enums.DiscountType
 
@@ -16075,9 +16091,21 @@ export namespace Prisma {
     voucherId: string | null
     voucherCode: string | null
     paymentMethod: string | null
+    paymentProvider: string | null
     paymentChannel: string | null
+    paymentStatus: $Enums.PaymentStatus | null
+    paymentRedirectUrl: string | null
     paymentInvoiceUrl: string | null
     paymentExternalId: string | null
+    xenditInvoiceId: string | null
+    xenditInvoiceStatus: string | null
+    midtransTransactionId: string | null
+    midtransTransactionStatus: string | null
+    midtransFraudStatus: string | null
+    midtransStatusCode: string | null
+    paidAt: Date | null
+    paymentExpiredAt: Date | null
+    paymentStockRestoredAt: Date | null
     trackingNumber: string | null
     courierName: string | null
     estimatedArrival: Date | null
@@ -16106,9 +16134,21 @@ export namespace Prisma {
     voucherId: string | null
     voucherCode: string | null
     paymentMethod: string | null
+    paymentProvider: string | null
     paymentChannel: string | null
+    paymentStatus: $Enums.PaymentStatus | null
+    paymentRedirectUrl: string | null
     paymentInvoiceUrl: string | null
     paymentExternalId: string | null
+    xenditInvoiceId: string | null
+    xenditInvoiceStatus: string | null
+    midtransTransactionId: string | null
+    midtransTransactionStatus: string | null
+    midtransFraudStatus: string | null
+    midtransStatusCode: string | null
+    paidAt: Date | null
+    paymentExpiredAt: Date | null
+    paymentStockRestoredAt: Date | null
     trackingNumber: string | null
     courierName: string | null
     estimatedArrival: Date | null
@@ -16138,9 +16178,21 @@ export namespace Prisma {
     voucherId: number
     voucherCode: number
     paymentMethod: number
+    paymentProvider: number
     paymentChannel: number
+    paymentStatus: number
+    paymentRedirectUrl: number
     paymentInvoiceUrl: number
     paymentExternalId: number
+    xenditInvoiceId: number
+    xenditInvoiceStatus: number
+    midtransTransactionId: number
+    midtransTransactionStatus: number
+    midtransFraudStatus: number
+    midtransStatusCode: number
+    paidAt: number
+    paymentExpiredAt: number
+    paymentStockRestoredAt: number
     trackingNumber: number
     courierName: number
     estimatedArrival: number
@@ -16185,9 +16237,21 @@ export namespace Prisma {
     voucherId?: true
     voucherCode?: true
     paymentMethod?: true
+    paymentProvider?: true
     paymentChannel?: true
+    paymentStatus?: true
+    paymentRedirectUrl?: true
     paymentInvoiceUrl?: true
     paymentExternalId?: true
+    xenditInvoiceId?: true
+    xenditInvoiceStatus?: true
+    midtransTransactionId?: true
+    midtransTransactionStatus?: true
+    midtransFraudStatus?: true
+    midtransStatusCode?: true
+    paidAt?: true
+    paymentExpiredAt?: true
+    paymentStockRestoredAt?: true
     trackingNumber?: true
     courierName?: true
     estimatedArrival?: true
@@ -16216,9 +16280,21 @@ export namespace Prisma {
     voucherId?: true
     voucherCode?: true
     paymentMethod?: true
+    paymentProvider?: true
     paymentChannel?: true
+    paymentStatus?: true
+    paymentRedirectUrl?: true
     paymentInvoiceUrl?: true
     paymentExternalId?: true
+    xenditInvoiceId?: true
+    xenditInvoiceStatus?: true
+    midtransTransactionId?: true
+    midtransTransactionStatus?: true
+    midtransFraudStatus?: true
+    midtransStatusCode?: true
+    paidAt?: true
+    paymentExpiredAt?: true
+    paymentStockRestoredAt?: true
     trackingNumber?: true
     courierName?: true
     estimatedArrival?: true
@@ -16248,9 +16324,21 @@ export namespace Prisma {
     voucherId?: true
     voucherCode?: true
     paymentMethod?: true
+    paymentProvider?: true
     paymentChannel?: true
+    paymentStatus?: true
+    paymentRedirectUrl?: true
     paymentInvoiceUrl?: true
     paymentExternalId?: true
+    xenditInvoiceId?: true
+    xenditInvoiceStatus?: true
+    midtransTransactionId?: true
+    midtransTransactionStatus?: true
+    midtransFraudStatus?: true
+    midtransStatusCode?: true
+    paidAt?: true
+    paymentExpiredAt?: true
+    paymentStockRestoredAt?: true
     trackingNumber?: true
     courierName?: true
     estimatedArrival?: true
@@ -16367,9 +16455,21 @@ export namespace Prisma {
     voucherId: string | null
     voucherCode: string | null
     paymentMethod: string | null
+    paymentProvider: string | null
     paymentChannel: string | null
+    paymentStatus: $Enums.PaymentStatus
+    paymentRedirectUrl: string | null
     paymentInvoiceUrl: string | null
     paymentExternalId: string | null
+    xenditInvoiceId: string | null
+    xenditInvoiceStatus: string | null
+    midtransTransactionId: string | null
+    midtransTransactionStatus: string | null
+    midtransFraudStatus: string | null
+    midtransStatusCode: string | null
+    paidAt: Date | null
+    paymentExpiredAt: Date | null
+    paymentStockRestoredAt: Date | null
     trackingNumber: string | null
     courierName: string | null
     estimatedArrival: Date | null
@@ -16418,9 +16518,21 @@ export namespace Prisma {
     voucherId?: boolean
     voucherCode?: boolean
     paymentMethod?: boolean
+    paymentProvider?: boolean
     paymentChannel?: boolean
+    paymentStatus?: boolean
+    paymentRedirectUrl?: boolean
     paymentInvoiceUrl?: boolean
     paymentExternalId?: boolean
+    xenditInvoiceId?: boolean
+    xenditInvoiceStatus?: boolean
+    midtransTransactionId?: boolean
+    midtransTransactionStatus?: boolean
+    midtransFraudStatus?: boolean
+    midtransStatusCode?: boolean
+    paidAt?: boolean
+    paymentExpiredAt?: boolean
+    paymentStockRestoredAt?: boolean
     trackingNumber?: boolean
     courierName?: boolean
     estimatedArrival?: boolean
@@ -16456,9 +16568,21 @@ export namespace Prisma {
     voucherId?: boolean
     voucherCode?: boolean
     paymentMethod?: boolean
+    paymentProvider?: boolean
     paymentChannel?: boolean
+    paymentStatus?: boolean
+    paymentRedirectUrl?: boolean
     paymentInvoiceUrl?: boolean
     paymentExternalId?: boolean
+    xenditInvoiceId?: boolean
+    xenditInvoiceStatus?: boolean
+    midtransTransactionId?: boolean
+    midtransTransactionStatus?: boolean
+    midtransFraudStatus?: boolean
+    midtransStatusCode?: boolean
+    paidAt?: boolean
+    paymentExpiredAt?: boolean
+    paymentStockRestoredAt?: boolean
     trackingNumber?: boolean
     courierName?: boolean
     estimatedArrival?: boolean
@@ -16490,9 +16614,21 @@ export namespace Prisma {
     voucherId?: boolean
     voucherCode?: boolean
     paymentMethod?: boolean
+    paymentProvider?: boolean
     paymentChannel?: boolean
+    paymentStatus?: boolean
+    paymentRedirectUrl?: boolean
     paymentInvoiceUrl?: boolean
     paymentExternalId?: boolean
+    xenditInvoiceId?: boolean
+    xenditInvoiceStatus?: boolean
+    midtransTransactionId?: boolean
+    midtransTransactionStatus?: boolean
+    midtransFraudStatus?: boolean
+    midtransStatusCode?: boolean
+    paidAt?: boolean
+    paymentExpiredAt?: boolean
+    paymentStockRestoredAt?: boolean
     trackingNumber?: boolean
     courierName?: boolean
     estimatedArrival?: boolean
@@ -16524,9 +16660,21 @@ export namespace Prisma {
     voucherId?: boolean
     voucherCode?: boolean
     paymentMethod?: boolean
+    paymentProvider?: boolean
     paymentChannel?: boolean
+    paymentStatus?: boolean
+    paymentRedirectUrl?: boolean
     paymentInvoiceUrl?: boolean
     paymentExternalId?: boolean
+    xenditInvoiceId?: boolean
+    xenditInvoiceStatus?: boolean
+    midtransTransactionId?: boolean
+    midtransTransactionStatus?: boolean
+    midtransFraudStatus?: boolean
+    midtransStatusCode?: boolean
+    paidAt?: boolean
+    paymentExpiredAt?: boolean
+    paymentStockRestoredAt?: boolean
     trackingNumber?: boolean
     courierName?: boolean
     estimatedArrival?: boolean
@@ -16539,7 +16687,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "userId" | "storeId" | "addressId" | "addressSnapshot" | "deliveryDate" | "deliverySlot" | "shippingMethod" | "shippingProvider" | "shippingCost" | "serviceFee" | "discountTotal" | "voucherId" | "voucherCode" | "paymentMethod" | "paymentChannel" | "paymentInvoiceUrl" | "paymentExternalId" | "trackingNumber" | "courierName" | "estimatedArrival" | "orderNote" | "status" | "total" | "paymentProofUrl" | "paymentDeadline" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "userId" | "storeId" | "addressId" | "addressSnapshot" | "deliveryDate" | "deliverySlot" | "shippingMethod" | "shippingProvider" | "shippingCost" | "serviceFee" | "discountTotal" | "voucherId" | "voucherCode" | "paymentMethod" | "paymentProvider" | "paymentChannel" | "paymentStatus" | "paymentRedirectUrl" | "paymentInvoiceUrl" | "paymentExternalId" | "xenditInvoiceId" | "xenditInvoiceStatus" | "midtransTransactionId" | "midtransTransactionStatus" | "midtransFraudStatus" | "midtransStatusCode" | "paidAt" | "paymentExpiredAt" | "paymentStockRestoredAt" | "trackingNumber" | "courierName" | "estimatedArrival" | "orderNote" | "status" | "total" | "paymentProofUrl" | "paymentDeadline" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
@@ -16583,9 +16731,21 @@ export namespace Prisma {
       voucherId: string | null
       voucherCode: string | null
       paymentMethod: string | null
+      paymentProvider: string | null
       paymentChannel: string | null
+      paymentStatus: $Enums.PaymentStatus
+      paymentRedirectUrl: string | null
       paymentInvoiceUrl: string | null
       paymentExternalId: string | null
+      xenditInvoiceId: string | null
+      xenditInvoiceStatus: string | null
+      midtransTransactionId: string | null
+      midtransTransactionStatus: string | null
+      midtransFraudStatus: string | null
+      midtransStatusCode: string | null
+      paidAt: Date | null
+      paymentExpiredAt: Date | null
+      paymentStockRestoredAt: Date | null
       trackingNumber: string | null
       courierName: string | null
       estimatedArrival: Date | null
@@ -17040,9 +17200,21 @@ export namespace Prisma {
     readonly voucherId: FieldRef<"Order", 'String'>
     readonly voucherCode: FieldRef<"Order", 'String'>
     readonly paymentMethod: FieldRef<"Order", 'String'>
+    readonly paymentProvider: FieldRef<"Order", 'String'>
     readonly paymentChannel: FieldRef<"Order", 'String'>
+    readonly paymentStatus: FieldRef<"Order", 'PaymentStatus'>
+    readonly paymentRedirectUrl: FieldRef<"Order", 'String'>
     readonly paymentInvoiceUrl: FieldRef<"Order", 'String'>
     readonly paymentExternalId: FieldRef<"Order", 'String'>
+    readonly xenditInvoiceId: FieldRef<"Order", 'String'>
+    readonly xenditInvoiceStatus: FieldRef<"Order", 'String'>
+    readonly midtransTransactionId: FieldRef<"Order", 'String'>
+    readonly midtransTransactionStatus: FieldRef<"Order", 'String'>
+    readonly midtransFraudStatus: FieldRef<"Order", 'String'>
+    readonly midtransStatusCode: FieldRef<"Order", 'String'>
+    readonly paidAt: FieldRef<"Order", 'DateTime'>
+    readonly paymentExpiredAt: FieldRef<"Order", 'DateTime'>
+    readonly paymentStockRestoredAt: FieldRef<"Order", 'DateTime'>
     readonly trackingNumber: FieldRef<"Order", 'String'>
     readonly courierName: FieldRef<"Order", 'String'>
     readonly estimatedArrival: FieldRef<"Order", 'DateTime'>
@@ -24534,9 +24706,21 @@ export namespace Prisma {
     voucherId: 'voucherId',
     voucherCode: 'voucherCode',
     paymentMethod: 'paymentMethod',
+    paymentProvider: 'paymentProvider',
     paymentChannel: 'paymentChannel',
+    paymentStatus: 'paymentStatus',
+    paymentRedirectUrl: 'paymentRedirectUrl',
     paymentInvoiceUrl: 'paymentInvoiceUrl',
     paymentExternalId: 'paymentExternalId',
+    xenditInvoiceId: 'xenditInvoiceId',
+    xenditInvoiceStatus: 'xenditInvoiceStatus',
+    midtransTransactionId: 'midtransTransactionId',
+    midtransTransactionStatus: 'midtransTransactionStatus',
+    midtransFraudStatus: 'midtransFraudStatus',
+    midtransStatusCode: 'midtransStatusCode',
+    paidAt: 'paidAt',
+    paymentExpiredAt: 'paymentExpiredAt',
+    paymentStockRestoredAt: 'paymentStockRestoredAt',
     trackingNumber: 'trackingNumber',
     courierName: 'courierName',
     estimatedArrival: 'estimatedArrival',
@@ -24800,6 +24984,18 @@ export namespace Prisma {
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
+
+
+  /**
+   * Reference to a field of type 'PaymentStatus'
+   */
+  export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
+
+
+  /**
+   * Reference to a field of type 'PaymentStatus[]'
+   */
+  export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
 
 
   /**
@@ -25759,9 +25955,21 @@ export namespace Prisma {
     voucherId?: StringNullableFilter<"Order"> | string | null
     voucherCode?: StringNullableFilter<"Order"> | string | null
     paymentMethod?: StringNullableFilter<"Order"> | string | null
+    paymentProvider?: StringNullableFilter<"Order"> | string | null
     paymentChannel?: StringNullableFilter<"Order"> | string | null
+    paymentStatus?: EnumPaymentStatusFilter<"Order"> | $Enums.PaymentStatus
+    paymentRedirectUrl?: StringNullableFilter<"Order"> | string | null
     paymentInvoiceUrl?: StringNullableFilter<"Order"> | string | null
     paymentExternalId?: StringNullableFilter<"Order"> | string | null
+    xenditInvoiceId?: StringNullableFilter<"Order"> | string | null
+    xenditInvoiceStatus?: StringNullableFilter<"Order"> | string | null
+    midtransTransactionId?: StringNullableFilter<"Order"> | string | null
+    midtransTransactionStatus?: StringNullableFilter<"Order"> | string | null
+    midtransFraudStatus?: StringNullableFilter<"Order"> | string | null
+    midtransStatusCode?: StringNullableFilter<"Order"> | string | null
+    paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentExpiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentStockRestoredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     courierName?: StringNullableFilter<"Order"> | string | null
     estimatedArrival?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -25796,9 +26004,21 @@ export namespace Prisma {
     voucherId?: SortOrderInput | SortOrder
     voucherCode?: SortOrderInput | SortOrder
     paymentMethod?: SortOrderInput | SortOrder
+    paymentProvider?: SortOrderInput | SortOrder
     paymentChannel?: SortOrderInput | SortOrder
+    paymentStatus?: SortOrder
+    paymentRedirectUrl?: SortOrderInput | SortOrder
     paymentInvoiceUrl?: SortOrderInput | SortOrder
     paymentExternalId?: SortOrderInput | SortOrder
+    xenditInvoiceId?: SortOrderInput | SortOrder
+    xenditInvoiceStatus?: SortOrderInput | SortOrder
+    midtransTransactionId?: SortOrderInput | SortOrder
+    midtransTransactionStatus?: SortOrderInput | SortOrder
+    midtransFraudStatus?: SortOrderInput | SortOrder
+    midtransStatusCode?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    paymentExpiredAt?: SortOrderInput | SortOrder
+    paymentStockRestoredAt?: SortOrderInput | SortOrder
     trackingNumber?: SortOrderInput | SortOrder
     courierName?: SortOrderInput | SortOrder
     estimatedArrival?: SortOrderInput | SortOrder
@@ -25836,9 +26056,21 @@ export namespace Prisma {
     voucherId?: StringNullableFilter<"Order"> | string | null
     voucherCode?: StringNullableFilter<"Order"> | string | null
     paymentMethod?: StringNullableFilter<"Order"> | string | null
+    paymentProvider?: StringNullableFilter<"Order"> | string | null
     paymentChannel?: StringNullableFilter<"Order"> | string | null
+    paymentStatus?: EnumPaymentStatusFilter<"Order"> | $Enums.PaymentStatus
+    paymentRedirectUrl?: StringNullableFilter<"Order"> | string | null
     paymentInvoiceUrl?: StringNullableFilter<"Order"> | string | null
     paymentExternalId?: StringNullableFilter<"Order"> | string | null
+    xenditInvoiceId?: StringNullableFilter<"Order"> | string | null
+    xenditInvoiceStatus?: StringNullableFilter<"Order"> | string | null
+    midtransTransactionId?: StringNullableFilter<"Order"> | string | null
+    midtransTransactionStatus?: StringNullableFilter<"Order"> | string | null
+    midtransFraudStatus?: StringNullableFilter<"Order"> | string | null
+    midtransStatusCode?: StringNullableFilter<"Order"> | string | null
+    paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentExpiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentStockRestoredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     courierName?: StringNullableFilter<"Order"> | string | null
     estimatedArrival?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -25873,9 +26105,21 @@ export namespace Prisma {
     voucherId?: SortOrderInput | SortOrder
     voucherCode?: SortOrderInput | SortOrder
     paymentMethod?: SortOrderInput | SortOrder
+    paymentProvider?: SortOrderInput | SortOrder
     paymentChannel?: SortOrderInput | SortOrder
+    paymentStatus?: SortOrder
+    paymentRedirectUrl?: SortOrderInput | SortOrder
     paymentInvoiceUrl?: SortOrderInput | SortOrder
     paymentExternalId?: SortOrderInput | SortOrder
+    xenditInvoiceId?: SortOrderInput | SortOrder
+    xenditInvoiceStatus?: SortOrderInput | SortOrder
+    midtransTransactionId?: SortOrderInput | SortOrder
+    midtransTransactionStatus?: SortOrderInput | SortOrder
+    midtransFraudStatus?: SortOrderInput | SortOrder
+    midtransStatusCode?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    paymentExpiredAt?: SortOrderInput | SortOrder
+    paymentStockRestoredAt?: SortOrderInput | SortOrder
     trackingNumber?: SortOrderInput | SortOrder
     courierName?: SortOrderInput | SortOrder
     estimatedArrival?: SortOrderInput | SortOrder
@@ -25913,9 +26157,21 @@ export namespace Prisma {
     voucherId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     voucherCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paymentMethod?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paymentProvider?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paymentChannel?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paymentStatus?: EnumPaymentStatusWithAggregatesFilter<"Order"> | $Enums.PaymentStatus
+    paymentRedirectUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paymentInvoiceUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paymentExternalId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    xenditInvoiceId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    xenditInvoiceStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    midtransTransactionId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    midtransTransactionStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    midtransFraudStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    midtransStatusCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paidAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    paymentExpiredAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    paymentStockRestoredAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     trackingNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
     courierName?: StringNullableWithAggregatesFilter<"Order"> | string | null
     estimatedArrival?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
@@ -27376,9 +27632,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -27413,9 +27681,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -27446,9 +27726,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27483,9 +27775,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27518,9 +27822,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -27548,9 +27864,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27580,9 +27908,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -28987,6 +29327,13 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type EnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
   export type EnumOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -29021,9 +29368,21 @@ export namespace Prisma {
     voucherId?: SortOrder
     voucherCode?: SortOrder
     paymentMethod?: SortOrder
+    paymentProvider?: SortOrder
     paymentChannel?: SortOrder
+    paymentStatus?: SortOrder
+    paymentRedirectUrl?: SortOrder
     paymentInvoiceUrl?: SortOrder
     paymentExternalId?: SortOrder
+    xenditInvoiceId?: SortOrder
+    xenditInvoiceStatus?: SortOrder
+    midtransTransactionId?: SortOrder
+    midtransTransactionStatus?: SortOrder
+    midtransFraudStatus?: SortOrder
+    midtransStatusCode?: SortOrder
+    paidAt?: SortOrder
+    paymentExpiredAt?: SortOrder
+    paymentStockRestoredAt?: SortOrder
     trackingNumber?: SortOrder
     courierName?: SortOrder
     estimatedArrival?: SortOrder
@@ -29059,9 +29418,21 @@ export namespace Prisma {
     voucherId?: SortOrder
     voucherCode?: SortOrder
     paymentMethod?: SortOrder
+    paymentProvider?: SortOrder
     paymentChannel?: SortOrder
+    paymentStatus?: SortOrder
+    paymentRedirectUrl?: SortOrder
     paymentInvoiceUrl?: SortOrder
     paymentExternalId?: SortOrder
+    xenditInvoiceId?: SortOrder
+    xenditInvoiceStatus?: SortOrder
+    midtransTransactionId?: SortOrder
+    midtransTransactionStatus?: SortOrder
+    midtransFraudStatus?: SortOrder
+    midtransStatusCode?: SortOrder
+    paidAt?: SortOrder
+    paymentExpiredAt?: SortOrder
+    paymentStockRestoredAt?: SortOrder
     trackingNumber?: SortOrder
     courierName?: SortOrder
     estimatedArrival?: SortOrder
@@ -29090,9 +29461,21 @@ export namespace Prisma {
     voucherId?: SortOrder
     voucherCode?: SortOrder
     paymentMethod?: SortOrder
+    paymentProvider?: SortOrder
     paymentChannel?: SortOrder
+    paymentStatus?: SortOrder
+    paymentRedirectUrl?: SortOrder
     paymentInvoiceUrl?: SortOrder
     paymentExternalId?: SortOrder
+    xenditInvoiceId?: SortOrder
+    xenditInvoiceStatus?: SortOrder
+    midtransTransactionId?: SortOrder
+    midtransTransactionStatus?: SortOrder
+    midtransFraudStatus?: SortOrder
+    midtransStatusCode?: SortOrder
+    paidAt?: SortOrder
+    paymentExpiredAt?: SortOrder
+    paymentStockRestoredAt?: SortOrder
     trackingNumber?: SortOrder
     courierName?: SortOrder
     estimatedArrival?: SortOrder
@@ -29136,6 +29519,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type EnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
 
   export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -30704,6 +31097,10 @@ export namespace Prisma {
     connect?: VoucherUsageWhereUniqueInput | VoucherUsageWhereUniqueInput[]
   }
 
+  export type EnumPaymentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentStatus
+  }
+
   export type EnumOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.OrderStatus
   }
@@ -31258,6 +31655,13 @@ export namespace Prisma {
     _max?: NestedEnumVoucherScopeFilter<$PrismaModel>
   }
 
+  export type NestedEnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
   export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -31286,6 +31690,16 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -31447,9 +31861,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -31482,9 +31908,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -31830,9 +32268,21 @@ export namespace Prisma {
     voucherId?: StringNullableFilter<"Order"> | string | null
     voucherCode?: StringNullableFilter<"Order"> | string | null
     paymentMethod?: StringNullableFilter<"Order"> | string | null
+    paymentProvider?: StringNullableFilter<"Order"> | string | null
     paymentChannel?: StringNullableFilter<"Order"> | string | null
+    paymentStatus?: EnumPaymentStatusFilter<"Order"> | $Enums.PaymentStatus
+    paymentRedirectUrl?: StringNullableFilter<"Order"> | string | null
     paymentInvoiceUrl?: StringNullableFilter<"Order"> | string | null
     paymentExternalId?: StringNullableFilter<"Order"> | string | null
+    xenditInvoiceId?: StringNullableFilter<"Order"> | string | null
+    xenditInvoiceStatus?: StringNullableFilter<"Order"> | string | null
+    midtransTransactionId?: StringNullableFilter<"Order"> | string | null
+    midtransTransactionStatus?: StringNullableFilter<"Order"> | string | null
+    midtransFraudStatus?: StringNullableFilter<"Order"> | string | null
+    midtransStatusCode?: StringNullableFilter<"Order"> | string | null
+    paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentExpiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    paymentStockRestoredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     courierName?: StringNullableFilter<"Order"> | string | null
     estimatedArrival?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -32115,9 +32565,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -32150,9 +32612,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34316,9 +34790,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34352,9 +34838,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34437,9 +34935,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -34473,9 +34983,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -34548,9 +35070,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34584,9 +35118,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34632,9 +35178,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -34668,9 +35226,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -34790,9 +35360,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34826,9 +35408,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -34976,9 +35570,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35012,9 +35618,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35736,9 +36354,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -35906,9 +36536,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35941,9 +36583,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35975,9 +36629,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36217,9 +36883,21 @@ export namespace Prisma {
     voucherId?: string | null
     voucherCode?: string | null
     paymentMethod?: string | null
+    paymentProvider?: string | null
     paymentChannel?: string | null
+    paymentStatus?: $Enums.PaymentStatus
+    paymentRedirectUrl?: string | null
     paymentInvoiceUrl?: string | null
     paymentExternalId?: string | null
+    xenditInvoiceId?: string | null
+    xenditInvoiceStatus?: string | null
+    midtransTransactionId?: string | null
+    midtransTransactionStatus?: string | null
+    midtransFraudStatus?: string | null
+    midtransStatusCode?: string | null
+    paidAt?: Date | string | null
+    paymentExpiredAt?: Date | string | null
+    paymentStockRestoredAt?: Date | string | null
     trackingNumber?: string | null
     courierName?: string | null
     estimatedArrival?: Date | string | null
@@ -36414,9 +37092,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36449,9 +37139,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36483,9 +37185,21 @@ export namespace Prisma {
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
     voucherCode?: NullableStringFieldUpdateOperationsInput | string | null
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentRedirectUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentInvoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paymentExternalId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
+    xenditInvoiceStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransTransactionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransFraudStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    midtransStatusCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentExpiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentStockRestoredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     courierName?: NullableStringFieldUpdateOperationsInput | string | null
     estimatedArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

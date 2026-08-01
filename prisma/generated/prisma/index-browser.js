@@ -267,9 +267,21 @@ exports.Prisma.OrderScalarFieldEnum = {
   voucherId: 'voucherId',
   voucherCode: 'voucherCode',
   paymentMethod: 'paymentMethod',
+  paymentProvider: 'paymentProvider',
   paymentChannel: 'paymentChannel',
+  paymentStatus: 'paymentStatus',
+  paymentRedirectUrl: 'paymentRedirectUrl',
   paymentInvoiceUrl: 'paymentInvoiceUrl',
   paymentExternalId: 'paymentExternalId',
+  xenditInvoiceId: 'xenditInvoiceId',
+  xenditInvoiceStatus: 'xenditInvoiceStatus',
+  midtransTransactionId: 'midtransTransactionId',
+  midtransTransactionStatus: 'midtransTransactionStatus',
+  midtransFraudStatus: 'midtransFraudStatus',
+  midtransStatusCode: 'midtransStatusCode',
+  paidAt: 'paidAt',
+  paymentExpiredAt: 'paymentExpiredAt',
+  paymentStockRestoredAt: 'paymentStockRestoredAt',
   trackingNumber: 'trackingNumber',
   courierName: 'courierName',
   estimatedArrival: 'estimatedArrival',
@@ -390,6 +402,15 @@ exports.VoucherScope = exports.$Enums.VoucherScope = {
   PRODUCT: 'PRODUCT',
   CART: 'CART',
   SHIPPING: 'SHIPPING'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {

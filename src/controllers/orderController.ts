@@ -1,8 +1,9 @@
 import type { Request, Response } from "express";
 import type { OrderStatus, Prisma } from "../../prisma/generated/prisma/client.js";
-import { createMidtransSnapTransaction, midtransConfig, verifyMidtransSignature } from "../config/midtrans.js";
 import { prisma } from "../config/prisma.js";
 import { calculateDomesticShippingCost, rajaongkirConfig } from "../config/rajaongkir.js";
+import { createMidtransSnapTransaction, midtransConfig } from "../services/midtrans.service.js";
+import { createXenditInvoice, xenditConfig, type XenditInvoiceItem } from "../services/xendit.service.js";
 import { distanceKm } from "../utils/distance.js";
 import { handleControllerError, locationFromQuery, mapStore, orderNumber } from "../utils/controllerHelpers.js";
 
@@ -17,7 +18,7 @@ type CreateOrderBody = {
   deliverySlot?: string;
   voucherCode?: string;
   weightGram?: number;
-  paymentMethod?: "midtrans";
+  paymentMethod?: "midtrans" | "xendit";
   paymentChannel?: string;
   orderNote?: string;
   addressId?: string;
@@ -38,9 +39,11 @@ type CheckoutPayment = {
   channel: string;
   externalId: string | null;
   invoiceUrl: string | null;
-  method: "midtrans";
+  method: "midtrans" | "xendit";
   orderNumber: string;
+  redirectUrl: string | null;
   status: string;
+  token?: string | null;
 };
 
 type CheckoutAddress = {
@@ -63,17 +66,6 @@ type VoucherValidation = {
   message: string;
   valid: boolean;
   voucher?: { id: string; code: string };
-};
-
-type MidtransNotificationBody = {
-  fraud_status?: string;
-  gross_amount?: string;
-  order_id?: string;
-  payment_type?: string;
-  signature_key?: string;
-  status_code?: string;
-  transaction_id?: string;
-  transaction_status?: string;
 };
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -162,9 +154,9 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       res.status(422).json({ message: "Metode pembayaran tidak tersedia." });
       return;
     }
-    const payment = await paymentInvoice(body, orderNumber(), total, userEmail, items, { shippingCost: shipping.cost, serviceFee, discount: voucher.discount });
-    const orderNo = payment.orderNumber;
+    const orderNo = orderNumber();
     const paymentDeadline = new Date(Date.now() + 60 * 60 * 1000);
+    const payment = initialPayment(body, orderNo);
 
     const order = await createCheckoutOrder({
       address,
@@ -186,59 +178,62 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       return createLegacyCheckoutOrder({ items, orderNo, paymentDeadline, shippingCost: shipping.cost, storeId: store.id, total, userId });
     });
 
-    res.status(201).json({ data: { ...order, status: statusLabels[order.status] }, shipping, payment: { ...payment, orderNumber: undefined } });
+    let session: CheckoutPayment;
+    try {
+      session = await createPaymentSession({ amount: total, email: userEmail, items, orderNumber: order.orderNumber, payment, totals: { shippingCost: shipping.cost, serviceFee, discount: voucher.discount } });
+    } catch (error) {
+      await markPaymentSessionFailed(order.id);
+      throw error;
+    }
+
+    const updated = await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentExternalId: session.token ?? session.externalId,
+        paymentInvoiceUrl: session.redirectUrl,
+        paymentProvider: session.method,
+        paymentRedirectUrl: session.redirectUrl,
+        xenditInvoiceId: session.method === "xendit" ? session.externalId : undefined,
+        xenditInvoiceStatus: session.method === "xendit" ? session.status : undefined
+      },
+      select: orderResponseSelect
+    });
+
+    res.status(201).json({
+      data: {
+        id: updated.id,
+        orderNumber: updated.orderNumber,
+        status: updated.status,
+        paymentStatus: updated.paymentStatus
+      },
+      shipping,
+      payment: {
+        method: session.method,
+        redirectUrl: session.redirectUrl,
+        invoiceUrl: session.redirectUrl,
+        expiresAt: paymentDeadline.toISOString()
+      }
+    });
   } catch (error) {
     handleControllerError(res, error);
   }
 }
 
-export async function handleMidtransNotification(req: Request, res: Response): Promise<void> {
+export async function getOrderInvoice(req: Request, res: Response): Promise<void> {
   try {
-    const body = req.body as MidtransNotificationBody;
-    if (!midtransConfig.hasServerKey) {
-      res.status(503).json({ message: "Konfigurasi Midtrans belum lengkap." });
-      return;
-    }
-    if (!verifyMidtransSignature({ grossAmount: body.gross_amount, orderId: body.order_id, signatureKey: body.signature_key, statusCode: body.status_code })) {
-      res.status(403).json({ message: "Signature Midtrans tidak valid." });
-      return;
-    }
-
-    const orderNo = String(body.order_id ?? "");
-    const nextStatus = statusFromMidtrans(body.transaction_status, body.fraud_status);
-    if (!orderNo || !nextStatus) {
-      res.json({ message: "Notifikasi Midtrans diabaikan." });
-      return;
-    }
-
-    const order = await prisma.$transaction(async (tx) => {
-      const exists = await tx.order.findUnique({ where: { orderNumber: orderNo }, include: { items: true } });
-      if (!exists) return null;
-      if (nextStatus === "CANCELLED" && exists.status !== "CANCELLED") {
-        for (const item of exists.items) {
-          await tx.inventory.update({ where: { storeId_productId: { storeId: exists.storeId, productId: item.productId } }, data: { quantity: { increment: item.quantity } } });
-          await tx.stockJournal.create({ data: { storeId: exists.storeId, productId: item.productId, change: item.quantity, note: `Pembatalan ${exists.orderNumber}` } });
-        }
+    const order = await prisma.order.findUnique({
+      where: { orderNumber: String(req.params.orderNumber ?? "") },
+      include: {
+        items: { include: { product: { include: { images: true } } } },
+        store: true,
+        user: true
       }
-      const updated = await tx.order.update({
-        where: { id: exists.id },
-        data: {
-          paymentChannel: body.payment_type ?? exists.paymentChannel,
-          paymentExternalId: body.transaction_id ?? exists.paymentExternalId,
-          status: nextStatus
-        }
-      });
-      if (exists.status !== nextStatus) {
-        await tx.orderStatusHistory.create({ data: { orderId: updated.id, status: nextStatus, description: midtransHistoryDescription(nextStatus) } });
-      }
-      return updated;
     });
-
-    if (!order) {
-      res.status(404).json({ message: "Order tidak ditemukan." });
+    if (!order || !canAccessOrder(req, order)) {
+      res.status(404).json({ message: "Invoice tidak ditemukan." });
       return;
     }
-    res.json({ message: "Notifikasi Midtrans diproses.", data: { id: order.id, status: statusLabels[order.status] } });
+    res.json({ data: invoicePayload(order) });
   } catch (error) {
     handleControllerError(res, error);
   }
@@ -464,20 +459,41 @@ async function shippingQuote(body: CreateOrderBody, method: ReturnType<typeof sh
   return { cost: method.cost, provider: "market-snap", detail: null };
 }
 
-async function paymentInvoice(body: CreateOrderBody, orderNo: string, amount: number, email: string, items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }): Promise<CheckoutPayment> {
+function initialPayment(body: CreateOrderBody, orderNo: string): CheckoutPayment {
   const methods = paymentMethodOptions();
   const selected = methods.find((method) => method.id === body.paymentChannel);
   if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
-  if (!midtransConfig.hasServerKey) throw new Error("Konfigurasi Midtrans belum lengkap.");
+  const method = selected.provider === "xendit" ? "xendit" : "midtrans";
+  if (method === "xendit" && !xenditConfig.hasSecretKey) throw new Error("Konfigurasi Xendit belum lengkap.");
+  if (method === "midtrans" && !midtransConfig.hasServerKey) throw new Error("Konfigurasi Midtrans belum lengkap.");
+  return { channel: selected.channel, externalId: orderNo, invoiceUrl: null, method, orderNumber: orderNo, redirectUrl: null, status: "PENDING" };
+}
+
+async function createPaymentSession(input: { amount: number; email: string; items: CheckoutItem[]; orderNumber: string; payment: CheckoutPayment; totals: { discount: number; serviceFee: number; shippingCost: number } }): Promise<CheckoutPayment> {
+  if (input.payment.method === "xendit") {
+    const invoice = await createXenditInvoice({
+      amount: input.amount,
+      customerEmail: input.email,
+      description: `Market-Snap order ${input.orderNumber}`,
+      externalId: input.orderNumber,
+      items: xenditItemDetails(input.items, input.totals)
+    });
+    if (!invoice.invoice_url) throw new Error("Xendit tidak mengembalikan invoice_url.");
+    return { ...input.payment, externalId: invoice.id, invoiceUrl: invoice.invoice_url, redirectUrl: invoice.invoice_url, status: invoice.status, token: invoice.id };
+  }
+
+  const itemDetails = midtransItemDetails(input.items, input.totals);
+  const itemGross = itemDetails.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  if (itemGross !== input.amount) throw new Error("Total item Midtrans tidak sama dengan total order.");
   const snap = await createMidtransSnapTransaction({
-    amount,
-    itemDetails: midtransItemDetails(items, totals),
-    orderNumber: orderNo,
-    payerEmail: email,
-    paymentChannel: selected.channel
+    amount: input.amount,
+    itemDetails,
+    orderNumber: input.orderNumber,
+    payerEmail: input.email,
+    paymentChannel: input.payment.channel || undefined
   });
   if (!snap.redirect_url) throw new Error("Midtrans tidak mengembalikan redirect_url.");
-  return { channel: selected.channel, externalId: orderNo, invoiceUrl: snap.redirect_url, method: "midtrans", orderNumber: orderNo, status: "PENDING" };
+  return { ...input.payment, externalId: snap.token ?? input.payment.externalId, invoiceUrl: snap.redirect_url, redirectUrl: snap.redirect_url, token: snap.token };
 }
 
 function shippingMethodOptions() {
@@ -489,25 +505,27 @@ function shippingMethodOptions() {
 }
 
 function paymentMethodOptions() {
-  if (
-    !midtransConfig.hasServerKey ||
-    !midtransConfig.isKeyModeValid
-  ) {
-    return [];
+  if (xenditConfig.hasSecretKey) {
+    return [
+      {
+        id: "xendit",
+        label: "Xendit Test Mode",
+        provider: "xendit",
+        channel: "",
+        description: "Bayar melalui Xendit Payment Link test mode."
+      }
+    ];
   }
 
-  return [
-    {
-      id: "midtrans",
-      label: midtransConfig.isProduction
-        ? "Midtrans"
-        : "Midtrans Sandbox",
-      provider: "midtrans",
-      channel: "",
-      description:
-        "Bayar aman melalui VA, QRIS, e-wallet, kartu, atau gerai retail.",
-    },
-  ];
+  if (!midtransConfig.hasServerKey || !midtransConfig.isKeyModeValid) return [];
+
+  return [{
+    id: "midtrans",
+    label: midtransConfig.isProduction ? "Midtrans" : "Midtrans Sandbox",
+    provider: "midtrans",
+    channel: "",
+    description: "Bayar aman melalui VA, QRIS, e-wallet, kartu, atau gerai retail."
+  }];
 }
 
 async function createCheckoutOrder(input: {
@@ -543,6 +561,9 @@ async function createCheckoutOrder(input: {
         paymentExternalId: input.payment.externalId,
         paymentInvoiceUrl: input.payment.invoiceUrl,
         paymentMethod: input.payment.method,
+        paymentProvider: input.payment.method,
+        paymentRedirectUrl: input.payment.redirectUrl,
+        paymentStatus: "PENDING",
         serviceFee: input.serviceFee,
         shippingCost: input.shipping.cost,
         shippingMethod: input.shippingMethod.id,
@@ -574,6 +595,7 @@ async function createLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo
       data: {
         orderNumber: input.orderNo,
         paymentDeadline: input.paymentDeadline,
+        paymentStatus: "PENDING",
         shippingCost: input.shippingCost,
         status: "WAITING_PAYMENT",
         storeId: input.storeId,
@@ -599,11 +621,37 @@ async function persistOrderSideEffects(tx: Prisma.TransactionClient, input: { it
   else await tx.cartItem.deleteMany({ where: { userId: input.userId, storeId: input.storeId, productId: { in: input.items.map((item) => item.productId) } } });
 }
 
+async function markPaymentSessionFailed(orderId: string) {
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({ where: { id: orderId }, include: { items: true } });
+    if (!order) return;
+    if (!order.paymentStockRestoredAt && order.paymentStatus === "PENDING") {
+      for (const item of order.items) {
+        await tx.inventory.update({ where: { storeId_productId: { storeId: order.storeId, productId: item.productId } }, data: { quantity: { increment: item.quantity } } });
+        await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: item.quantity, note: `Restore stok sesi pembayaran ${order.orderNumber}` } });
+      }
+    }
+    await tx.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: "FAILED",
+        paymentStockRestoredAt: order.paymentStockRestoredAt ?? new Date(),
+        status: "CANCELLED"
+      }
+    });
+    if (order.status !== "CANCELLED") {
+      await tx.orderStatusHistory.create({ data: { orderId: order.id, status: "CANCELLED", description: "Sesi pembayaran Midtrans gagal dibuat." } });
+    }
+  });
+}
+
 const orderResponseSelect = {
   createdAt: true,
   id: true,
   orderNumber: true,
   paymentDeadline: true,
+  paymentRedirectUrl: true,
+  paymentStatus: true,
   shippingCost: true,
   status: true,
   storeId: true,
@@ -611,6 +659,54 @@ const orderResponseSelect = {
   updatedAt: true,
   userId: true
 } satisfies Prisma.OrderSelect;
+
+function canAccessOrder(req: Request, order: { storeId: string; userId: string }) {
+  if (req.user?.role === "super_admin") return true;
+  if (req.user?.role === "store_admin") return Boolean(req.user.storeId && req.user.storeId === order.storeId);
+  return req.user?.id === order.userId;
+}
+
+function invoicePayload(order: Prisma.OrderGetPayload<{ include: { items: { include: { product: { include: { images: true } } } }; store: true; user: true } }>) {
+  const address = (order.addressSnapshot ?? {}) as Record<string, unknown>;
+  return {
+    invoiceNumber: `INV-${order.orderNumber}`,
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    paymentStatus: order.paymentStatus,
+    orderStatus: order.status,
+    customer: {
+      id: order.user.id,
+      name: order.user.name,
+      email: order.user.email,
+      phone: order.user.phone
+    },
+    store: {
+      id: order.store.id,
+      name: order.store.name,
+      city: order.store.city
+    },
+    address,
+    items: order.items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      name: item.product.name,
+      image: item.product.images[0]?.url ?? null,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      subtotal: item.price * item.quantity
+    })),
+    subtotal: order.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    shippingCost: order.shippingCost,
+    serviceFee: order.serviceFee,
+    discount: order.discountTotal,
+    grandTotal: order.total,
+    paymentMethod: order.paymentMethod,
+    paymentChannel: order.paymentChannel,
+    transactionId: order.xenditInvoiceId ?? order.midtransTransactionId ?? order.paymentExternalId,
+    createdAt: order.createdAt.toISOString(),
+    paidAt: order.paymentStatus === "PAID" ? order.paidAt?.toISOString() ?? null : null
+  };
+}
 
 function isCheckoutSchemaMissing(error: unknown) {
   const message = error instanceof Error ? error.message : "";
@@ -627,6 +723,18 @@ function midtransItemDetails(items: CheckoutItem[], totals: { discount: number; 
   if (totals.shippingCost > 0) details.push({ id: "shipping", name: "Biaya pengiriman", price: totals.shippingCost, quantity: 1 });
   if (totals.serviceFee > 0) details.push({ id: "service-fee", name: "Biaya layanan", price: totals.serviceFee, quantity: 1 });
   if (totals.discount > 0) details.push({ id: "discount", name: "Diskon voucher", price: -totals.discount, quantity: 1 });
+  return details;
+}
+
+function xenditItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }): XenditInvoiceItem[] {
+  const details: XenditInvoiceItem[] = items.map((item) => ({
+    name: item.name.slice(0, 255),
+    price: item.price,
+    quantity: item.quantity,
+    category: item.category
+  }));
+  if (totals.shippingCost > 0) details.push({ name: "Biaya pengiriman", price: totals.shippingCost, quantity: 1, category: "Shipping" });
+  if (totals.serviceFee > 0) details.push({ name: "Biaya layanan", price: totals.serviceFee, quantity: 1, category: "Service Fee" });
   return details;
 }
 

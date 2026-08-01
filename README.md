@@ -86,7 +86,7 @@ DATABASE_URL="postgres://USER:PASSWORD@HOST:5432/postgres?sslmode=require"
 DIRECT_URL="postgres://USER:PASSWORD@HOST:5432/postgres?sslmode=require"
 PORT=4100
 HOST=127.0.0.1
-WEB_ORIGIN=http://localhost:3200
+WEB_ORIGIN=http://localhost:3000
 JWT_SECRET=""
 CLOUDINARY_CLOUD_NAME=""
 CLOUDINARY_API_KEY=""
@@ -101,6 +101,9 @@ MIDTRANS_MERCHANT_ID=""
 MIDTRANS_CLIENT_KEY=""
 MIDTRANS_SERVER_KEY=""
 MIDTRANS_IS_PRODUCTION=false
+XENDIT_SECRET_KEY=""
+XENDIT_CALLBACK_TOKEN=""
+XENDIT_INVOICE_DURATION_SECONDS=3600
 ```
 
 Jangan commit `.env` ke GitHub.
@@ -140,9 +143,10 @@ Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
 
 - Memilih store terdekat dari `location`.
 - Menghitung ongkir RajaOngkir jika `destinationId` dikirim.
-- Membuat transaksi Snap Midtrans saat `MIDTRANS_SERVER_KEY` tersedia, lalu mengembalikan `payment.invoiceUrl` dari `redirect_url` Midtrans untuk halaman pembayaran.
-- Menerima notification webhook Midtrans di `/payments/midtrans/notification` untuk update status order otomatis.
-- Menyimpan `shippingCost`, `total`, `paymentDeadline`, dan order items.
+- Menghitung ulang subtotal, diskon, ongkir, service fee, dan total di backend.
+- Membuat transaksi Snap Midtrans saat `MIDTRANS_SERVER_KEY` tersedia, lalu mengembalikan `payment.redirectUrl` dari `redirect_url` Midtrans untuk halaman pembayaran.
+- Menerima notification webhook Midtrans di `/payments/midtrans/notification` untuk rekonsiliasi payment status otomatis.
+- Menyimpan `shippingCost`, `total`, `paymentDeadline`, `paymentStatus`, `paymentRedirectUrl`, metadata Midtrans, dan order items.
 
 Contoh request:
 
@@ -167,14 +171,113 @@ Response akan membawa data order, detail shipping, dan object payment dari `redi
 
 ```json
 {
+  "data": {
+    "id": "ORDER_DATABASE_ID",
+    "orderNumber": "ORD-260801-...",
+    "status": "WAITING_PAYMENT",
+    "paymentStatus": "PENDING"
+  },
   "payment": {
     "method": "midtrans",
-    "invoiceUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/TRANSACTION_ID"
+    "redirectUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/TRANSACTION_ID",
+    "invoiceUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/TRANSACTION_ID",
+    "expiresAt": "2026-08-01T10:00:00.000Z"
   }
 }
 ```
 
-Untuk sandbox, isi `MIDTRANS_SERVER_KEY` dengan Server Key sandbox dan biarkan `MIDTRANS_IS_PRODUCTION=false`. Backend akan memanggil `https://app.sandbox.midtrans.com/snap/v1/transactions` memakai Basic Auth `base64(MIDTRANS_SERVER_KEY + ":")`, lalu frontend mengarahkan customer ke `payment.invoiceUrl`.
+Untuk sandbox, isi `MIDTRANS_SERVER_KEY` dengan Server Key sandbox dan biarkan `MIDTRANS_IS_PRODUCTION=false`. Backend akan memanggil `https://app.sandbox.midtrans.com/snap/v1/transactions` memakai Basic Auth `base64(MIDTRANS_SERVER_KEY + ":")`, lalu frontend mengarahkan customer ke `payment.redirectUrl`.
+
+### Midtrans Dashboard
+
+Local sandbox:
+
+```txt
+Finish Redirect URL:
+http://localhost:3000/payment/finish
+
+Unfinish Redirect URL:
+http://localhost:3000/payment/pending
+
+Error Redirect URL:
+http://localhost:3000/payment/error
+
+Payment Notification URL:
+<API_PUBLIC_URL>/payments/midtrans/notification
+```
+
+Production:
+
+```txt
+Finish Redirect URL:
+https://market-snap.web.id/payment/finish
+
+Unfinish Redirect URL:
+https://market-snap.web.id/payment/pending
+
+Error Redirect URL:
+https://market-snap.web.id/payment/error
+
+Payment Notification URL:
+<DOMAIN_BACKEND_PRODUCTION>/payments/midtrans/notification
+```
+
+Gunakan `WEB_ORIGIN=http://localhost:3000` untuk lokal dan `WEB_ORIGIN=https://market-snap.web.id` untuk production. Jangan hardcode domain production di source code. Domain backend production tidak ditebak oleh aplikasi; isi Dashboard Midtrans dengan domain API publik yang benar dari environment/deployment.
+
+Webhook Midtrans harus HTTPS di production, dapat diakses public, tidak mengarah ke localhost saat diuji dari Midtrans, tidak dilindungi middleware login, dan merespons HTTP 200 setelah notification valid berhasil diproses. Backend selalu memvalidasi signature, memanggil Midtrans Get Status API, mencocokkan gross amount dengan total order, dan memakai `paymentStatus` terpisah dari `status` proses pesanan.
+
+### Xendit Test Mode
+
+Dashboard: https://dashboard.xendit.co
+
+Ambil test secret key dari:
+
+```txt
+Settings → Developers → API Keys
+```
+
+Isi hanya di backend/API environment:
+
+```env
+XENDIT_SECRET_KEY=xnd_development_...
+XENDIT_CALLBACK_TOKEN=callback_token_dari_webhook_settings
+XENDIT_INVOICE_DURATION_SECONDS=3600
+WEB_ORIGIN=http://localhost:3000
+```
+
+Untuk Vercel test mode, pasang env di project backend/API:
+
+```env
+XENDIT_SECRET_KEY=xnd_development_...
+XENDIT_CALLBACK_TOKEN=callback_token_dari_webhook_settings
+XENDIT_INVOICE_DURATION_SECONDS=3600
+WEB_ORIGIN=https://market-snap.web.id
+```
+
+Set webhook invoice di:
+
+```txt
+Settings → Developers → Webhooks
+```
+
+Gunakan URL:
+
+```txt
+Invoice Webhook URL:
+<API_PUBLIC_URL>/payments/xendit/invoice
+```
+
+Redirect dibuat otomatis saat backend membuat invoice Xendit:
+
+```txt
+Success Redirect:
+<WEB_ORIGIN>/payment/finish?order_id=<ORDER_NUMBER>
+
+Failure Redirect:
+<WEB_ORIGIN>/payment/error?order_id=<ORDER_NUMBER>
+```
+
+Xendit test mode ditentukan oleh test secret key `xnd_development_...`. Secret key tidak boleh dikirim ke frontend, response API, log, atau GitHub.
 
 ## Main Endpoints
 
@@ -193,7 +296,10 @@ Untuk sandbox, isi `MIDTRANS_SERVER_KEY` dengan Server Key sandbox dan biarkan `
 | PATCH | `/addresses/:id` | Auth | Update address |
 | DELETE | `/addresses/:id` | Auth | Delete address |
 | GET | `/orders` | Auth | Order list |
-| POST | `/orders` | Customer | Create order, calculate shipping, create Midtrans payment |
+| POST | `/orders` | Customer | Create order, calculate shipping, create payment link |
+| GET | `/payments/:orderNumber/status` | Auth | Reconcile and read latest payment status |
+| POST | `/payments/xendit/invoice` | Public | Xendit invoice webhook |
+| GET | `/orders/by-number/:orderNumber/invoice` | Auth | Market-Snap invoice from database order data |
 | PATCH | `/orders/:id` | Auth | Update order |
 | DELETE | `/orders/:id` | Auth | Delete order |
 | POST | `/orders/:id/payment-proof` | Customer | Upload payment proof |

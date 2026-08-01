@@ -24,6 +24,15 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
 enum DiscountType {
   PERCENTAGE
   NOMINAL
@@ -214,40 +223,52 @@ model Voucher {
 }
 
 model Order {
-  id                String               @id @default(cuid())
-  orderNumber       String               @unique
-  userId            String
-  storeId           String
-  addressId         String?
-  addressSnapshot   Json?
-  deliveryDate      DateTime?
-  deliverySlot      String?
-  shippingMethod    String?
-  shippingProvider  String?
-  shippingCost      Int                  @default(0)
-  serviceFee        Int                  @default(0)
-  discountTotal     Int                  @default(0)
-  voucherId         String?
-  voucherCode       String?
-  paymentMethod     String?
-  paymentChannel    String?
-  paymentInvoiceUrl String?
-  paymentExternalId String?
-  trackingNumber    String?
-  courierName       String?
-  estimatedArrival  DateTime?
-  orderNote         String?
-  user              User                 @relation(fields: [userId], references: [id])
-  store             Store                @relation(fields: [storeId], references: [id])
-  status            OrderStatus          @default(WAITING_PAYMENT)
-  total             Int
-  paymentProofUrl   String?
-  paymentDeadline   DateTime?
-  items             OrderItem[]
-  histories         OrderStatusHistory[]
-  voucherUsages     VoucherUsage[]
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  id                        String               @id @default(cuid())
+  orderNumber               String               @unique
+  userId                    String
+  storeId                   String
+  addressId                 String?
+  addressSnapshot           Json?
+  deliveryDate              DateTime?
+  deliverySlot              String?
+  shippingMethod            String?
+  shippingProvider          String?
+  shippingCost              Int                  @default(0)
+  serviceFee                Int                  @default(0)
+  discountTotal             Int                  @default(0)
+  voucherId                 String?
+  voucherCode               String?
+  paymentMethod             String?
+  paymentProvider           String?
+  paymentChannel            String?
+  paymentStatus             PaymentStatus        @default(PENDING)
+  paymentRedirectUrl        String?
+  paymentInvoiceUrl         String?
+  paymentExternalId         String?
+  xenditInvoiceId           String?
+  xenditInvoiceStatus       String?
+  midtransTransactionId     String?
+  midtransTransactionStatus String?
+  midtransFraudStatus       String?
+  midtransStatusCode        String?
+  paidAt                    DateTime?
+  paymentExpiredAt          DateTime?
+  paymentStockRestoredAt    DateTime?
+  trackingNumber            String?
+  courierName               String?
+  estimatedArrival          DateTime?
+  orderNote                 String?
+  user                      User                 @relation(fields: [userId], references: [id])
+  store                     Store                @relation(fields: [storeId], references: [id])
+  status                    OrderStatus          @default(WAITING_PAYMENT)
+  total                     Int
+  paymentProofUrl           String?
+  paymentDeadline           DateTime?
+  items                     OrderItem[]
+  histories                 OrderStatusHistory[]
+  voucherUsages             VoucherUsage[]
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime             @updatedAt
 }
 
 model OrderItem {

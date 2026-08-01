@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrder, deleteOrder, getCheckoutOptions, getOrderById, getOrderStatistics, getOrders, getOrderTracking, handleMidtransNotification, updateOrder, updateOrderStatus, uploadPayment } from "../controllers/orderController.js";
+import { createOrder, deleteOrder, getCheckoutOptions, getOrderById, getOrderInvoice, getOrderStatistics, getOrders, getOrderTracking, updateOrder, updateOrderStatus, uploadPayment } from "../controllers/orderController.js";
 import { authenticate, onlyAdmin, onlyUser } from "../middleware/authRole.js";
 import { createOrderSchema, updateOrderSchema, updateOrderStatusSchema } from "../middleware/schemas.js";
 import { uploadPaymentProof } from "../middleware/upload.js";
@@ -11,9 +11,8 @@ orderRouter.post("/orders", ...onlyUser, validate(createOrderSchema), createOrde
 orderRouter.get("/orders", authenticate, getOrders);
 orderRouter.get("/checkout/options", authenticate, getCheckoutOptions);
 orderRouter.get("/orders/checkout/options", authenticate, getCheckoutOptions);
-orderRouter.post("/payments/midtrans/notification", handleMidtransNotification);
-orderRouter.post("/midtrans/notification", handleMidtransNotification);
 orderRouter.get("/orders/statistics", ...onlyUser, getOrderStatistics);
+orderRouter.get("/orders/by-number/:orderNumber/invoice", authenticate, getOrderInvoice);
 orderRouter.get("/orders/:id", authenticate, getOrderById);
 orderRouter.get("/orders/:id/tracking", authenticate, getOrderTracking);
 orderRouter.post("/orders/:id/payment-proof", ...onlyUser, uploadPaymentProof.single("paymentProof"), uploadPayment);

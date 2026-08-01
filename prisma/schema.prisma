@@ -24,6 +24,15 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
 enum DiscountType {
   PERCENTAGE
   NOMINAL
@@ -44,51 +53,51 @@ enum StoreAdminRequestStatus {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  name         String
-  email        String    @unique
-  phone        String?
-  password     String?
-  passwordHash String?
-  authProvider String    @default("credentials")
-  role         Role      @default(CUSTOMER)
-  isActive     Boolean   @default(true)
-  verifiedAt   DateTime?
-  avatarUrl    String?
-  referralCode String?   @unique
-  referredBy   String?
-  storeId      String?
-  store        Store?    @relation(fields: [storeId], references: [id])
-  addresses    Address[]
-  carts        CartItem[]
-  orders       Order[]
-  voucherUsages VoucherUsage[]
-  storeAdminRequests StoreAdminRequest[] @relation("StoreAdminRequestUser")
+  id                         String              @id @default(cuid())
+  name                       String
+  email                      String              @unique
+  phone                      String?
+  password                   String?
+  passwordHash               String?
+  authProvider               String              @default("credentials")
+  role                       Role                @default(CUSTOMER)
+  isActive                   Boolean             @default(true)
+  verifiedAt                 DateTime?
+  avatarUrl                  String?
+  referralCode               String?             @unique
+  referredBy                 String?
+  storeId                    String?
+  store                      Store?              @relation(fields: [storeId], references: [id])
+  addresses                  Address[]
+  carts                      CartItem[]
+  orders                     Order[]
+  voucherUsages              VoucherUsage[]
+  storeAdminRequests         StoreAdminRequest[] @relation("StoreAdminRequestUser")
   reviewedStoreAdminRequests StoreAdminRequest[] @relation("StoreAdminRequestReviewer")
-  notifications Notification[]
-  auditLogs AuditLog[] @relation("AuditLogActor")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  notifications              Notification[]
+  auditLogs                  AuditLog[]          @relation("AuditLogActor")
+  createdAt                  DateTime            @default(now())
+  updatedAt                  DateTime            @updatedAt
 }
 
 model Store {
-  id        String      @id @default(cuid())
-  name      String
-  city      String
-  latitude  Float
-  longitude Float
-  radiusKm  Float       @default(10)
-  isMain    Boolean     @default(false)
-  admins    User[]
-  stocks    Inventory[]
-  carts     CartItem[]
-  orders    Order[]
-  discounts Discount[]
-  journals  StockJournal[]
+  id                          String              @id @default(cuid())
+  name                        String
+  city                        String
+  latitude                    Float
+  longitude                   Float
+  radiusKm                    Float               @default(10)
+  isMain                      Boolean             @default(false)
+  admins                      User[]
+  stocks                      Inventory[]
+  carts                       CartItem[]
+  orders                      Order[]
+  discounts                   Discount[]
+  journals                    StockJournal[]
   requestedStoreAdminRequests StoreAdminRequest[] @relation("RequestedStore")
-  assignedStoreAdminRequests StoreAdminRequest[] @relation("AssignedStore")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  assignedStoreAdminRequests  StoreAdminRequest[] @relation("AssignedStore")
+  createdAt                   DateTime            @default(now())
+  updatedAt                   DateTime            @updatedAt
 }
 
 model Address {
@@ -120,8 +129,8 @@ model ProductCategory {
 }
 
 model Product {
-  id          String         @id @default(cuid())
-  name        String         @unique
+  id          String          @id @default(cuid())
+  name        String          @unique
   description String?
   price       Int
   unit        String
@@ -133,8 +142,8 @@ model Product {
   orderItems  OrderItem[]
   discounts   Discount[]
   journals    StockJournal[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model ProductImage {
@@ -183,24 +192,24 @@ model StockJournal {
 }
 
 model Discount {
-  id           String       @id @default(cuid())
-  storeId      String
-  productId    String?
-  store        Store        @relation(fields: [storeId], references: [id])
-  product      Product?     @relation(fields: [productId], references: [id])
-  title        String
-  type         DiscountType
-  value        Int
-  minSpend     Int?
-  maxDiscount  Int?
-  startsAt     DateTime
-  expiresAt    DateTime
-  createdAt    DateTime     @default(now())
+  id          String       @id @default(cuid())
+  storeId     String
+  productId   String?
+  store       Store        @relation(fields: [storeId], references: [id])
+  product     Product?     @relation(fields: [productId], references: [id])
+  title       String
+  type        DiscountType
+  value       Int
+  minSpend    Int?
+  maxDiscount Int?
+  startsAt    DateTime
+  expiresAt   DateTime
+  createdAt   DateTime     @default(now())
 }
 
 model Voucher {
-  id          String       @id @default(cuid())
-  code        String       @unique
+  id          String         @id @default(cuid())
+  code        String         @unique
   title       String
   scope       VoucherScope
   type        DiscountType
@@ -210,44 +219,56 @@ model Voucher {
   productId   String?
   expiresAt   DateTime
   usages      VoucherUsage[]
-  createdAt   DateTime     @default(now())
+  createdAt   DateTime       @default(now())
 }
 
 model Order {
-  id                 String      @id @default(cuid())
-  orderNumber        String      @unique
-  userId             String
-  storeId            String
-  addressId          String?
-  addressSnapshot    Json?
-  deliveryDate       DateTime?
-  deliverySlot       String?
-  shippingMethod     String?
-  shippingProvider   String?
-  shippingCost       Int         @default(0)
-  serviceFee         Int         @default(0)
-  discountTotal      Int         @default(0)
-  voucherId          String?
-  voucherCode        String?
-  paymentMethod      String?
-  paymentChannel     String?
-  paymentInvoiceUrl  String?
-  paymentExternalId  String?
-  trackingNumber     String?
-  courierName        String?
-  estimatedArrival   DateTime?
-  orderNote          String?
-  user               User        @relation(fields: [userId], references: [id])
-  store              Store       @relation(fields: [storeId], references: [id])
-  status             OrderStatus @default(WAITING_PAYMENT)
-  total              Int
-  paymentProofUrl    String?
-  paymentDeadline    DateTime?
-  items              OrderItem[]
-  histories          OrderStatusHistory[]
-  voucherUsages      VoucherUsage[]
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  id                        String               @id @default(cuid())
+  orderNumber               String               @unique
+  userId                    String
+  storeId                   String
+  addressId                 String?
+  addressSnapshot           Json?
+  deliveryDate              DateTime?
+  deliverySlot              String?
+  shippingMethod            String?
+  shippingProvider          String?
+  shippingCost              Int                  @default(0)
+  serviceFee                Int                  @default(0)
+  discountTotal             Int                  @default(0)
+  voucherId                 String?
+  voucherCode               String?
+  paymentMethod             String?
+  paymentProvider           String?
+  paymentChannel            String?
+  paymentStatus             PaymentStatus        @default(PENDING)
+  paymentRedirectUrl        String?
+  paymentInvoiceUrl         String?
+  paymentExternalId         String?
+  xenditInvoiceId           String?
+  xenditInvoiceStatus       String?
+  midtransTransactionId     String?
+  midtransTransactionStatus String?
+  midtransFraudStatus       String?
+  midtransStatusCode        String?
+  paidAt                    DateTime?
+  paymentExpiredAt          DateTime?
+  paymentStockRestoredAt    DateTime?
+  trackingNumber            String?
+  courierName               String?
+  estimatedArrival          DateTime?
+  orderNote                 String?
+  user                      User                 @relation(fields: [userId], references: [id])
+  store                     Store                @relation(fields: [storeId], references: [id])
+  status                    OrderStatus          @default(WAITING_PAYMENT)
+  total                     Int
+  paymentProofUrl           String?
+  paymentDeadline           DateTime?
+  items                     OrderItem[]
+  histories                 OrderStatusHistory[]
+  voucherUsages             VoucherUsage[]
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime             @updatedAt
 }
 
 model OrderItem {
@@ -290,23 +311,23 @@ model VoucherUsage {
 }
 
 model StoreAdminRequest {
-  id              String                  @id @default(cuid())
-  userId          String
+  id               String                  @id @default(cuid())
+  userId           String
   requestedStoreId String?
-  reason          String
-  experience      String?
-  status          StoreAdminRequestStatus @default(PENDING)
-  reviewedById    String?
-  assignedStoreId String?
-  rejectionReason String?
-  reviewedAt      DateTime?
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
+  reason           String
+  experience       String?
+  status           StoreAdminRequestStatus @default(PENDING)
+  reviewedById     String?
+  assignedStoreId  String?
+  rejectionReason  String?
+  reviewedAt       DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
 
-  user            User                    @relation("StoreAdminRequestUser", fields: [userId], references: [id])
-  requestedStore  Store?                  @relation("RequestedStore", fields: [requestedStoreId], references: [id])
-  assignedStore   Store?                  @relation("AssignedStore", fields: [assignedStoreId], references: [id])
-  reviewedBy      User?                   @relation("StoreAdminRequestReviewer", fields: [reviewedById], references: [id])
+  user           User   @relation("StoreAdminRequestUser", fields: [userId], references: [id])
+  requestedStore Store? @relation("RequestedStore", fields: [requestedStoreId], references: [id])
+  assignedStore  Store? @relation("AssignedStore", fields: [assignedStoreId], references: [id])
+  reviewedBy     User?  @relation("StoreAdminRequestReviewer", fields: [reviewedById], references: [id])
 
   @@index([userId, status])
   @@index([status, createdAt])
@@ -325,7 +346,7 @@ model Notification {
   isRead        Boolean  @default(false)
   createdAt     DateTime @default(now())
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead, createdAt])
   @@index([referenceId, referenceType])
@@ -342,7 +363,7 @@ model AuditLog {
   requestId  String?
   createdAt  DateTime @default(now())
 
-  actor      User?    @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+  actor User? @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([actorId, createdAt])
   @@index([entityType, entityId])
