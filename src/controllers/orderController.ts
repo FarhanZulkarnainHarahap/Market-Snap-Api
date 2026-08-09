@@ -51,6 +51,13 @@ type CheckoutPayment = {
   token?: string | null;
 };
 
+type CheckoutOrderResult = {
+  id: string;
+  orderNumber: string;
+  paymentStatus?: string | null;
+  status: string;
+};
+
 type CheckoutAddress = {
   city?: string | null;
   detail: string;
@@ -200,19 +207,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       throw error;
     }
 
-    const updated = await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        paymentExternalId: session.token ?? session.externalId,
-        paymentInvoiceUrl: session.redirectUrl,
-        paymentProvider: session.method,
-        paymentRedirectUrl: session.redirectUrl,
-        paymentStatus: "UNPAID",
-        xenditInvoiceId: session.method === "xendit" ? session.externalId : undefined,
-        xenditInvoiceStatus: session.method === "xendit" ? session.status : undefined
-      },
-      select: orderResponseSelect
-    });
+    const updated = await attachPaymentSessionToOrder(order.id, session);
     logBusinessEvent("PAYMENT_CREATED", { orderId: updated.id, orderNumber: updated.orderNumber, provider: session.method });
 
     res.status(201).json({
@@ -220,7 +215,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
         id: updated.id,
         orderNumber: updated.orderNumber,
         status: updated.status,
-        paymentStatus: updated.paymentStatus
+        paymentStatus: updated.paymentStatus ?? session.status
       },
       shipping,
       payment: {
@@ -413,7 +408,7 @@ async function checkoutItems(userId: string, body: CreateOrderBody): Promise<Che
   if (selectedIds.length) {
     const cartItems = await prisma.cartItem.findMany({
       where: { id: { in: selectedIds }, userId },
-      include: { product: { include: { category: true, discounts: true, images: true } } }
+      include: { product: { select: checkoutProductSelect() } }
     });
     return cartItems.map((item) => ({
       cartId: item.id,
@@ -425,14 +420,17 @@ async function checkoutItems(userId: string, body: CreateOrderBody): Promise<Che
       price: item.product.price,
       productId: item.productId,
       quantity: item.quantity,
-      sku: item.product.sku,
+      sku: null,
       storeId: item.storeId
     })).map((item) => ({ ...item, subtotal: item.finalPrice * item.quantity }));
   }
   if (body.items?.length) {
     const productIds = body.items.map((item) => String(item.productId ?? "")).filter(Boolean);
     const fallbackStore = body.storeId ?? (await prisma.store.findFirst({ where: { isMain: true } }))?.id ?? (await prisma.store.findFirst())?.id ?? "";
-    const products = await prisma.product.findMany({ where: { id: { in: productIds }, isActive: true }, include: { category: true, discounts: true, images: true } });
+    const products = await prisma.product.findMany({ where: { id: { in: productIds }, isActive: true }, select: checkoutProductSelect() }).catch((error) => {
+      if (!isCheckoutSchemaMissing(error)) throw error;
+      return prisma.product.findMany({ where: { id: { in: productIds } }, select: checkoutProductSelect() });
+    });
     return body.items.flatMap((item) => {
       const product = products.find((entry) => entry.id === item.productId);
       if (!product || !fallbackStore) return [];
@@ -448,7 +446,7 @@ async function checkoutItems(userId: string, body: CreateOrderBody): Promise<Che
         price: product.price,
         productId: product.id,
         quantity,
-        sku: product.sku,
+        sku: null,
         storeId: fallbackStore,
         subtotal: finalPrice * quantity
       }];
@@ -477,11 +475,36 @@ async function nearestStore(input: Record<string, unknown>) {
 
 async function stockIssueFor(storeId: string, items: CheckoutItem[]) {
   for (const item of items) {
-    const inventory = await prisma.inventory.findUnique({ where: { storeId_productId: { storeId, productId: item.productId } }, include: { product: true } });
+    const inventory = await inventoryForCheckout(storeId, item.productId);
     const available = Math.max(0, (inventory?.quantity ?? 0) - (inventory?.reservedQuantity ?? 0));
     if (!inventory || available < item.quantity) return `Stok ${inventory?.product.name ?? item.name} tidak mencukupi`;
   }
   return null;
+}
+
+function checkoutProductSelect() {
+  return {
+    id: true,
+    name: true,
+    price: true,
+    unit: true,
+    category: { select: { name: true } },
+    discounts: { select: { expiresAt: true, maxDiscount: true, startsAt: true, storeId: true, type: true, value: true } },
+    images: { select: { url: true } }
+  } as const;
+}
+
+async function inventoryForCheckout(storeId: string, productId: string) {
+  return prisma.inventory.findUnique({
+    where: { storeId_productId: { storeId, productId } },
+    select: { quantity: true, reservedQuantity: true, product: { select: { name: true } } }
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return prisma.inventory.findUnique({
+      where: { storeId_productId: { storeId, productId } },
+      select: { quantity: true, product: { select: { name: true } } }
+    }).then((item) => item ? { ...item, reservedQuantity: 0 } : null);
+  });
 }
 
 function activeProductDiscount(price: number, discounts: { expiresAt: Date; maxDiscount: number | null; startsAt: Date; storeId: string; type: "PERCENTAGE" | "NOMINAL" | "BOGO"; value: number }[], storeId: string): number {
@@ -619,23 +642,103 @@ async function createCheckoutOrder(input: {
   });
 }
 
-async function createLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo: string; paymentDeadline: Date; shippingCost: number; storeId: string; total: number; userId: string }) {
+async function createLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo: string; paymentDeadline: Date; shippingCost: number; storeId: string; total: number; userId: string }): Promise<CheckoutOrderResult> {
   return prisma.$transaction(async (tx) => {
     const created = await tx.order.create({
       data: {
         orderNumber: input.orderNo,
         paymentDeadline: input.paymentDeadline,
-        paymentStatus: "UNPAID",
+        paymentStatus: "PENDING",
         shippingCost: input.shippingCost,
-        status: "PENDING_PAYMENT",
+        status: "WAITING_PAYMENT",
         storeId: input.storeId,
         total: input.total,
         userId: input.userId
       },
       select: orderResponseSelect
     });
-    await persistOrderSideEffects(tx, { items: input.items, orderId: created.id, orderNumber: created.orderNumber, storeId: input.storeId, userId: input.userId });
+    await persistLegacyOrderSideEffects(tx, { items: input.items, orderId: created.id, orderNumber: created.orderNumber, storeId: input.storeId, userId: input.userId });
     return created;
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return createBareLegacyCheckoutOrder(input);
+  });
+}
+
+async function createBareLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo: string; paymentDeadline: Date; shippingCost: number; storeId: string; total: number; userId: string }): Promise<CheckoutOrderResult> {
+  return prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
+      data: {
+        orderNumber: input.orderNo,
+        paymentDeadline: input.paymentDeadline,
+        shippingCost: input.shippingCost,
+        status: "WAITING_PAYMENT",
+        storeId: input.storeId,
+        total: input.total,
+        userId: input.userId
+      },
+      select: bareOrderResponseSelect
+    });
+    await persistLegacyOrderSideEffects(tx, { items: input.items, orderId: created.id, orderNumber: created.orderNumber, storeId: input.storeId, userId: input.userId });
+    return withPaymentStatus(created, "PENDING");
+  });
+}
+
+async function attachPaymentSessionToOrder(orderId: string, session: CheckoutPayment): Promise<CheckoutOrderResult> {
+  return prisma.order.update({
+    where: { id: orderId },
+    data: {
+      paymentExternalId: session.token ?? session.externalId,
+      paymentInvoiceUrl: session.redirectUrl,
+      paymentProvider: session.method,
+      paymentRedirectUrl: session.redirectUrl,
+      paymentStatus: "PENDING",
+      xenditInvoiceId: session.method === "xendit" ? session.externalId : undefined,
+      xenditInvoiceStatus: session.method === "xendit" ? session.status : undefined
+    },
+    select: orderResponseSelect
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentChannel: session.channel,
+        paymentExternalId: session.token ?? session.externalId,
+        paymentInvoiceUrl: session.redirectUrl,
+        paymentMethod: session.method,
+        paymentRedirectUrl: session.redirectUrl,
+        paymentStatus: "PENDING"
+      },
+      select: orderResponseSelect
+    });
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentChannel: session.channel,
+        paymentExternalId: session.token ?? session.externalId,
+        paymentInvoiceUrl: session.redirectUrl,
+        paymentMethod: session.method
+      },
+      select: bareOrderResponseSelect
+    }).then((order) => withPaymentStatus(order, "PENDING"));
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentExternalId: session.token ?? session.externalId,
+        paymentStatus: "PENDING"
+      },
+      select: orderResponseSelect
+    });
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return prisma.order.findUnique({ where: { id: orderId }, select: bareOrderResponseSelect }).then((order) => {
+      if (!order) throw error;
+      return withPaymentStatus(order, "PENDING");
+    });
   });
 }
 
@@ -674,6 +777,18 @@ async function persistOrderSideEffects(tx: Prisma.TransactionClient, input: { it
   else await tx.cartItem.deleteMany({ where: { userId: input.userId, storeId: input.storeId, productId: { in: input.items.map((item) => item.productId) } } });
 }
 
+async function persistLegacyOrderSideEffects(tx: Prisma.TransactionClient, input: { items: CheckoutItem[]; orderId: string; orderNumber: string; storeId: string; userId: string }) {
+  for (const item of input.items) {
+    await tx.orderItem.create({ data: { orderId: input.orderId, productId: item.productId, quantity: item.quantity, price: item.finalPrice || item.price } });
+    await tx.inventory.update({ where: { storeId_productId: { storeId: input.storeId, productId: item.productId } }, data: { quantity: { decrement: item.quantity } } });
+    await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: -item.quantity, note: `Order ${input.orderNumber}` } });
+  }
+
+  const cartIds = input.items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
+  if (cartIds.length) await tx.cartItem.deleteMany({ where: { id: { in: cartIds }, userId: input.userId } });
+  else await tx.cartItem.deleteMany({ where: { userId: input.userId, storeId: input.storeId, productId: { in: input.items.map((item) => item.productId) } } });
+}
+
 async function markPaymentSessionFailed(orderId: string) {
   await prisma.$transaction(async (tx) => {
     const order = await tx.order.findUnique({ where: { id: orderId }, include: { items: true } });
@@ -696,6 +811,39 @@ async function markPaymentSessionFailed(orderId: string) {
     if (order.status !== "CANCELLED") {
       await tx.orderStatusHistory.create({ data: { orderId: order.id, status: "CANCELLED", description: "Sesi pembayaran Xendit gagal dibuat." } });
     }
+  }).catch((error) => {
+    if (!isCheckoutSchemaMissing(error)) throw error;
+    return markLegacyPaymentSessionFailed(orderId);
+  });
+}
+
+async function markLegacyPaymentSessionFailed(orderId: string) {
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      select: {
+        id: true,
+        orderNumber: true,
+        status: true,
+        storeId: true,
+        items: { select: { productId: true, quantity: true } }
+      }
+    });
+    if (!order) return;
+    for (const item of order.items) {
+      await tx.inventory.update({ where: { storeId_productId: { storeId: order.storeId, productId: item.productId } }, data: { quantity: { increment: item.quantity } } });
+      await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: item.quantity, note: `RESTORE sesi pembayaran ${order.orderNumber}` } });
+    }
+    await tx.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: "FAILED",
+        status: "CANCELLED"
+      }
+    }).catch((error) => {
+      if (!isCheckoutSchemaMissing(error)) throw error;
+      return tx.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+    });
   });
 }
 
@@ -713,6 +861,16 @@ const orderResponseSelect = {
   updatedAt: true,
   userId: true
 } satisfies Prisma.OrderSelect;
+
+const bareOrderResponseSelect = {
+  id: true,
+  orderNumber: true,
+  status: true
+} satisfies Prisma.OrderSelect;
+
+function withPaymentStatus<T extends { id: string; orderNumber: string; status: string }>(order: T, paymentStatus: string): T & { paymentStatus: string } {
+  return { ...order, paymentStatus };
+}
 
 function canAccessOrder(req: Request, order: { storeId: string; userId: string }) {
   if (req.user?.role === "super_admin") return true;
@@ -768,7 +926,7 @@ function invoicePayload(order: Prisma.OrderGetPayload<{ include: { items: { incl
 
 function isCheckoutSchemaMissing(error: unknown) {
   const message = error instanceof Error ? error.message : "";
-  return message.includes("does not exist in the current database") || message.includes("column") || message.includes("OrderStatusHistory") || message.includes("VoucherUsage") || message.includes("addressId") || message.includes("paymentInvoiceUrl");
+  return message.includes("does not exist in the current database") || message.includes("column") || message.includes("P2022") || message.includes("OrderStatusHistory") || message.includes("VoucherUsage") || message.includes("addressId") || message.includes("paymentInvoiceUrl");
 }
 
 function xenditItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }): XenditInvoiceItem[] {
