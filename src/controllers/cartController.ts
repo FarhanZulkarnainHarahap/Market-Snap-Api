@@ -29,7 +29,7 @@ export async function addCartItem(req: Request, res: Response): Promise<void> {
       return;
     }
     const body = req.body as CartBody;
-    const product = body.productId ? await prisma.product.findUnique({ where: { id: body.productId } }) : null;
+    const product = body.productId ? await prisma.product.findUnique({ where: { id: body.productId }, select: { id: true } }) : null;
     const store = body.storeId ? await prisma.store.findUnique({ where: { id: body.storeId } }) : await mainStore();
     if (!product || !store) return notFound(res, "Produk atau store tidak ditemukan");
     const inventory = await stockFor(store.id, product.id);
@@ -222,7 +222,19 @@ function outOfStock(res: Response): void {
   res.status(422).json({ message: "Stok tidak mencukupi untuk cart" });
 }
 
-const cartInclude = { product: { include: { category: true, images: true } }, store: true };
+const cartInclude = {
+  product: {
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      unit: true,
+      category: { select: { name: true } },
+      images: { select: { url: true } }
+    }
+  },
+  store: { select: { id: true, name: true, city: true } }
+};
 
 type CartRow = {
   id: string;
