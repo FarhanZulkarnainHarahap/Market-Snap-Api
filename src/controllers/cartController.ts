@@ -201,7 +201,17 @@ function validateVoucher(voucher: Awaited<ReturnType<typeof prisma.voucher.findU
 }
 
 async function stockFor(storeId: string, productId: string): Promise<number> {
-  return prisma.inventory.findFirst({ where: { storeId, productId } }).then((item) => Math.max(0, (item?.quantity ?? 0) - (item?.reservedQuantity ?? 0)));
+  return prisma.inventory.findFirst({ where: { storeId, productId }, select: { quantity: true, reservedQuantity: true } })
+    .then((item) => Math.max(0, (item?.quantity ?? 0) - (item?.reservedQuantity ?? 0)))
+    .catch((error) => {
+      if (!isMissingColumnError(error)) throw error;
+      return prisma.inventory.findFirst({ where: { storeId, productId }, select: { quantity: true } }).then((item) => item?.quantity ?? 0);
+    });
+}
+
+function isMissingColumnError(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  return message.includes("does not exist in the current database") || message.includes("column") || message.includes("P2022");
 }
 
 function notFound(res: Response, message: string): void {

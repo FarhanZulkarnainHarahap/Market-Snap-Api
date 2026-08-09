@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import type { Prisma } from "../../prisma/generated/prisma/client.js";
 import { prisma } from "../config/prisma.js";
 import { handleControllerError, locationFromQuery, mapStore, paginate } from "../utils/controllerHelpers.js";
 
@@ -84,10 +85,11 @@ async function resolveStore(query: Request["query"]) {
 async function filteredProducts(req: Request, storeId: string) {
   const term = String(req.query.search ?? "");
   const category = req.query.category ? String(req.query.category) : undefined;
-  const products = await prisma.product.findMany({
-    where: { name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined },
-    select: productSelect(storeId)
-  });
+  const where: Prisma.ProductWhereInput = { isActive: true, name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined };
+  const products = await prisma.product.findMany({ where, select: productSelect(storeId) }).catch((error) => {
+    if (!isMissingColumnError(error)) throw error;
+    return prisma.product.findMany({ where, select: legacyProductSelect(storeId) });
+  }) as ProductRow[];
   return products.map(mapProduct);
 }
 
@@ -103,6 +105,21 @@ function productSelect(storeId: string) {
     images: true,
     discounts: { where: { storeId, startsAt: { lte: now }, expiresAt: { gt: now } }, orderBy: { value: "desc" } },
     stocks: { where: { storeId }, select: { quantity: true, reservedQuantity: true } }
+  } as const;
+}
+
+function legacyProductSelect(storeId: string) {
+  const now = new Date();
+  return {
+    description: true,
+    id: true,
+    name: true,
+    price: true,
+    unit: true,
+    category: true,
+    images: true,
+    discounts: { where: { storeId, startsAt: { lte: now }, expiresAt: { gt: now } }, orderBy: { value: "desc" } },
+    stocks: { where: { storeId }, select: { quantity: true } }
   } as const;
 }
 
@@ -164,10 +181,21 @@ function filterMappedProducts(items: ReturnType<typeof mapProduct>[], query: Req
 }
 
 async function findProductByIdOrSlug(value: string, storeId: string) {
-  const byId = await prisma.product.findFirst({ where: { id: value }, select: productSelect(storeId) });
+  const byId = await prisma.product.findFirst({ where: { id: value, isActive: true }, select: productSelect(storeId) }).catch((error) => {
+    if (!isMissingColumnError(error)) throw error;
+    return prisma.product.findFirst({ where: { id: value, isActive: true }, select: legacyProductSelect(storeId) });
+  });
   if (byId) return byId;
-  const products = await prisma.product.findMany({ select: productSelect(storeId) });
+  const products = await prisma.product.findMany({ where: { isActive: true }, select: productSelect(storeId) }).catch((error) => {
+    if (!isMissingColumnError(error)) throw error;
+    return prisma.product.findMany({ where: { isActive: true }, select: legacyProductSelect(storeId) });
+  });
   return products.find((product) => slugify(product.name) === value) ?? null;
+}
+
+function isMissingColumnError(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  return message.includes("does not exist in the current database") || message.includes("column") || message.includes("P2022");
 }
 
 function slugify(value: string) {
@@ -188,5 +216,5 @@ type ProductRow = {
   category: { name: string };
   images: { id: string; url: string }[];
   discounts: { type: "PERCENTAGE" | "NOMINAL" | "BOGO"; value: number }[];
-  stocks: { quantity: number; reservedQuantity: number }[];
+  stocks: { quantity: number; reservedQuantity?: number }[];
 };
