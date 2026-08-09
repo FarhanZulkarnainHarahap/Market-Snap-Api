@@ -9,7 +9,8 @@ const stores = [
   { id: "kemang", name: "Market Snap Kemang", city: "Jakarta Selatan", latitude: -6.2607, longitude: 106.8106, radiusKm: 12, isMain: true },
   { id: "bangka", name: "Market Snap Bangka", city: "Jakarta Selatan", latitude: -6.2552, longitude: 106.8217, radiusKm: 10, isMain: false },
   { id: "prapatan", name: "Market Snap Prapatan", city: "Jakarta Selatan", latitude: -6.2482, longitude: 106.832, radiusKm: 9, isMain: false },
-  { id: "rawamangun", name: "Market Snap Rawamangun", city: "Jakarta Timur", latitude: -6.1931, longitude: 106.8876, radiusKm: 11, isMain: false }
+  { id: "rawamangun", name: "Market Snap Rawamangun", city: "Jakarta Timur", latitude: -6.1931, longitude: 106.8876, radiusKm: 11, isMain: false },
+  { id: "medan-denai", name: "Market Snap Medan Denai", city: "Medan", latitude: 3.5616, longitude: 98.7009, radiusKm: 20, isMain: false }
 ];
 
 const categories = [
