@@ -86,9 +86,10 @@ async function filteredProducts(req: Request, storeId: string) {
   const term = String(req.query.search ?? "");
   const category = req.query.category ? String(req.query.category) : undefined;
   const where: Prisma.ProductWhereInput = { isActive: true, name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined };
+  const legacyWhere: Prisma.ProductWhereInput = { name: { contains: term, mode: "insensitive" }, category: category ? { name: category } : undefined };
   const products = await prisma.product.findMany({ where, select: productSelect(storeId) }).catch((error) => {
     if (!isMissingColumnError(error)) throw error;
-    return prisma.product.findMany({ where, select: legacyProductSelect(storeId) });
+    return prisma.product.findMany({ where: legacyWhere, select: legacyProductSelect(storeId) });
   }) as ProductRow[];
   return products.map(mapProduct);
 }
@@ -183,12 +184,12 @@ function filterMappedProducts(items: ReturnType<typeof mapProduct>[], query: Req
 async function findProductByIdOrSlug(value: string, storeId: string) {
   const byId = await prisma.product.findFirst({ where: { id: value, isActive: true }, select: productSelect(storeId) }).catch((error) => {
     if (!isMissingColumnError(error)) throw error;
-    return prisma.product.findFirst({ where: { id: value, isActive: true }, select: legacyProductSelect(storeId) });
+    return prisma.product.findFirst({ where: { id: value }, select: legacyProductSelect(storeId) });
   });
   if (byId) return byId;
   const products = await prisma.product.findMany({ where: { isActive: true }, select: productSelect(storeId) }).catch((error) => {
     if (!isMissingColumnError(error)) throw error;
-    return prisma.product.findMany({ where: { isActive: true }, select: legacyProductSelect(storeId) });
+    return prisma.product.findMany({ select: legacyProductSelect(storeId) });
   });
   return products.find((product) => slugify(product.name) === value) ?? null;
 }
