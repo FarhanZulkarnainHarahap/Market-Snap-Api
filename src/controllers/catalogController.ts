@@ -102,7 +102,7 @@ function productSelect(storeId: string) {
     category: true,
     images: true,
     discounts: { where: { storeId, startsAt: { lte: now }, expiresAt: { gt: now } }, orderBy: { value: "desc" } },
-    stocks: { where: { storeId }, select: { quantity: true } }
+    stocks: { where: { storeId }, select: { quantity: true, reservedQuantity: true } }
   } as const;
 }
 
@@ -130,7 +130,7 @@ function mapProduct(product: ProductRow) {
     primaryImage,
     discount: discount ? discountLabel(discount) : null,
     organic: Boolean(discount),
-    stock: product.stocks[0]?.quantity ?? 0
+    stock: Math.max(0, (product.stocks[0]?.quantity ?? 0) - (product.stocks[0]?.reservedQuantity ?? 0))
   };
 }
 
@@ -188,5 +188,5 @@ type ProductRow = {
   category: { name: string };
   images: { id: string; url: string }[];
   discounts: { type: "PERCENTAGE" | "NOMINAL" | "BOGO"; value: number }[];
-  stocks: { quantity: number }[];
+  stocks: { quantity: number; reservedQuantity: number }[];
 };

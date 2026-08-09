@@ -1,5 +1,6 @@
 import type { Response } from "express";
 import type { Role, Store as PrismaStore, User as PrismaUser } from "../../prisma/generated/prisma/client.js";
+import { logger } from "../config/logger.js";
 import { distanceKm } from "./distance.js";
 import type { Store, User } from "../types/market.js";
 
@@ -7,9 +8,9 @@ type QueryLike = Record<string, unknown>;
 
 export function handleControllerError(res: Response, error: unknown): void {
   if (process.env.NODE_ENV !== "production" && error instanceof Error) {
-    console.error(error.message);
+    logger.error({ err: error }, "CONTROLLER_ERROR");
   }
-  res.status(500).json({ message: publicErrorMessage(error) });
+  res.status(500).json({ success: false, message: publicErrorMessage(error), code: "INTERNAL_SERVER_ERROR" });
 }
 
 export function publicErrorMessage(error: unknown): string {

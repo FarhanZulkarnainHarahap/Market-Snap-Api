@@ -16,6 +16,15 @@ enum Role {
 }
 
 enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PICKING
+  PACKED
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  COMPLETED
+  REFUNDED
   WAITING_PAYMENT
   WAITING_PAYMENT_CONFIRMATION
   PROCESSING
@@ -25,6 +34,7 @@ enum OrderStatus {
 }
 
 enum PaymentStatus {
+  UNPAID
   PENDING
   PAID
   FAILED
@@ -160,15 +170,18 @@ model ProductImage {
 }
 
 model Inventory {
-  id        String   @id @default(cuid())
-  storeId   String
-  productId String
-  store     Store    @relation(fields: [storeId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int      @default(0)
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  storeId          String
+  productId        String
+  store            Store    @relation(fields: [storeId], references: [id])
+  product          Product  @relation(fields: [productId], references: [id])
+  quantity         Int      @default(0)
+  reservedQuantity Int      @default(0)
+  updatedAt        DateTime @updatedAt
 
   @@unique([storeId, productId])
+  @@index([storeId, quantity])
+  @@index([productId])
 }
 
 model CartItem {
@@ -247,7 +260,7 @@ model Order {
   paymentMethod          String?
   paymentProvider        String?
   paymentChannel         String?
-  paymentStatus          PaymentStatus        @default(PENDING)
+  paymentStatus          PaymentStatus        @default(UNPAID)
   paymentRedirectUrl     String?
   paymentInvoiceUrl      String?
   paymentExternalId      String?
@@ -256,13 +269,19 @@ model Order {
   paidAt                 DateTime?
   paymentExpiredAt       DateTime?
   paymentStockRestoredAt DateTime?
+  stockReservedAt        DateTime?
+  stockCommittedAt       DateTime?
+  stockReleasedAt        DateTime?
+  invoiceNumber          String?              @unique
+  invoiceSnapshot        Json?
+  invoiceCreatedAt       DateTime?
   trackingNumber         String?
   courierName            String?
   estimatedArrival       DateTime?
   orderNote              String?
   user                   User                 @relation(fields: [userId], references: [id])
   store                  Store                @relation(fields: [storeId], references: [id])
-  status                 OrderStatus          @default(WAITING_PAYMENT)
+  status                 OrderStatus          @default(PENDING_PAYMENT)
   total                  Int
   paymentProofUrl        String?
   paymentDeadline        DateTime?
@@ -271,16 +290,30 @@ model Order {
   voucherUsages          VoucherUsage[]
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([storeId, status, createdAt])
+  @@index([paymentStatus, createdAt])
+  @@index([status, createdAt])
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Int
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  order       Order   @relation(fields: [orderId], references: [id])
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Int
+  productName String  @default("")
+  sku         String?
+  discount    Int     @default(0)
+  finalPrice  Int     @default(0)
+  subtotal    Int     @default(0)
+  imageUrl    String?
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model OrderStatusHistory {

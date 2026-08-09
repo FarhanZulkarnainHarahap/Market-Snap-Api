@@ -16,11 +16,11 @@ describe("mapXenditInvoiceStatus", () => {
   it("maps Xendit invoice lifecycle statuses", () => {
     assert.deepEqual(mapXenditInvoiceStatus("PENDING"), {
       paymentStatus: "PENDING",
-      orderStatus: "WAITING_PAYMENT"
+      orderStatus: "PENDING_PAYMENT"
     });
     assert.deepEqual(mapXenditInvoiceStatus("PAID"), {
       paymentStatus: "PAID",
-      orderStatus: "PROCESSING"
+      orderStatus: "PAID"
     });
     assert.deepEqual(mapXenditInvoiceStatus("EXPIRED"), {
       paymentStatus: "EXPIRED",

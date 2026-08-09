@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { OrderStatus, Prisma } from "../../prisma/generated/prisma/client.js";
+import { logBusinessEvent } from "../config/logger.js";
 import { prisma } from "../config/prisma.js";
 import { calculateDomesticShippingCost, rajaongkirConfig } from "../config/rajaongkir.js";
 import { createXenditInvoice, xenditConfig, type XenditInvoiceItem } from "../services/xendit.service.js";
@@ -30,7 +31,12 @@ type CheckoutItem = {
   quantity: number;
   storeId: string;
   price: number;
+  discount: number;
+  finalPrice: number;
+  imageUrl?: string | null;
   name: string;
+  sku?: string | null;
+  subtotal: number;
   category: string;
 };
 
@@ -69,8 +75,17 @@ type VoucherValidation = {
 
 const statusLabels: Record<OrderStatus, string> = {
   CANCELLED: "Dibatalkan",
+  COMPLETED: "Selesai",
+  DELIVERED: "Terkirim",
   CONFIRMED: "Pesanan Dikonfirmasi",
+  OUT_FOR_DELIVERY: "Dalam Pengiriman",
+  PACKED: "Dikemas",
+  PAID: "Pembayaran Berhasil",
+  PENDING_PAYMENT: "Menunggu Pembayaran",
+  PICKING: "Picking Produk",
   PROCESSING: "Diproses",
+  READY: "Siap Dikirim",
+  REFUNDED: "Refunded",
   SHIPPED: "Dikirim",
   WAITING_PAYMENT: "Menunggu Pembayaran",
   WAITING_PAYMENT_CONFIRMATION: "Menunggu Konfirmasi Pembayaran"
@@ -130,7 +145,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
     const voucher = await validateVoucher(body.voucherCode, subtotal, items.map((item) => item.productId));
     if (body.voucherCode && !voucher.valid) {
       res.status(422).json({ message: voucher.message });
@@ -192,11 +207,13 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
         paymentInvoiceUrl: session.redirectUrl,
         paymentProvider: session.method,
         paymentRedirectUrl: session.redirectUrl,
+        paymentStatus: "UNPAID",
         xenditInvoiceId: session.method === "xendit" ? session.externalId : undefined,
         xenditInvoiceStatus: session.method === "xendit" ? session.status : undefined
       },
       select: orderResponseSelect
     });
+    logBusinessEvent("PAYMENT_CREATED", { orderId: updated.id, orderNumber: updated.orderNumber, provider: session.method });
 
     res.status(201).json({
       data: {
@@ -241,12 +258,23 @@ export async function getOrderInvoice(req: Request, res: Response): Promise<void
 export async function getOrders(req: Request, res: Response): Promise<void> {
   try {
     const where = orderWhere(req, req.query.status ? { status: statusFromText(String(req.query.status)) } : {});
-    const orders = await prisma.order.findMany({
-      where,
-      include: orderInclude,
-      orderBy: { createdAt: "desc" }
-    });
-    res.json({ data: orders });
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+    const search = String(req.query.search ?? "").trim();
+    const scopedWhere: Prisma.OrderWhereInput = search
+      ? { ...where, OR: [{ orderNumber: { contains: search, mode: "insensitive" } }, { voucherCode: { contains: search, mode: "insensitive" } }] }
+      : where;
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where: scopedWhere,
+        include: orderInclude,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      prisma.order.count({ where: scopedWhere })
+    ]);
+    res.json({ data: orders, meta: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) } });
   } catch (error) {
     handleControllerError(res, error);
   }
@@ -290,7 +318,7 @@ export async function getOrderStatistics(req: Request, res: Response): Promise<v
       include: { items: { include: { product: { include: { category: true } } } } },
       orderBy: { createdAt: "asc" }
     });
-    const completed = orders.filter((order) => order.status === "CONFIRMED");
+    const completed = orders.filter((order) => order.status === "COMPLETED" || order.status === "DELIVERED" || order.status === "CONFIRMED");
     const cancelled = orders.filter((order) => order.status === "CANCELLED");
     const totalSpent = completed.reduce((sum, order) => sum + order.total, 0);
     const totalSavings = orders.reduce((sum, order) => sum + order.discountTotal, 0);
@@ -385,35 +413,54 @@ async function checkoutItems(userId: string, body: CreateOrderBody): Promise<Che
   if (selectedIds.length) {
     const cartItems = await prisma.cartItem.findMany({
       where: { id: { in: selectedIds }, userId },
-      include: { product: { include: { category: true } } }
+      include: { product: { include: { category: true, discounts: true, images: true } } }
     });
     return cartItems.map((item) => ({
       cartId: item.id,
       category: item.product.category.name,
+      discount: activeProductDiscount(item.product.price, item.product.discounts, item.storeId),
+      finalPrice: Math.max(0, item.product.price - activeProductDiscount(item.product.price, item.product.discounts, item.storeId)),
+      imageUrl: item.product.images[0]?.url,
       name: item.product.name,
       price: item.product.price,
       productId: item.productId,
       quantity: item.quantity,
+      sku: item.product.sku,
       storeId: item.storeId
-    }));
+    })).map((item) => ({ ...item, subtotal: item.finalPrice * item.quantity }));
   }
   if (body.items?.length) {
     const productIds = body.items.map((item) => String(item.productId ?? "")).filter(Boolean);
-    const products = await prisma.product.findMany({ where: { id: { in: productIds } }, include: { category: true } });
     const fallbackStore = body.storeId ?? (await prisma.store.findFirst({ where: { isMain: true } }))?.id ?? (await prisma.store.findFirst())?.id ?? "";
+    const products = await prisma.product.findMany({ where: { id: { in: productIds }, isActive: true }, include: { category: true, discounts: true, images: true } });
     return body.items.flatMap((item) => {
       const product = products.find((entry) => entry.id === item.productId);
       if (!product || !fallbackStore) return [];
-      return [{ category: product.category.name, name: product.name, price: product.price, productId: product.id, quantity: Math.max(1, Number(item.quantity ?? 1)), storeId: fallbackStore }];
+      const discount = activeProductDiscount(product.price, product.discounts, fallbackStore);
+      const quantity = Math.max(1, Number(item.quantity ?? 1));
+      const finalPrice = Math.max(0, product.price - discount);
+      return [{
+        category: product.category.name,
+        discount,
+        finalPrice,
+        imageUrl: product.images[0]?.url,
+        name: product.name,
+        price: product.price,
+        productId: product.id,
+        quantity,
+        sku: product.sku,
+        storeId: fallbackStore,
+        subtotal: finalPrice * quantity
+      }];
     });
   }
   return [];
 }
 
 async function resolveStore(body: CreateOrderBody, items: CheckoutItem[]) {
-  if (body.storeId) return prisma.store.findUnique({ where: { id: body.storeId } });
   const itemStoreIds = Array.from(new Set(items.map((item) => item.storeId)));
   if (itemStoreIds.length === 1) return prisma.store.findUnique({ where: { id: itemStoreIds[0] } });
+  if (body.storeId) return prisma.store.findUnique({ where: { id: body.storeId } });
   const nearest = await nearestStore(body.location ?? {});
   return nearest.data;
 }
@@ -431,9 +478,22 @@ async function nearestStore(input: Record<string, unknown>) {
 async function stockIssueFor(storeId: string, items: CheckoutItem[]) {
   for (const item of items) {
     const inventory = await prisma.inventory.findUnique({ where: { storeId_productId: { storeId, productId: item.productId } }, include: { product: true } });
-    if (!inventory || inventory.quantity < item.quantity) return `Stok ${inventory?.product.name ?? item.name} tidak mencukupi`;
+    const available = Math.max(0, (inventory?.quantity ?? 0) - (inventory?.reservedQuantity ?? 0));
+    if (!inventory || available < item.quantity) return `Stok ${inventory?.product.name ?? item.name} tidak mencukupi`;
   }
   return null;
+}
+
+function activeProductDiscount(price: number, discounts: { expiresAt: Date; maxDiscount: number | null; startsAt: Date; storeId: string; type: "PERCENTAGE" | "NOMINAL" | "BOGO"; value: number }[], storeId: string): number {
+  const now = Date.now();
+  const active = discounts
+    .filter((discount) => discount.storeId === storeId && discount.startsAt.getTime() <= now && discount.expiresAt.getTime() > now)
+    .map((discount) => {
+      if (discount.type === "BOGO") return 0;
+      const raw = discount.type === "PERCENTAGE" ? Math.round(price * (discount.value / 100)) : discount.value;
+      return discount.maxDiscount ? Math.min(raw, discount.maxDiscount) : raw;
+    });
+  return Math.min(price, Math.max(0, ...active, 0));
 }
 
 async function validateVoucher(code: string | undefined, subtotal: number, productIds: string[]): Promise<VoucherValidation> {
@@ -537,7 +597,7 @@ async function createCheckoutOrder(input: {
         shippingCost: input.shipping.cost,
         shippingMethod: input.shippingMethod.id,
         shippingProvider: input.shipping.provider,
-        status: "WAITING_PAYMENT",
+        status: "PENDING_PAYMENT",
         storeId: input.store.id,
         total: input.total,
         userId: input.userId,
@@ -553,7 +613,8 @@ async function createCheckoutOrder(input: {
       await tx.voucherUsage.create({ data: { code: input.voucher.voucher.code, discount: input.voucher.discount, orderId: created.id, userId: input.userId, voucherId: input.voucher.voucher.id } });
     }
 
-    await tx.orderStatusHistory.create({ data: { orderId: created.id, status: "WAITING_PAYMENT", description: "Pesanan dibuat dan menunggu pembayaran." } });
+    await tx.orderStatusHistory.create({ data: { orderId: created.id, status: "PENDING_PAYMENT", description: "Pesanan dibuat, stok di-reserve, dan menunggu pembayaran." } });
+    logBusinessEvent("ORDER_CREATED", { orderId: created.id, orderNumber: created.orderNumber, total: input.total, userId: input.userId });
     return created;
   });
 }
@@ -564,9 +625,9 @@ async function createLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo
       data: {
         orderNumber: input.orderNo,
         paymentDeadline: input.paymentDeadline,
-        paymentStatus: "PENDING",
+        paymentStatus: "UNPAID",
         shippingCost: input.shippingCost,
-        status: "WAITING_PAYMENT",
+        status: "PENDING_PAYMENT",
         storeId: input.storeId,
         total: input.total,
         userId: input.userId
@@ -580,10 +641,33 @@ async function createLegacyCheckoutOrder(input: { items: CheckoutItem[]; orderNo
 
 async function persistOrderSideEffects(tx: Prisma.TransactionClient, input: { items: CheckoutItem[]; orderId: string; orderNumber: string; storeId: string; userId: string }) {
   for (const item of input.items) {
-    await tx.orderItem.create({ data: { orderId: input.orderId, productId: item.productId, quantity: item.quantity, price: item.price } });
-    await tx.inventory.update({ where: { storeId_productId: { storeId: input.storeId, productId: item.productId } }, data: { quantity: { decrement: item.quantity } } });
-    await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: -item.quantity, note: `Order ${input.orderNumber}` } });
+    await tx.orderItem.create({
+      data: {
+        discount: item.discount,
+        finalPrice: item.finalPrice,
+        imageUrl: item.imageUrl,
+        orderId: input.orderId,
+        price: item.price,
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        sku: item.sku,
+        subtotal: item.subtotal
+      }
+    });
+    const reserved = await tx.$executeRaw`
+      UPDATE "Inventory"
+      SET "reservedQuantity" = "reservedQuantity" + ${item.quantity}
+      WHERE "storeId" = ${input.storeId}
+        AND "productId" = ${item.productId}
+        AND ("quantity" - "reservedQuantity") >= ${item.quantity}
+    `;
+    if (reserved !== 1) throw new Error(`Stok ${item.name} tidak mencukupi`);
+    await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: item.quantity, note: `RESERVATION ${input.orderNumber}` } });
+    logBusinessEvent("STOCK_RESERVED", { orderNumber: input.orderNumber, productId: item.productId, quantity: item.quantity, storeId: input.storeId });
   }
+
+  await tx.order.update({ where: { id: input.orderId }, data: { stockReservedAt: new Date() } });
 
   const cartIds = input.items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
   if (cartIds.length) await tx.cartItem.deleteMany({ where: { id: { in: cartIds }, userId: input.userId } });
@@ -594,10 +678,10 @@ async function markPaymentSessionFailed(orderId: string) {
   await prisma.$transaction(async (tx) => {
     const order = await tx.order.findUnique({ where: { id: orderId }, include: { items: true } });
     if (!order) return;
-    if (!order.paymentStockRestoredAt && order.paymentStatus === "PENDING") {
+    if (!order.stockReleasedAt && !order.stockCommittedAt) {
       for (const item of order.items) {
-        await tx.inventory.update({ where: { storeId_productId: { storeId: order.storeId, productId: item.productId } }, data: { quantity: { increment: item.quantity } } });
-        await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: item.quantity, note: `Restore stok sesi pembayaran ${order.orderNumber}` } });
+        await tx.inventory.update({ where: { storeId_productId: { storeId: order.storeId, productId: item.productId } }, data: { reservedQuantity: { decrement: item.quantity } } });
+        await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: -item.quantity, note: `RELEASE sesi pembayaran ${order.orderNumber}` } });
       }
     }
     await tx.order.update({
@@ -605,6 +689,7 @@ async function markPaymentSessionFailed(orderId: string) {
       data: {
         paymentStatus: "FAILED",
         paymentStockRestoredAt: order.paymentStockRestoredAt ?? new Date(),
+        stockReleasedAt: order.stockReleasedAt ?? new Date(),
         status: "CANCELLED"
       }
     });
@@ -636,9 +721,10 @@ function canAccessOrder(req: Request, order: { storeId: string; userId: string }
 }
 
 function invoicePayload(order: Prisma.OrderGetPayload<{ include: { items: { include: { product: { include: { images: true } } } }; store: true; user: true } }>) {
+  if (order.invoiceSnapshot && typeof order.invoiceSnapshot === "object") return order.invoiceSnapshot;
   const address = (order.addressSnapshot ?? {}) as Record<string, unknown>;
   return {
-    invoiceNumber: `INV-${order.orderNumber}`,
+    invoiceNumber: order.invoiceNumber ?? `INV-${order.orderNumber}`,
     orderId: order.id,
     orderNumber: order.orderNumber,
     paymentStatus: order.paymentStatus,
@@ -658,13 +744,16 @@ function invoicePayload(order: Prisma.OrderGetPayload<{ include: { items: { incl
     items: order.items.map((item) => ({
       id: item.id,
       productId: item.productId,
-      name: item.product.name,
-      image: item.product.images[0]?.url ?? null,
+      name: item.productName || item.product.name,
+      sku: item.sku,
+      image: item.imageUrl ?? item.product.images[0]?.url ?? null,
       quantity: item.quantity,
       unitPrice: item.price,
-      subtotal: item.price * item.quantity
+      discount: item.discount,
+      finalPrice: item.finalPrice || item.price,
+      subtotal: item.subtotal || item.price * item.quantity
     })),
-    subtotal: order.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    subtotal: order.items.reduce((sum, item) => sum + (item.subtotal || item.price * item.quantity), 0),
     shippingCost: order.shippingCost,
     serviceFee: order.serviceFee,
     discount: order.discountTotal,
@@ -685,7 +774,7 @@ function isCheckoutSchemaMissing(error: unknown) {
 function xenditItemDetails(items: CheckoutItem[], totals: { discount: number; serviceFee: number; shippingCost: number }): XenditInvoiceItem[] {
   const details: XenditInvoiceItem[] = items.map((item) => ({
     name: item.name.slice(0, 255),
-    price: item.price,
+    price: item.finalPrice,
     quantity: item.quantity,
     category: item.category
   }));
@@ -745,15 +834,39 @@ const orderInclude = {
 } satisfies Prisma.OrderInclude;
 
 function statusFromText(value: string): OrderStatus {
-  const statuses: Record<string, OrderStatus> = { "Menunggu Pembayaran": "WAITING_PAYMENT", "Menunggu Konfirmasi Pembayaran": "WAITING_PAYMENT_CONFIRMATION", Diproses: "PROCESSING", Dikirim: "SHIPPED", "Pesanan Dikonfirmasi": "CONFIRMED", Dibatalkan: "CANCELLED" };
+  const statuses: Record<string, OrderStatus> = {
+    "Menunggu Pembayaran": "PENDING_PAYMENT",
+    "Menunggu Konfirmasi Pembayaran": "PENDING_PAYMENT",
+    "Pembayaran Berhasil": "PAID",
+    Diproses: "PROCESSING",
+    "Picking Produk": "PICKING",
+    Dikemas: "PACKED",
+    "Siap Dikirim": "READY",
+    "Dalam Pengiriman": "OUT_FOR_DELIVERY",
+    Dikirim: "OUT_FOR_DELIVERY",
+    Terkirim: "DELIVERED",
+    Selesai: "COMPLETED",
+    "Pesanan Dikonfirmasi": "CONFIRMED",
+    Dibatalkan: "CANCELLED",
+    Refunded: "REFUNDED"
+  };
   return statuses[value] ?? (value as OrderStatus);
 }
 
 function historyDescription(status: OrderStatus) {
   const descriptions: Record<OrderStatus, string> = {
     CANCELLED: "Pesanan dibatalkan.",
+    COMPLETED: "Pesanan telah selesai.",
+    DELIVERED: "Pesanan sudah diterima pelanggan.",
     CONFIRMED: "Pesanan telah diterima pelanggan.",
+    OUT_FOR_DELIVERY: "Pesanan sedang dalam pengiriman.",
+    PACKED: "Pesanan sudah dikemas.",
+    PAID: "Pembayaran berhasil diterima.",
+    PENDING_PAYMENT: "Pesanan menunggu pembayaran.",
+    PICKING: "Produk sedang diambil dari rak.",
     PROCESSING: "Pesanan sedang diproses cabang.",
+    READY: "Pesanan siap dikirim atau diambil.",
+    REFUNDED: "Pesanan dikembalikan dan refund diproses.",
     SHIPPED: "Pesanan sudah diserahkan ke kurir.",
     WAITING_PAYMENT: "Pesanan menunggu pembayaran.",
     WAITING_PAYMENT_CONFIRMATION: "Pembayaran menunggu konfirmasi."

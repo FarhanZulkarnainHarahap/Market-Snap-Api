@@ -206,6 +206,7 @@ exports.Prisma.InventoryScalarFieldEnum = {
   storeId: 'storeId',
   productId: 'productId',
   quantity: 'quantity',
+  reservedQuantity: 'reservedQuantity',
   updatedAt: 'updatedAt'
 };
 
@@ -284,6 +285,12 @@ exports.Prisma.OrderScalarFieldEnum = {
   paidAt: 'paidAt',
   paymentExpiredAt: 'paymentExpiredAt',
   paymentStockRestoredAt: 'paymentStockRestoredAt',
+  stockReservedAt: 'stockReservedAt',
+  stockCommittedAt: 'stockCommittedAt',
+  stockReleasedAt: 'stockReleasedAt',
+  invoiceNumber: 'invoiceNumber',
+  invoiceSnapshot: 'invoiceSnapshot',
+  invoiceCreatedAt: 'invoiceCreatedAt',
   trackingNumber: 'trackingNumber',
   courierName: 'courierName',
   estimatedArrival: 'estimatedArrival',
@@ -301,7 +308,13 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   orderId: 'orderId',
   productId: 'productId',
   quantity: 'quantity',
-  price: 'price'
+  price: 'price',
+  productName: 'productName',
+  sku: 'sku',
+  discount: 'discount',
+  finalPrice: 'finalPrice',
+  subtotal: 'subtotal',
+  imageUrl: 'imageUrl'
 };
 
 exports.Prisma.OrderStatusHistoryScalarFieldEnum = {
@@ -407,6 +420,7 @@ exports.VoucherScope = exports.$Enums.VoucherScope = {
 };
 
 exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  UNPAID: 'UNPAID',
   PENDING: 'PENDING',
   PAID: 'PAID',
   FAILED: 'FAILED',
@@ -416,6 +430,15 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  PAID: 'PAID',
+  PICKING: 'PICKING',
+  PACKED: 'PACKED',
+  READY: 'READY',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  COMPLETED: 'COMPLETED',
+  REFUNDED: 'REFUNDED',
   WAITING_PAYMENT: 'WAITING_PAYMENT',
   WAITING_PAYMENT_CONFIRMATION: 'WAITING_PAYMENT_CONFIRMATION',
   PROCESSING: 'PROCESSING',

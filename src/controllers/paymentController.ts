@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { logBusinessEvent } from "../config/logger.js";
 import { prisma } from "../config/prisma.js";
 import { handleControllerError } from "../utils/controllerHelpers.js";
 import { reconcileXenditInvoice } from "../services/payment.service.js";
@@ -45,6 +46,7 @@ export async function handleXenditInvoiceWebhook(req: Request, res: Response): P
       return;
     }
     const invoice = req.body as XenditInvoice;
+    logBusinessEvent("PAYMENT_WEBHOOK_RECEIVED", { invoiceId: invoice.id, externalId: invoice.external_id, status: invoice.status });
     if (!invoice.external_id || !invoice.id || !invoice.status) {
       res.json({ message: "Webhook Xendit test diterima." });
       return;

@@ -30,9 +30,16 @@ export async function updateProduct(req: Request, res: Response): Promise<void> 
 
 export async function deleteProduct(req: Request, res: Response): Promise<void> {
   try {
-    await prisma.inventory.deleteMany({ where: { productId: String(req.params.id) } });
-    await prisma.productImage.deleteMany({ where: { productId: String(req.params.id) } });
-    const product = await prisma.product.delete({ where: { id: String(req.params.id) } });
+    const productId = String(req.params.id);
+    const ordered = await prisma.orderItem.count({ where: { productId } });
+    if (ordered) {
+      const product = await prisma.product.update({ where: { id: productId }, data: { isActive: false } });
+      res.json({ message: "Produk sudah pernah masuk transaksi, jadi produk diarsipkan.", data: product });
+      return;
+    }
+    await prisma.inventory.deleteMany({ where: { productId } });
+    await prisma.productImage.deleteMany({ where: { productId } });
+    const product = await prisma.product.delete({ where: { id: productId } });
     res.json({ message: "Produk berhasil dihapus", data: product });
   } catch (error) {
     handleControllerError(res, error);
