@@ -456,9 +456,13 @@ async function checkoutItems(userId: string, body: CreateOrderBody): Promise<Che
 }
 
 async function resolveStore(body: CreateOrderBody, items: CheckoutItem[]) {
+  if (body.storeId) return prisma.store.findUnique({ where: { id: body.storeId } });
+  if (locationFromQuery(body.location ?? {})) {
+    const nearest = await nearestStore(body.location ?? {});
+    return nearest.data;
+  }
   const itemStoreIds = Array.from(new Set(items.map((item) => item.storeId)));
   if (itemStoreIds.length === 1) return prisma.store.findUnique({ where: { id: itemStoreIds[0] } });
-  if (body.storeId) return prisma.store.findUnique({ where: { id: body.storeId } });
   const nearest = await nearestStore(body.location ?? {});
   return nearest.data;
 }
