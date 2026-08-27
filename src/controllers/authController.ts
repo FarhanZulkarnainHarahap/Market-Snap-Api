@@ -91,7 +91,7 @@ export function googleLogin(req: Request, res: Response): void {
     return;
   }
   const callbackUrl = cleanWebCallbackUrl(req.query.callbackUrl, "google");
-  res.type("html").send(autoSubmitOAuthForm(authJsGoogleSignInUrl(), callbackUrl));
+  res.type("html").send(autoSubmitOAuthForm(authJsGoogleSignInUrl(), callbackUrl, res.locals.cspNonce));
 }
 
 export function googleCallback(_req: Request, res: Response): void {
@@ -108,7 +108,7 @@ export function facebookLogin(req: Request, res: Response): void {
     return;
   }
   const callbackUrl = cleanWebCallbackUrl(req.query.callbackUrl, "facebook");
-  res.type("html").send(autoSubmitOAuthForm(authJsFacebookSignInUrl(), callbackUrl));
+  res.type("html").send(autoSubmitOAuthForm(authJsFacebookSignInUrl(), callbackUrl, res.locals.cspNonce));
 }
 
 export function facebookCallback(_req: Request, res: Response): void {
@@ -307,7 +307,8 @@ function cleanWebCallbackUrl(value: unknown, provider: "facebook" | "google"): s
   }
 }
 
-function autoSubmitOAuthForm(action: string, callbackUrl: string): string {
+function autoSubmitOAuthForm(action: string, callbackUrl: string, nonce: unknown): string {
+  const safeNonce = escapeHtml(typeof nonce === "string" ? nonce : "");
   return `<!doctype html>
 <html lang="id">
   <head>
@@ -319,7 +320,7 @@ function autoSubmitOAuthForm(action: string, callbackUrl: string): string {
     <form id="google-auth-form" method="post" action="${escapeHtml(action)}">
       <input type="hidden" name="callbackUrl" value="${escapeHtml(callbackUrl)}" />
     </form>
-    <script>document.getElementById("google-auth-form").submit();</script>
+    <script nonce="${safeNonce}">document.getElementById("google-auth-form").submit();</script>
     <noscript>
       <button form="google-auth-form" type="submit">Lanjutkan login</button>
     </noscript>

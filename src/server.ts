@@ -1,5 +1,7 @@
 import cors from "cors";
+import { randomBytes } from "node:crypto";
 import express from "express";
+import type { Response } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { pinoHttp } from "pino-http";
@@ -37,7 +39,18 @@ const allowedOrigins = [
   "http://127.0.0.1:3200"
 ].filter(Boolean) as string[];
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use((_req, res, next) => {
+  res.locals.cspNonce = randomBytes(32).toString("base64");
+  next();
+});
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      scriptSrc: ["'self'", (_req, res) => `'nonce-${(res as Response).locals.cspNonce}'`]
+    }
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(pinoHttp({ logger }));
 app.use(cors({ credentials: true, origin: allowedOrigins }));
 app.use(/^\/authjs\/(.*)/, authJsHandler);
