@@ -1,13 +1,27 @@
+import { createHash, timingSafeEqual } from "node:crypto";
+
 const baseUrl = (process.env.XENDIT_BASE_URL ?? "https://api.xendit.co").replace(/\/+$/, "");
-const secretKey = process.env.XENDIT_SECRET_KEY ?? "";
-const callbackToken = process.env.XENDIT_CALLBACK_TOKEN ?? "";
+const secretKey = process.env.XENDIT_SECRET_KEY?.trim() ?? "";
+const callbackToken = process.env.XENDIT_CALLBACK_TOKEN?.trim() ?? "";
 const webOrigin = normalizeUrl(process.env.WEB_ORIGIN ?? "http://localhost:3000");
+const configuredInvoiceDuration = Number(process.env.XENDIT_INVOICE_DURATION_SECONDS ?? 3600);
+const invoiceDurationSeconds = Number.isInteger(configuredInvoiceDuration) && configuredInvoiceDuration >= 60
+  ? configuredInvoiceDuration
+  : 3600;
+const missingConfiguration = [
+  !secretKey ? "XENDIT_SECRET_KEY" : "",
+  !callbackToken ? "XENDIT_CALLBACK_TOKEN" : ""
+].filter(Boolean);
 
 export const xenditConfig = {
   baseUrl,
   callbackTokenConfigured: Boolean(callbackToken),
   hasSecretKey: Boolean(secretKey),
-  validationMessage: secretKey ? "" : "Konfigurasi Xendit belum lengkap. XENDIT_SECRET_KEY wajib diisi.",
+  invoiceDurationSeconds,
+  isReady: Boolean(secretKey && callbackToken),
+  validationMessage: missingConfiguration.length
+    ? `Konfigurasi Xendit belum lengkap. ${missingConfiguration.join(" dan ")} wajib diisi.`
+    : "",
   webOrigin
 };
 
@@ -41,13 +55,14 @@ export async function createXenditInvoice(input: {
   externalId: string;
   items: XenditInvoiceItem[];
 }) {
+  if (!xenditConfig.isReady) throw new Error(xenditConfig.validationMessage);
   return xenditFetch<XenditInvoice>("/v2/invoices", {
     method: "POST",
     body: JSON.stringify({
       external_id: input.externalId,
       amount: input.amount,
       description: input.description,
-      invoice_duration: Number(process.env.XENDIT_INVOICE_DURATION_SECONDS ?? 3600),
+      invoice_duration: invoiceDurationSeconds,
       payer_email: input.customerEmail || undefined,
       customer: {
         given_names: input.customerName || "Market Snap Customer",
@@ -71,8 +86,26 @@ export async function getXenditInvoice(invoiceId: string) {
 }
 
 export function verifyXenditCallbackToken(token?: string | string[]) {
-  if (!callbackToken) return true;
-  return token === callbackToken;
+  if (typeof token !== "string" || !token || !callbackToken) return false;
+  return secureTokenEquals(callbackToken, token);
+}
+
+export function secureTokenEquals(expected: string, provided: string): boolean {
+  if (!expected || !provided) return false;
+  const expectedDigest = createHash("sha256").update(expected, "utf8").digest();
+  const providedDigest = createHash("sha256").update(provided, "utf8").digest();
+  return timingSafeEqual(expectedDigest, providedDigest);
+}
+
+export function isXenditPaymentUrl(value?: string | null): value is string {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    return url.protocol === "https:" && (host === "xendit.co" || host.endsWith(".xendit.co"));
+  } catch {
+    return false;
+  }
 }
 
 async function xenditFetch<T>(path: string, init?: RequestInit): Promise<T> {

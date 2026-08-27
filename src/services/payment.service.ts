@@ -9,22 +9,49 @@ export type PaymentReconcileResult = {
   orderNumber: string;
   orderStatus: OrderStatus;
   paidAt: Date | null;
+  paymentChannel: string | null;
+  paymentDeadline: Date | null;
+  paymentMethod: string | null;
+  paymentRedirectUrl: string | null;
   paymentStatus: PaymentStatus;
+  total: number;
   transactionStatus: string | null;
 };
+
+export class PaymentVerificationError extends Error {
+  override readonly name = "PaymentVerificationError";
+}
 
 const finalFailureStatuses: PaymentStatus[] = ["FAILED", "EXPIRED", "CANCELLED"];
 
 export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; orderNumber: string }): Promise<PaymentReconcileResult | null> {
   return prisma.$transaction(async (tx) => {
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id"
+      FROM "Order"
+      WHERE "orderNumber" = ${input.orderNumber}
+      FOR UPDATE
+    `;
+    if (!locked[0]) return null;
+
     const order = await tx.order.findUnique({
-      where: { orderNumber: input.orderNumber },
+      where: { id: locked[0].id },
       include: { items: true, store: true, user: true }
     });
     if (!order) return null;
 
-    logBusinessEvent("PAYMENT_WEBHOOK_RECEIVED", { invoiceId: input.invoice.id, orderNumber: input.orderNumber, status: input.invoice.status });
-    assertGrossAmountMatches(order.total, input.invoice.amount);
+    try {
+      assertXenditInvoiceIdentity(order, input.invoice);
+      assertXenditInvoiceAmount(order.total, input.invoice);
+    } catch (error) {
+      logBusinessEvent("PAYMENT_VERIFICATION_FAILED", {
+        invoiceId: input.invoice.id,
+        orderNumber: input.orderNumber,
+        reason: error instanceof Error ? error.message : "Verifikasi pembayaran gagal."
+      });
+      throw error;
+    }
+
     const mapped = mapXenditInvoiceStatus(input.invoice.status);
     const metadata: Prisma.OrderUpdateInput = {
       paymentChannel: input.invoice.payment_channel ?? input.invoice.payment_method ?? undefined,
@@ -34,7 +61,7 @@ export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; or
       xenditInvoiceStatus: input.invoice.status
     };
 
-    if (!mapped || !shouldApplyPaymentStatus(order.paymentStatus, mapped.paymentStatus)) {
+    if (!mapped) {
       const updated = await tx.order.update({
         where: { id: order.id },
         data: metadata,
@@ -43,19 +70,36 @@ export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; or
       return paymentResult(updated);
     }
 
+    if (!shouldApplyPaymentStatus(order.paymentStatus, mapped.paymentStatus)) {
+      return paymentResult(order);
+    }
+
     const now = new Date();
     const orderStatus = mapped.orderStatus ?? order.status;
     const paidAt = mapped.paymentStatus === "PAID" ? order.paidAt ?? transactionDate(input.invoice.paid_at) ?? now : order.paidAt;
     const paymentExpiredAt = mapped.paymentStatus === "EXPIRED" ? order.paymentExpiredAt ?? transactionDate(input.invoice.expiry_date) ?? now : order.paymentExpiredAt;
-    const shouldCommitStock = mapped.paymentStatus === "PAID" && !order.stockCommittedAt && Boolean(order.stockReservedAt) && !order.stockReleasedAt;
-    const shouldReleaseStock = shouldReleaseReservedStock(order.paymentStatus, mapped.paymentStatus, order.stockCommittedAt, order.stockReleasedAt, order.stockReservedAt);
+    const stockTransition = stockTransitionForPayment({
+      committedAt: order.stockCommittedAt,
+      current: order.paymentStatus,
+      next: mapped.paymentStatus,
+      releasedAt: order.stockReleasedAt,
+      reservedAt: order.stockReservedAt
+    });
+    const shouldCommitStock = stockTransition === "COMMIT";
+    const shouldReleaseStock = stockTransition === "RELEASE";
 
     if (shouldCommitStock) {
       for (const item of order.items) {
-        await tx.inventory.update({
-          where: { storeId_productId: { storeId: order.storeId, productId: item.productId } },
+        const inventory = await tx.inventory.updateMany({
+          where: {
+            storeId: order.storeId,
+            productId: item.productId,
+            quantity: { gte: item.quantity },
+            reservedQuantity: { gte: item.quantity }
+          },
           data: { quantity: { decrement: item.quantity }, reservedQuantity: { decrement: item.quantity } }
         });
+        if (inventory.count !== 1) throw new Error(`Reservasi stok ${item.productName || item.productId} tidak konsisten.`);
         await tx.stockJournal.create({
           data: {
             storeId: order.storeId,
@@ -65,29 +109,36 @@ export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; or
           }
         });
       }
+      logBusinessEvent("STOCK_COMMITTED", { orderId: order.id, orderNumber: order.orderNumber });
       logBusinessEvent("PAYMENT_PAID", { orderId: order.id, orderNumber: order.orderNumber, amount: order.total });
     }
 
     if (shouldReleaseStock) {
       for (const item of order.items) {
-        await tx.inventory.update({
-          where: { storeId_productId: { storeId: order.storeId, productId: item.productId } },
+        const inventory = await tx.inventory.updateMany({
+          where: {
+            storeId: order.storeId,
+            productId: item.productId,
+            reservedQuantity: { gte: item.quantity }
+          },
           data: { reservedQuantity: { decrement: item.quantity } }
         });
+        if (inventory.count !== 1) throw new Error(`Reservasi stok ${item.productName || item.productId} tidak konsisten.`);
         await tx.stockJournal.create({
           data: {
             storeId: order.storeId,
             productId: item.productId,
-            change: -item.quantity,
-            note: `RELEASE ${order.orderNumber}`
+            change: 0,
+            note: `RELEASE ${item.quantity} unit ${order.orderNumber}`
           }
         });
       }
+      await tx.voucherUsage.deleteMany({ where: { orderId: order.id } });
       logBusinessEvent("STOCK_RELEASED", { orderId: order.id, orderNumber: order.orderNumber, paymentStatus: mapped.paymentStatus });
     }
 
     const invoiceData = mapped.paymentStatus === "PAID" && !order.invoiceNumber
-      ? createInvoiceData(order, paidAt ?? now)
+      ? createInvoiceData(order, paidAt ?? now, input.invoice)
       : null;
 
     const updated = await tx.order.update({
@@ -133,9 +184,32 @@ export function mapXenditInvoiceStatus(status?: string): { orderStatus: OrderSta
 
 export function assertGrossAmountMatches(orderTotal: number, grossAmount: string | number | undefined): void {
   const gross = Number(grossAmount);
-  if (!Number.isFinite(gross) || Math.round(gross) !== orderTotal) {
-    throw new Error("Nominal pembayaran tidak cocok dengan total order.");
+  if (!Number.isFinite(gross) || gross !== orderTotal) {
+    throw new PaymentVerificationError("Nominal pembayaran tidak cocok dengan total order.");
   }
+}
+
+export function assertXenditInvoiceIdentity(
+  order: { orderNumber: string; xenditInvoiceId: string | null },
+  invoice: Pick<XenditInvoice, "external_id" | "id">
+): void {
+  if (!invoice.external_id || invoice.external_id !== order.orderNumber) {
+    throw new PaymentVerificationError("External ID Xendit tidak cocok dengan nomor order.");
+  }
+  if (order.xenditInvoiceId && invoice.id !== order.xenditInvoiceId) {
+    throw new PaymentVerificationError("Invoice ID Xendit tidak cocok dengan order.");
+  }
+}
+
+export function assertXenditInvoiceAmount(orderTotal: number, invoice: Pick<XenditInvoice, "amount" | "paid_amount" | "status">): void {
+  assertGrossAmountMatches(orderTotal, invoice.amount);
+  if ((invoice.status === "PAID" || invoice.status === "SETTLED") && invoice.paid_amount !== undefined) {
+    assertGrossAmountMatches(orderTotal, invoice.paid_amount);
+  }
+}
+
+export function isPaymentVerificationError(error: unknown): error is PaymentVerificationError {
+  return error instanceof PaymentVerificationError;
 }
 
 function shouldApplyPaymentStatus(current: PaymentStatus, next: PaymentStatus): boolean {
@@ -166,6 +240,22 @@ function shouldReleaseReservedStock(current: PaymentStatus, next: PaymentStatus,
   return true;
 }
 
+export function stockTransitionForPayment(input: {
+  committedAt: Date | null;
+  current: PaymentStatus;
+  next: PaymentStatus;
+  releasedAt: Date | null;
+  reservedAt: Date | null;
+}): "COMMIT" | "RELEASE" | null {
+  if (input.next === "PAID" && !input.committedAt && input.reservedAt && !input.releasedAt) return "COMMIT";
+  if (shouldReleaseReservedStock(input.current, input.next, input.committedAt, input.releasedAt, input.reservedAt)) return "RELEASE";
+  return null;
+}
+
+export function isFinalInvoiceAvailable(order: { invoiceNumber?: string | null; invoiceSnapshot?: unknown; paymentStatus: PaymentStatus }): boolean {
+  return order.paymentStatus === "PAID" || Boolean(order.invoiceNumber && order.invoiceSnapshot);
+}
+
 function xenditHistoryDescription(paymentStatus: PaymentStatus, orderStatus: OrderStatus): string {
   if (paymentStatus === "PAID") return "Pembayaran Xendit berhasil dan pesanan masuk proses cabang.";
   if (paymentStatus === "EXPIRED") return "Invoice Xendit kedaluwarsa.";
@@ -173,7 +263,7 @@ function xenditHistoryDescription(paymentStatus: PaymentStatus, orderStatus: Ord
   return "Status pembayaran Xendit diperbarui.";
 }
 
-function createInvoiceData(order: Prisma.OrderGetPayload<{ include: { items: true; store: true; user: true } }>, paidAt: Date) {
+function createInvoiceData(order: Prisma.OrderGetPayload<{ include: { items: true; store: true; user: true } }>, paidAt: Date, invoice: XenditInvoice) {
   const invoiceNumber = invoiceNumberFor(order.orderNumber);
   const subtotal = order.items.reduce((sum, item) => sum + (item.subtotal || item.finalPrice * item.quantity || item.price * item.quantity), 0);
   return {
@@ -211,10 +301,10 @@ function createInvoiceData(order: Prisma.OrderGetPayload<{ include: { items: tru
     serviceFee: order.serviceFee,
     grandTotal: order.total,
     paymentMethod: order.paymentMethod,
-    paymentChannel: order.paymentChannel,
+    paymentChannel: invoice.payment_channel ?? invoice.payment_method ?? order.paymentChannel,
     paymentStatus: "PAID",
     orderStatus: "PAID",
-    transactionId: order.xenditInvoiceId ?? order.paymentExternalId,
+    transactionId: invoice.id,
     paidAt: paidAt.toISOString(),
     createdAt: order.createdAt.toISOString()
   };
@@ -237,7 +327,12 @@ const paymentResultSelect = {
   id: true,
   orderNumber: true,
   paidAt: true,
+  paymentChannel: true,
+  paymentDeadline: true,
+  paymentMethod: true,
+  paymentRedirectUrl: true,
   paymentStatus: true,
+  total: true,
   xenditInvoiceStatus: true,
   status: true
 } satisfies Prisma.OrderSelect;
@@ -249,7 +344,12 @@ function paymentResult(order: Prisma.OrderGetPayload<{ select: typeof paymentRes
     orderNumber: order.orderNumber,
     orderStatus: order.status,
     paidAt: order.paidAt,
+    paymentChannel: order.paymentChannel,
+    paymentDeadline: order.paymentDeadline,
+    paymentMethod: order.paymentMethod,
+    paymentRedirectUrl: order.paymentRedirectUrl,
     paymentStatus: order.paymentStatus,
+    total: order.total,
     transactionStatus: order.xenditInvoiceStatus
   };
 }

@@ -3,7 +3,8 @@ import type { OrderStatus, Prisma } from "../../prisma/generated/prisma/client.j
 import { logBusinessEvent } from "../config/logger.js";
 import { prisma } from "../config/prisma.js";
 import { calculateDomesticShippingCost, rajaongkirConfig } from "../config/rajaongkir.js";
-import { createXenditInvoice, xenditConfig, type XenditInvoiceItem } from "../services/xendit.service.js";
+import { createXenditInvoice, isXenditPaymentUrl, xenditConfig, type XenditInvoiceItem } from "../services/xendit.service.js";
+import { isFinalInvoiceAvailable } from "../services/payment.service.js";
 import { distanceKm } from "../utils/distance.js";
 import { handleControllerError, locationFromQuery, mapStore, orderNumber } from "../utils/controllerHelpers.js";
 
@@ -114,7 +115,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     const body = req.body as CreateOrderBody;
     const userId = String(req.user?.id);
     const userEmail = String(req.user?.email ?? "");
-    const items = await checkoutItems(userId, body);
+    let items = await checkoutItems(userId, body);
     if (!items.length) {
       res.status(422).json({ message: "Pilih produk sebelum membuat pesanan." });
       return;
@@ -123,6 +124,11 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     const store = await resolveStore(body, items);
     if (!store) {
       res.status(404).json({ message: "Cabang tidak ditemukan." });
+      return;
+    }
+    items = await repriceCheckoutItems(items, store.id);
+    if (!items.length) {
+      res.status(422).json({ message: "Produk checkout tidak aktif atau tidak tersedia di cabang yang dipilih." });
       return;
     }
     const shippingMethods = shippingMethodOptions();
@@ -169,14 +175,14 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     }
 
     const shipping = await shippingQuote(body, shippingMethod);
-    const serviceFee = Number(process.env.ORDER_SERVICE_FEE ?? 0);
+    const serviceFee = environmentAmount("ORDER_SERVICE_FEE", 0);
     const total = Math.max(0, subtotal + shipping.cost + serviceFee - voucher.discount);
     if (!paymentMethodOptions().some((method) => method.id === body.paymentChannel)) {
       res.status(422).json({ message: "Metode pembayaran tidak tersedia." });
       return;
     }
     const orderNo = orderNumber();
-    const paymentDeadline = new Date(Date.now() + 60 * 60 * 1000);
+    const paymentDeadline = new Date(Date.now() + xenditConfig.invoiceDurationSeconds * 1000);
     const payment = initialPayment(body, orderNo);
 
     const order = await createCheckoutOrder({
@@ -200,15 +206,30 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     });
 
     let session: CheckoutPayment;
+    let updated: CheckoutOrderResult;
     try {
       session = await createPaymentSession({ amount: total, email: userEmail, items, orderNumber: order.orderNumber, payment, totals: { shippingCost: shipping.cost, serviceFee, discount: voucher.discount } });
+      updated = await attachPaymentSessionToOrder(order.id, session);
     } catch (error) {
-      await markPaymentSessionFailed(order.id);
+      await markPaymentSessionFailed(order.id).catch((compensationError) => {
+        logBusinessEvent("STOCK_RELEASE_FAILED", {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          reason: compensationError instanceof Error ? compensationError.message : "Kompensasi checkout gagal."
+        });
+      });
       throw error;
     }
 
-    const updated = await attachPaymentSessionToOrder(order.id, session);
     logBusinessEvent("PAYMENT_CREATED", { orderId: updated.id, orderNumber: updated.orderNumber, provider: session.method });
+    await clearPurchasedCartItems(userId, store.id, items).catch((error) => {
+      logBusinessEvent("CHECKOUT_CART_CLEAR_FAILED", {
+        orderId: updated.id,
+        orderNumber: updated.orderNumber,
+        reason: error instanceof Error ? error.message : "Cart checkout gagal dibersihkan.",
+        userId
+      });
+    });
 
     res.status(201).json({
       data: {
@@ -242,6 +263,10 @@ export async function getOrderInvoice(req: Request, res: Response): Promise<void
     });
     if (!order || !canAccessOrder(req, order)) {
       res.status(404).json({ message: "Invoice tidak ditemukan." });
+      return;
+    }
+    if (!isFinalInvoiceAvailable(order)) {
+      res.status(409).json({ message: "Invoice tersedia setelah pembayaran berhasil." });
       return;
     }
     res.json({ data: invoicePayload(order) });
@@ -339,31 +364,63 @@ export async function getOrderStatistics(req: Request, res: Response): Promise<v
 export async function updateOrderStatus(req: Request, res: Response): Promise<void> {
   try {
     const status = statusFromText(req.body.status);
+    if (["PAID", "REFUNDED", "PENDING_PAYMENT", "WAITING_PAYMENT", "WAITING_PAYMENT_CONFIRMATION"].includes(status)) {
+      res.status(422).json({ message: "Status pembayaran hanya dapat diperbarui melalui alur pembayaran terverifikasi." });
+      return;
+    }
     const where = orderWhere(req, { id: String(req.params.id) });
-    const order = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const exists = await tx.order.findFirst({ where });
       if (!exists) return null;
-      const updated = await tx.order.update({ where: { id: exists.id }, data: { status } });
+      await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT "id" FROM "Order" WHERE "id" = ${exists.id} FOR UPDATE
+      `;
+      const current = await tx.order.findUnique({ where: { id: exists.id }, include: { items: true } });
+      if (!current) return null;
+      if (status !== "CANCELLED" && current.paymentStatus !== "PAID") {
+        return { blocked: true as const, message: "Pesanan hanya dapat diproses setelah pembayaran berhasil.", order: null };
+      }
+      if (status === "CANCELLED" && (current.paymentStatus === "PAID" || current.paymentStatus === "REFUNDED" || current.stockCommittedAt)) {
+        return { blocked: true as const, message: "Pesanan berbayar memerlukan alur refund sebelum dibatalkan.", order: null };
+      }
+      if (status === "CANCELLED" && current.xenditInvoiceId && current.paymentStatus === "PENDING") {
+        return { blocked: true as const, message: "Sesi pembayaran Xendit masih aktif. Tunggu invoice kedaluwarsa atau batalkan melalui alur Xendit.", order: null };
+      }
+
+      const releasedAt = status === "CANCELLED" ? await releaseOrderReservation(tx, current, "pembatalan") : null;
+      const updated = await tx.order.update({
+        where: { id: exists.id },
+        data: {
+          paymentStatus: status === "CANCELLED" ? "CANCELLED" : undefined,
+          paymentStockRestoredAt: releasedAt ?? undefined,
+          stockReleasedAt: releasedAt ?? undefined,
+          status
+        }
+      });
+      if (status === "CANCELLED") await tx.voucherUsage.deleteMany({ where: { orderId: current.id } });
       await tx.orderStatusHistory.create({ data: { orderId: updated.id, status, description: historyDescription(status), location: cleanText(req.body.location) } });
-      return updated;
+      return { blocked: false as const, message: "", order: updated };
     });
-    if (!order) {
+    if (!result) {
       res.status(404).json({ message: "Order tidak ditemukan." });
       return;
     }
-    res.json({ data: order });
+    if (result.blocked) {
+      res.status(409).json({ message: result.message });
+      return;
+    }
+    res.json({ data: result.order });
   } catch (error) {
     handleControllerError(res, error);
   }
 }
 
 export async function updateOrder(req: Request, res: Response): Promise<void> {
-  try {
-    const order = await prisma.order.update({ where: { id: String(req.params.id) }, data: { status: req.body.status ? statusFromText(req.body.status) : undefined } });
-    res.json({ data: order });
-  } catch (error) {
-    handleControllerError(res, error);
+  if (!req.body.status) {
+    res.status(422).json({ message: "Status order wajib diisi." });
+    return;
   }
+  await updateOrderStatus(req, res);
 }
 
 export async function deleteOrder(req: Request, res: Response): Promise<void> {
@@ -373,9 +430,46 @@ export async function deleteOrder(req: Request, res: Response): Promise<void> {
       res.status(404).json({ message: "Order tidak ditemukan." });
       return;
     }
-    await prisma.orderItem.deleteMany({ where: { orderId: exists.id } });
-    const order = await prisma.order.delete({ where: { id: exists.id } });
-    res.json({ message: "Order berhasil dihapus", data: order });
+    const result = await prisma.$transaction(async (tx) => {
+      const locked = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT "id" FROM "Order" WHERE "id" = ${exists.id} FOR UPDATE
+      `;
+      if (!locked[0]) return null;
+      const order = await tx.order.findUnique({ where: { id: locked[0].id }, include: { items: true } });
+      if (!order) return null;
+      if (order.paymentStatus === "PAID" || order.paymentStatus === "REFUNDED" || order.stockCommittedAt) {
+        return { blocked: true as const, message: "Order yang sudah dibayar tidak dapat dihapus.", order: null };
+      }
+      if (order.xenditInvoiceId && (order.paymentStatus === "PENDING" || order.paymentStatus === "UNPAID")) {
+        return { blocked: true as const, message: "Order dengan sesi pembayaran aktif tidak dapat dihapus.", order: null };
+      }
+
+      if (order.stockReservedAt && !order.stockReleasedAt) {
+        for (const item of order.items) {
+          const inventory = await tx.inventory.updateMany({
+            where: { storeId: order.storeId, productId: item.productId, reservedQuantity: { gte: item.quantity } },
+            data: { reservedQuantity: { decrement: item.quantity } }
+          });
+          if (inventory.count !== 1) throw new Error(`Reservasi stok ${item.productName || item.productId} tidak konsisten.`);
+          await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: 0, note: `RELEASE ${item.quantity} unit penghapusan ${order.orderNumber}` } });
+        }
+        logBusinessEvent("STOCK_RELEASED", { orderId: order.id, orderNumber: order.orderNumber, reason: "ORDER_DELETED" });
+      }
+
+      await tx.voucherUsage.deleteMany({ where: { orderId: order.id } });
+      await tx.orderItem.deleteMany({ where: { orderId: order.id } });
+      const deleted = await tx.order.delete({ where: { id: order.id } });
+      return { blocked: false as const, message: "", order: deleted };
+    });
+    if (!result) {
+      res.status(404).json({ message: "Order tidak ditemukan." });
+      return;
+    }
+    if (result.blocked) {
+      res.status(409).json({ message: result.message });
+      return;
+    }
+    res.json({ message: "Order berhasil dihapus", data: result.order });
   } catch (error) {
     handleControllerError(res, error);
   }
@@ -410,6 +504,7 @@ async function checkoutItems(userId: string, body: CreateOrderBody): Promise<Che
       where: { id: { in: selectedIds }, userId },
       include: { product: { select: checkoutProductSelect() } }
     });
+    if (cartItems.length !== new Set(selectedIds).size || cartItems.some((item) => !item.product.isActive)) return [];
     return cartItems.map((item) => ({
       cartId: item.id,
       category: item.product.category.name,
@@ -467,6 +562,33 @@ async function resolveStore(body: CreateOrderBody, items: CheckoutItem[]) {
   return nearest.data;
 }
 
+async function repriceCheckoutItems(items: CheckoutItem[], storeId: string): Promise<CheckoutItem[]> {
+  const productIds = Array.from(new Set(items.map((item) => item.productId)));
+  const products = await prisma.product.findMany({
+    where: { id: { in: productIds }, isActive: true },
+    select: checkoutProductSelect()
+  });
+  if (products.length !== productIds.length) return [];
+
+  return items.flatMap((item) => {
+    const product = products.find((entry) => entry.id === item.productId);
+    if (!product || !Number.isInteger(item.quantity) || item.quantity <= 0) return [];
+    const discount = activeProductDiscount(product.price, product.discounts, storeId);
+    const finalPrice = Math.max(0, product.price - discount);
+    return [{
+      ...item,
+      category: product.category.name,
+      discount,
+      finalPrice,
+      imageUrl: product.images[0]?.url,
+      name: product.name,
+      price: product.price,
+      storeId,
+      subtotal: finalPrice * item.quantity
+    }];
+  });
+}
+
 async function nearestStore(input: Record<string, unknown>) {
   const stores = await prisma.store.findMany();
   const fallback = stores.find((store) => store.isMain) ?? stores[0];
@@ -489,6 +611,7 @@ async function stockIssueFor(storeId: string, items: CheckoutItem[]) {
 function checkoutProductSelect() {
   return {
     id: true,
+    isActive: true,
     name: true,
     price: true,
     unit: true,
@@ -549,7 +672,7 @@ function initialPayment(body: CreateOrderBody, orderNo: string): CheckoutPayment
   const methods = paymentMethodOptions();
   const selected = methods.find((method) => method.id === body.paymentChannel);
   if (!selected) throw new Error("Metode pembayaran tidak tersedia.");
-  if (!xenditConfig.hasSecretKey) throw new Error("Konfigurasi Xendit belum lengkap.");
+  if (!xenditConfig.isReady) throw new Error(xenditConfig.validationMessage || "Konfigurasi Xendit belum lengkap.");
   return { channel: selected.channel, externalId: orderNo, invoiceUrl: null, method: "xendit", orderNumber: orderNo, redirectUrl: null, status: "PENDING" };
 }
 
@@ -561,26 +684,26 @@ async function createPaymentSession(input: { amount: number; email: string; item
     externalId: input.orderNumber,
     items: xenditItemDetails(input.items, input.totals)
   });
-  if (!invoice.invoice_url) throw new Error("Xendit tidak mengembalikan invoice_url.");
+  if (!isXenditPaymentUrl(invoice.invoice_url)) throw new Error("Xendit tidak mengembalikan URL pembayaran yang aman.");
   return { ...input.payment, externalId: invoice.id, invoiceUrl: invoice.invoice_url, redirectUrl: invoice.invoice_url, status: invoice.status, token: invoice.id };
 }
 
 function shippingMethodOptions() {
   return [
-    { id: "standard", label: "Pengiriman Standar", description: "Estimasi reguler dari cabang terdekat.", eta: "2-4 jam", cost: Number(process.env.SHIPPING_STANDARD_COST ?? 10000), requiresAddress: true },
-    { id: "express", label: "Pengiriman Express", description: "Prioritas lebih cepat bila cabang tersedia.", eta: "60-120 menit", cost: Number(process.env.SHIPPING_EXPRESS_COST ?? 18000), requiresAddress: true },
+    { id: "standard", label: "Pengiriman Standar", description: "Estimasi reguler dari cabang terdekat.", eta: "2-4 jam", cost: environmentAmount("SHIPPING_STANDARD_COST", 10000), requiresAddress: true },
+    { id: "express", label: "Pengiriman Express", description: "Prioritas lebih cepat bila cabang tersedia.", eta: "60-120 menit", cost: environmentAmount("SHIPPING_EXPRESS_COST", 18000), requiresAddress: true },
     { id: "pickup", label: "Ambil di Cabang", description: "Ambil pesanan langsung di cabang pilihan.", eta: "Sesuai jadwal ambil", cost: 0, requiresAddress: false }
   ];
 }
 
 function paymentMethodOptions() {
-  if (!xenditConfig.hasSecretKey) return [];
+  if (!xenditConfig.isReady) return [];
   return [{
     id: "xendit",
-    label: "Xendit Test Mode",
+    label: "Xendit",
     provider: "xendit",
     channel: "",
-    description: "Bayar melalui Xendit Payment Link test mode."
+    description: "Bayar aman melalui halaman pembayaran Xendit."
   }];
 }
 
@@ -770,15 +893,11 @@ async function persistOrderSideEffects(tx: Prisma.TransactionClient, input: { it
         AND ("quantity" - "reservedQuantity") >= ${item.quantity}
     `;
     if (reserved !== 1) throw new Error(`Stok ${item.name} tidak mencukupi`);
-    await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: item.quantity, note: `RESERVATION ${input.orderNumber}` } });
+    await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: 0, note: `RESERVATION ${item.quantity} unit ${input.orderNumber}` } });
     logBusinessEvent("STOCK_RESERVED", { orderNumber: input.orderNumber, productId: item.productId, quantity: item.quantity, storeId: input.storeId });
   }
 
   await tx.order.update({ where: { id: input.orderId }, data: { stockReservedAt: new Date() } });
-
-  const cartIds = input.items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
-  if (cartIds.length) await tx.cartItem.deleteMany({ where: { id: { in: cartIds }, userId: input.userId } });
-  else await tx.cartItem.deleteMany({ where: { userId: input.userId, storeId: input.storeId, productId: { in: input.items.map((item) => item.productId) } } });
 }
 
 async function persistLegacyOrderSideEffects(tx: Prisma.TransactionClient, input: { items: CheckoutItem[]; orderId: string; orderNumber: string; storeId: string; userId: string }) {
@@ -788,27 +907,68 @@ async function persistLegacyOrderSideEffects(tx: Prisma.TransactionClient, input
     await tx.stockJournal.create({ data: { storeId: input.storeId, productId: item.productId, change: -item.quantity, note: `Order ${input.orderNumber}` } });
   }
 
-  const cartIds = input.items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
-  if (cartIds.length) await tx.cartItem.deleteMany({ where: { id: { in: cartIds }, userId: input.userId } });
-  else await tx.cartItem.deleteMany({ where: { userId: input.userId, storeId: input.storeId, productId: { in: input.items.map((item) => item.productId) } } });
+}
+
+async function clearPurchasedCartItems(userId: string, storeId: string, items: CheckoutItem[]) {
+  const cartIds = items.map((item) => item.cartId).filter((id): id is string => Boolean(id));
+  if (cartIds.length) {
+    return prisma.cartItem.deleteMany({ where: { id: { in: cartIds }, userId } });
+  }
+  return prisma.cartItem.deleteMany({
+    where: { userId, storeId, productId: { in: items.map((item) => item.productId) } }
+  });
+}
+
+async function releaseOrderReservation(
+  tx: Prisma.TransactionClient,
+  order: Prisma.OrderGetPayload<{ include: { items: true } }>,
+  reason: string
+): Promise<Date | null> {
+  if (!order.stockReservedAt || order.stockReleasedAt || order.stockCommittedAt) return null;
+  for (const item of order.items) {
+    const inventory = await tx.inventory.updateMany({
+      where: { storeId: order.storeId, productId: item.productId, reservedQuantity: { gte: item.quantity } },
+      data: { reservedQuantity: { decrement: item.quantity } }
+    });
+    if (inventory.count !== 1) throw new Error(`Reservasi stok ${item.productName || item.productId} tidak konsisten.`);
+    await tx.stockJournal.create({
+      data: { storeId: order.storeId, productId: item.productId, change: 0, note: `RELEASE ${item.quantity} unit ${reason} ${order.orderNumber}` }
+    });
+  }
+  const releasedAt = new Date();
+  logBusinessEvent("STOCK_RELEASED", { orderId: order.id, orderNumber: order.orderNumber, reason });
+  return releasedAt;
 }
 
 async function markPaymentSessionFailed(orderId: string) {
   await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUnique({ where: { id: orderId }, include: { items: true } });
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "Order" WHERE "id" = ${orderId} FOR UPDATE
+    `;
+    if (!locked[0]) return;
+    const order = await tx.order.findUnique({ where: { id: locked[0].id }, include: { items: true } });
     if (!order) return;
-    if (!order.stockReleasedAt && !order.stockCommittedAt) {
+    if (order.paymentStatus === "PAID" || order.paymentStatus === "REFUNDED" || order.stockCommittedAt) return;
+    const shouldRelease = Boolean(order.stockReservedAt && !order.stockReleasedAt);
+    if (shouldRelease) {
       for (const item of order.items) {
-        await tx.inventory.update({ where: { storeId_productId: { storeId: order.storeId, productId: item.productId } }, data: { reservedQuantity: { decrement: item.quantity } } });
-        await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: -item.quantity, note: `RELEASE sesi pembayaran ${order.orderNumber}` } });
+        const inventory = await tx.inventory.updateMany({
+          where: { storeId: order.storeId, productId: item.productId, reservedQuantity: { gte: item.quantity } },
+          data: { reservedQuantity: { decrement: item.quantity } }
+        });
+        if (inventory.count !== 1) throw new Error(`Reservasi stok ${item.productName || item.productId} tidak konsisten.`);
+        await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: 0, note: `RELEASE ${item.quantity} unit sesi pembayaran ${order.orderNumber}` } });
       }
+      await tx.voucherUsage.deleteMany({ where: { orderId: order.id } });
+      logBusinessEvent("STOCK_RELEASED", { orderId: order.id, orderNumber: order.orderNumber, paymentStatus: "FAILED" });
     }
+    const now = new Date();
     await tx.order.update({
       where: { id: order.id },
       data: {
         paymentStatus: "FAILED",
-        paymentStockRestoredAt: order.paymentStockRestoredAt ?? new Date(),
-        stockReleasedAt: order.stockReleasedAt ?? new Date(),
+        paymentStockRestoredAt: shouldRelease ? order.paymentStockRestoredAt ?? now : order.paymentStockRestoredAt,
+        stockReleasedAt: shouldRelease ? order.stockReleasedAt ?? now : order.stockReleasedAt,
         status: "CANCELLED"
       }
     });
@@ -823,8 +983,12 @@ async function markPaymentSessionFailed(orderId: string) {
 
 async function markLegacyPaymentSessionFailed(orderId: string) {
   await prisma.$transaction(async (tx) => {
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "Order" WHERE "id" = ${orderId} FOR UPDATE
+    `;
+    if (!locked[0]) return;
     const order = await tx.order.findUnique({
-      where: { id: orderId },
+      where: { id: locked[0].id },
       select: {
         id: true,
         orderNumber: true,
@@ -834,6 +998,7 @@ async function markLegacyPaymentSessionFailed(orderId: string) {
       }
     });
     if (!order) return;
+    if (!["WAITING_PAYMENT", "PENDING_PAYMENT"].includes(order.status)) return;
     for (const item of order.items) {
       await tx.inventory.update({ where: { storeId_productId: { storeId: order.storeId, productId: item.productId } }, data: { quantity: { increment: item.quantity } } });
       await tx.stockJournal.create({ data: { storeId: order.storeId, productId: item.productId, change: item.quantity, note: `RESTORE sesi pembayaran ${order.orderNumber}` } });
@@ -1086,4 +1251,9 @@ function isPastSchedule(date: Date, slot: string) {
 
 function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() || undefined : undefined;
+}
+
+function environmentAmount(name: string, fallback: number) {
+  const value = Number(process.env[name] ?? fallback);
+  return Number.isFinite(value) && value >= 0 ? Math.round(value) : fallback;
 }

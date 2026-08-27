@@ -16,6 +16,6 @@ orderRouter.get("/orders/by-number/:orderNumber/invoice", authenticate, getOrder
 orderRouter.get("/orders/:id", authenticate, getOrderById);
 orderRouter.get("/orders/:id/tracking", authenticate, getOrderTracking);
 orderRouter.post("/orders/:id/payment-proof", ...onlyUser, uploadPaymentProof.single("paymentProof"), uploadPayment);
-orderRouter.patch("/orders/:id", authenticate, validate(updateOrderSchema), updateOrder);
+orderRouter.patch("/orders/:id", ...onlyAdmin, validate(updateOrderSchema), updateOrder);
 orderRouter.patch("/orders/:id/status", ...onlyAdmin, validate(updateOrderStatusSchema), updateOrderStatus);
 orderRouter.delete("/orders/:id", authenticate, deleteOrder);

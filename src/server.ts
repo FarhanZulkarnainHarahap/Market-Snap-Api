@@ -6,11 +6,20 @@ import { pinoHttp } from "pino-http";
 import * as Sentry from "@sentry/node";
 import { authJsHandler } from "./config/authjs.js";
 import { logger } from "./config/logger.js";
+import { xenditConfig } from "./config/xendit.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { apiRouter } from "./routers/index.js";
 
 export const app = express();
 app.set("trust proxy", true);
+
+if (!xenditConfig.isReady) {
+  logger[process.env.NODE_ENV === "production" ? "error" : "warn"]({
+    event: "XENDIT_DISABLED",
+    callbackTokenConfigured: xenditConfig.callbackTokenConfigured,
+    secretKeyConfigured: xenditConfig.hasSecretKey
+  }, "Checkout Xendit dinonaktifkan sampai konfigurasi pembayaran lengkap.");
+}
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({ dsn: process.env.SENTRY_DSN, environment: process.env.NODE_ENV ?? "development" });

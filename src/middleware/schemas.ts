@@ -24,8 +24,11 @@ export const passwordResetConfirmSchema = z.object({
 export const createOrderSchema = z.object({
   userId: z.string().optional(),
   total: z.coerce.number().nonnegative().optional(),
-  items: z.array(z.unknown()).default([]),
-  selectedCartItemIds: z.array(z.string().min(1)).optional(),
+  items: z.array(z.object({
+    productId: z.string().min(1),
+    quantity: z.coerce.number().int().positive().max(1000)
+  })).max(100).default([]),
+  selectedCartItemIds: z.array(z.string().min(1)).max(100).optional(),
   addressId: z.string().min(1).optional(),
   location: z.record(z.string(), z.unknown()).optional(),
   destinationId: z.string().optional(),
