@@ -1,4 +1,5 @@
 import { createHash, timingSafeEqual } from "node:crypto";
+import { Xendit } from "xendit-node";
 
 const baseUrl = (process.env.XENDIT_BASE_URL ?? "https://api.xendit.co").replace(/\/+$/, "");
 const secretKey = process.env.XENDIT_SECRET_KEY?.trim() ?? "";
@@ -56,33 +57,42 @@ export async function createXenditInvoice(input: {
   items: XenditInvoiceItem[];
 }) {
   if (!xenditConfig.isReady) throw new Error(xenditConfig.validationMessage);
-  return xenditFetch<XenditInvoice>("/v2/invoices", {
-    method: "POST",
-    body: JSON.stringify({
-      external_id: input.externalId,
+  try {
+    const invoice = await xenditClient().Invoice.createInvoice({
+      data: {
+      externalId: input.externalId,
       amount: input.amount,
       description: input.description,
-      invoice_duration: invoiceDurationSeconds,
-      payer_email: input.customerEmail || undefined,
+      invoiceDuration: invoiceDurationSeconds,
+      payerEmail: input.customerEmail || undefined,
       customer: {
-        given_names: input.customerName || "Market Snap Customer",
+        givenNames: input.customerName || "Market Snap Customer",
         email: input.customerEmail || undefined
       },
-      success_redirect_url: `${webOrigin}/payment/finish?order_id=${encodeURIComponent(input.externalId)}`,
-      failure_redirect_url: `${webOrigin}/payment/error?order_id=${encodeURIComponent(input.externalId)}`,
+      successRedirectUrl: `${webOrigin}/payment/finish?order_id=${encodeURIComponent(input.externalId)}`,
+      failureRedirectUrl: `${webOrigin}/payment/error?order_id=${encodeURIComponent(input.externalId)}`,
       currency: "IDR",
       items: input.items,
       metadata: {
         orderNumber: input.externalId,
         source: "market-snap"
       }
-    })
-  });
+    }});
+    return normalizeSdkInvoice(invoice);
+  } catch (error) {
+    throw new Error(xenditErrorMessage(error));
+  }
 }
 
 export async function getXenditInvoice(invoiceId: string) {
   if (!invoiceId.trim()) throw new Error("Invoice ID Xendit wajib diisi.");
-  return xenditFetch<XenditInvoice>(`/v2/invoices/${encodeURIComponent(invoiceId)}`, { method: "GET" });
+  if (!secretKey) throw new Error(xenditConfig.validationMessage);
+  try {
+    const invoice = await xenditClient().Invoice.getInvoiceById({ invoiceId });
+    return normalizeSdkInvoice(invoice);
+  } catch (error) {
+    throw new Error(xenditErrorMessage(error));
+  }
 }
 
 export function verifyXenditCallbackToken(token?: string | string[]) {
@@ -108,42 +118,34 @@ export function isXenditPaymentUrl(value?: string | null): value is string {
   }
 }
 
-async function xenditFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!secretKey) throw new Error(xenditConfig.validationMessage);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), Number(process.env.XENDIT_TIMEOUT_MS ?? 10000));
-  try {
-    const response = await fetch(`${baseUrl}${path}`, {
-      ...init,
-      signal: controller.signal,
-      headers: {
-        accept: "application/json",
-        authorization: `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`,
-        "content-type": "application/json",
-        ...init?.headers
-      }
-    });
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      throw new Error(xenditErrorMessage(detail) || "Pembayaran Xendit belum dapat diproses.");
-    }
-    return response.json() as Promise<T>;
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") throw new Error("Koneksi Xendit melewati batas waktu.");
-    throw error;
-  } finally {
-    clearTimeout(timeout);
-  }
+function xenditClient(): Xendit {
+  return new Xendit({ secretKey, xenditURL: baseUrl });
 }
 
-function xenditErrorMessage(detail: string) {
-  if (!detail) return "";
-  try {
-    const parsed = JSON.parse(detail) as { message?: string; error_code?: string };
-    return parsed.message ?? parsed.error_code ?? "";
-  } catch {
-    return detail.slice(0, 180);
-  }
+function normalizeSdkInvoice(invoice: {
+  amount: number;
+  expiryDate: Date;
+  externalId: string;
+  id?: string;
+  invoiceUrl: string;
+  paymentMethod?: unknown;
+  status: unknown;
+}): XenditInvoice {
+  if (!invoice.id) throw new Error("Xendit tidak mengembalikan invoice ID.");
+  return {
+    amount: invoice.amount,
+    expiry_date: invoice.expiryDate instanceof Date ? invoice.expiryDate.toISOString() : String(invoice.expiryDate),
+    external_id: invoice.externalId,
+    id: invoice.id,
+    invoice_url: invoice.invoiceUrl,
+    payment_method: typeof invoice.paymentMethod === "string" ? invoice.paymentMethod : undefined,
+    status: String(invoice.status)
+  };
+}
+
+function xenditErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.name === "AbortError") return "Koneksi Xendit melewati batas waktu.";
+  return "Pembayaran Xendit belum dapat diproses. Silakan coba lagi.";
 }
 
 function normalizeUrl(url: string) {

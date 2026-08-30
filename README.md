@@ -87,7 +87,15 @@ DIRECT_URL="postgres://USER:PASSWORD@HOST:5432/postgres?sslmode=require"
 PORT=4100
 HOST=127.0.0.1
 WEB_ORIGIN=http://localhost:3000
+CLIENT_URL=http://localhost:3000
+API_PUBLIC_URL=http://localhost:4100
 JWT_SECRET=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GOOGLE_CALLBACK_URL=http://localhost:4100/api/auth/google/callback
+FACEBOOK_APP_ID=""
+FACEBOOK_APP_SECRET=""
+FACEBOOK_CALLBACK_URL=http://localhost:4100/api/auth/facebook/callback
 CLOUDINARY_CLOUD_NAME=""
 CLOUDINARY_API_KEY=""
 CLOUDINARY_API_SECRET=""
@@ -113,25 +121,37 @@ npm run build            # TypeScript build
 npm run vercel-build     # Prisma generate + TypeScript build
 npm run prisma:generate  # generate Prisma client
 npm run prisma:migrate   # run Prisma migration
+npm run db:deploy        # apply migration di production/CI
 ```
 
 ## Authorization
 
-Endpoint protected memakai JWT dari response login.
+Endpoint protected memakai access JWT di cookie `market_snap_session` yang HttpOnly. Refresh credential dirotasi melalui `POST /api/auth/refresh`, disimpan sebagai hash di database, dan tidak pernah dikirim dalam JSON.
 
 ```bash
-curl -X POST https://your-market-snap-api.vercel.app/auth/login \
+curl -X POST https://your-market-snap-api.vercel.app/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@email.com","password":"password"}'
 ```
 
-Gunakan token dari response pada request berikutnya:
+Untuk browser, kirim cookie secara otomatis dengan `credentials: "include"`. Dukungan Bearer token tetap tersedia untuk client non-browser.
 
 ```txt
-Authorization: Bearer YOUR_JWT_TOKEN
+Cookie: market_snap_session=<httpOnly access JWT>
 ```
 
 Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
+
+### OAuth callback production
+
+Daftarkan URI berikut persis di console provider:
+
+```txt
+Google:  https://api-node.market-snap.web.id/api/auth/google/callback
+Facebook: https://api-node.market-snap.web.id/api/auth/facebook/callback
+```
+
+Flow dimulai dari `GET /api/auth/google` atau `GET /api/auth/facebook` dan kembali ke frontend di `/auth/callback`. State OAuth diverifikasi melalui cookie HttpOnly berumur 10 menit.
 
 ## Checkout, Ongkir, and Payment
 
@@ -141,7 +161,7 @@ Role API yang didukung: `user`, `admin`, `super_admin`, dan `store_admin`.
 - Menghitung ongkir RajaOngkir jika `destinationId` dikirim.
 - Menghitung ulang subtotal, diskon, ongkir, service fee, dan total di backend.
 - Membuat invoice Xendit saat `XENDIT_SECRET_KEY` tersedia, lalu mengembalikan `payment.redirectUrl` dari `invoice_url` Xendit untuk halaman pembayaran.
-- Menerima webhook invoice Xendit di `/payments/xendit/invoice` untuk rekonsiliasi payment status otomatis.
+- Menerima webhook invoice Xendit di `/api/payment/xendit/callback` untuk rekonsiliasi payment status otomatis.
 - Menyimpan `shippingCost`, `total`, `paymentDeadline`, `paymentStatus`, `paymentRedirectUrl`, metadata Xendit, dan order items.
 
 ## Product Seed and Merchandising Data
@@ -252,7 +272,7 @@ Gunakan URL:
 
 ```txt
 Invoice Webhook URL:
-<API_PUBLIC_URL>/payments/xendit/invoice
+<API_PUBLIC_URL>/api/payment/xendit/callback
 ```
 
 Redirect dibuat otomatis saat backend membuat invoice Xendit:

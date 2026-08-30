@@ -86,6 +86,7 @@ model User {
   reviewedStoreAdminRequests StoreAdminRequest[] @relation("StoreAdminRequestReviewer")
   notifications              Notification[]
   auditLogs                  AuditLog[]          @relation("AuditLogActor")
+  refreshSessions            RefreshSession[]
   createdAt                  DateTime            @default(now())
   updatedAt                  DateTime            @updatedAt
 }
@@ -287,6 +288,7 @@ model Order {
   paymentDeadline        DateTime?
   items                  OrderItem[]
   histories              OrderStatusHistory[]
+  payments               Payment[]
   voucherUsages          VoucherUsage[]
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
@@ -295,6 +297,35 @@ model Order {
   @@index([storeId, status, createdAt])
   @@index([paymentStatus, createdAt])
   @@index([status, createdAt])
+}
+
+model Payment {
+  id         String        @id @default(cuid())
+  orderId    String
+  provider   String
+  invoiceId  String        @unique
+  amount     Int
+  status     PaymentStatus @default(PENDING)
+  paymentUrl String?
+  order      Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([orderId, createdAt])
+  @@index([status, updatedAt])
+}
+
+model RefreshSession {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, expiresAt])
 }
 
 model OrderItem {

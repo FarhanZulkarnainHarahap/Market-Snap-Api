@@ -11,7 +11,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
   try {
     const token = sessionToken(req) ?? bearerToken(req.header("authorization"));
     const payload = token ? verifyToken(token) : null;
-    const user = payload ? await prisma.user.findUnique({ where: { id: payload.sub } }) : null;
+    const user = payload?.type === "access" ? await prisma.user.findUnique({ where: { id: payload.sub } }) : null;
     if (!user) {
       res.status(401).json({ message: "Silakan login terlebih dahulu" });
       return;

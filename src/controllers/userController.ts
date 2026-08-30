@@ -25,7 +25,7 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
         return;
       }
     }
-    const user = await prisma.user.update({ where: { id: String(req.user?.id) }, data: profileData(req.body, false) });
+    const user = await prisma.user.update({ where: { id: String(req.user?.id) }, data: await profileData(req.body, false) });
     res.json({ data: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
@@ -52,7 +52,7 @@ export async function createUser(req: Request, res: Response): Promise<void> {
       data: {
         name: req.body.name,
         email: req.body.email,
-        passwordHash: req.body.password ? hashPassword(req.body.password) : undefined,
+        passwordHash: req.body.password ? await hashPassword(req.body.password) : undefined,
         authProvider: "credentials",
         role: prismaRole(req.body.role),
         isActive: true,
@@ -67,7 +67,7 @@ export async function createUser(req: Request, res: Response): Promise<void> {
 
 export async function updateUser(req: Request, res: Response): Promise<void> {
   try {
-    const user = await prisma.user.update({ where: { id: String(req.params.id) }, data: profileData(req.body) });
+    const user = await prisma.user.update({ where: { id: String(req.params.id) }, data: await profileData(req.body) });
     res.json({ data: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
@@ -83,7 +83,7 @@ export async function deleteUser(req: Request, res: Response): Promise<void> {
   }
 }
 
-function profileData(body: Record<string, unknown>, allowRoleUpdate = true) {
+async function profileData(body: Record<string, unknown>, allowRoleUpdate = true) {
   const password = typeof body.password === "string" && body.password ? body.password : undefined;
   return {
     name: body.name as string | undefined,
@@ -91,7 +91,7 @@ function profileData(body: Record<string, unknown>, allowRoleUpdate = true) {
     phone: body.phone as string | undefined,
     avatarUrl: body.avatarUrl as string | undefined,
     password: password ? null : undefined,
-    passwordHash: password ? hashPassword(password) : undefined,
+    passwordHash: password ? await hashPassword(password) : undefined,
     role: allowRoleUpdate && body.role ? prismaRole(String(body.role)) : undefined,
     verifiedAt: allowRoleUpdate && body.verified !== undefined ? body.verified ? new Date() : null : undefined
   };

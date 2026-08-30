@@ -1,21 +1,21 @@
 import assert from "node:assert/strict";
+import { once } from "node:events";
 import { after, before, test } from "node:test";
 import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
 
-process.env.AUTH_SECRET = "oauth-csp-test-secret";
+process.env.JWT_SECRET = "oauth-state-test-secret";
 process.env.GOOGLE_CLIENT_ID = "google-client-id";
 process.env.GOOGLE_CLIENT_SECRET = "google-client-secret";
+process.env.GOOGLE_CALLBACK_URL = "http://localhost:4100/api/auth/google/callback";
 
 let baseUrl = "";
 let server: Server;
 
 before(async () => {
   const { app } = await import("../src/server.js");
-  await new Promise<void>((resolve, reject) => {
-    server = app.listen(0, "127.0.0.1", resolve);
-    server.once("error", reject);
-  });
+  server = app.listen(0, "127.0.0.1");
+  await once(server, "listening");
   const address = server.address() as AddressInfo;
   baseUrl = `http://127.0.0.1:${address.port}`;
 });
@@ -26,16 +26,30 @@ after(async () => {
   });
 });
 
-test("Google OAuth auto-submit script uses the response CSP nonce", async () => {
-  const response = await fetch(`${baseUrl}/auth/google`);
-  const body = await response.text();
-  const policy = response.headers.get("content-security-policy") ?? "";
-  const policyNonce = policy.match(/'nonce-([^']+)'/)?.[1];
-  const scriptNonce = body.match(/<script nonce="([^"]+)">/)?.[1];
+test("Google OAuth redirects directly to Google with state and the production callback contract", async () => {
+  const response = await fetch(`${baseUrl}/api/auth/google`, { redirect: "manual" });
+  const location = new URL(String(response.headers.get("location")));
 
-  assert.equal(response.status, 200);
-  assert.ok(policyNonce);
-  assert.equal(scriptNonce, policyNonce);
-  assert.match(body, /method="post"/);
-  assert.match(body, /document\.getElementById\("google-auth-form"\)\.submit\(\)/);
+  assert.equal(response.status, 302);
+  assert.equal(location.origin, "https://accounts.google.com");
+  assert.equal(location.searchParams.get("redirect_uri"), "http://localhost:4100/api/auth/google/callback");
+  assert.ok(location.searchParams.get("state"));
+  assert.match(response.headers.get("set-cookie") ?? "", /market_snap_oauth_state_google=/);
+});
+
+test("Google OAuth cancellation returns a visible frontend error instead of a blank page", async () => {
+  const start = await fetch(`${baseUrl}/api/auth/google`, { redirect: "manual" });
+  const providerUrl = new URL(String(start.headers.get("location")));
+  const state = String(providerUrl.searchParams.get("state"));
+  const cookie = String(start.headers.get("set-cookie")).split(";", 1)[0];
+  const callback = await fetch(`${baseUrl}/api/auth/google/callback?error=access_denied&state=${encodeURIComponent(state)}`, {
+    headers: { cookie },
+    redirect: "manual"
+  });
+  const frontendUrl = new URL(String(callback.headers.get("location")));
+
+  assert.equal(callback.status, 302);
+  assert.equal(frontendUrl.pathname, "/auth/callback");
+  assert.equal(frontendUrl.searchParams.get("provider"), "google");
+  assert.match(frontendUrl.searchParams.get("error") ?? "", /dibatalkan/i);
 });

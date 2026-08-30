@@ -303,6 +303,28 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  provider: 'provider',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  status: 'status',
+  paymentUrl: 'paymentUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RefreshSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -467,6 +489,8 @@ exports.Prisma.ModelName = {
   Discount: 'Discount',
   Voucher: 'Voucher',
   Order: 'Order',
+  Payment: 'Payment',
+  RefreshSession: 'RefreshSession',
   OrderItem: 'OrderItem',
   OrderStatusHistory: 'OrderStatusHistory',
   VoucherUsage: 'VoucherUsage',

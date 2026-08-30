@@ -812,18 +812,40 @@ async function createBareLegacyCheckoutOrder(input: { items: CheckoutItem[]; ord
 }
 
 async function attachPaymentSessionToOrder(orderId: string, session: CheckoutPayment): Promise<CheckoutOrderResult> {
-  return prisma.order.update({
-    where: { id: orderId },
-    data: {
-      paymentExternalId: session.token ?? session.externalId,
-      paymentInvoiceUrl: session.redirectUrl,
-      paymentProvider: session.method,
-      paymentRedirectUrl: session.redirectUrl,
-      paymentStatus: "PENDING",
-      xenditInvoiceId: session.method === "xendit" ? session.externalId : undefined,
-      xenditInvoiceStatus: session.method === "xendit" ? session.status : undefined
-    },
-    select: orderResponseSelect
+  return prisma.$transaction(async (tx) => {
+    const order = await tx.order.update({
+      where: { id: orderId },
+      data: {
+        paymentExternalId: session.token ?? session.externalId,
+        paymentInvoiceUrl: session.redirectUrl,
+        paymentProvider: session.method,
+        paymentRedirectUrl: session.redirectUrl,
+        paymentStatus: "PENDING",
+        xenditInvoiceId: session.method === "xendit" ? session.externalId : undefined,
+        xenditInvoiceStatus: session.method === "xendit" ? session.status : undefined
+      },
+      select: orderResponseSelect
+    });
+    const invoiceId = session.externalId;
+    if (session.method === "xendit" && invoiceId) {
+      await tx.payment.upsert({
+        where: { invoiceId },
+        create: {
+          amount: order.total,
+          invoiceId,
+          orderId,
+          paymentUrl: session.redirectUrl ?? undefined,
+          provider: "xendit",
+          status: "PENDING"
+        },
+        update: {
+          amount: order.total,
+          paymentUrl: session.redirectUrl ?? undefined,
+          status: "PENDING"
+        }
+      });
+    }
+    return order;
   }).catch((error) => {
     if (!isCheckoutSchemaMissing(error)) throw error;
     return prisma.order.update({

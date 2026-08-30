@@ -3,7 +3,82 @@ import { logBusinessEvent } from "../config/logger.js";
 import { prisma } from "../config/prisma.js";
 import { handleControllerError } from "../utils/controllerHelpers.js";
 import { isPaymentVerificationError, reconcileXenditInvoice } from "../services/payment.service.js";
-import { getXenditInvoice, verifyXenditCallbackToken, xenditConfig, type XenditInvoice } from "../services/xendit.service.js";
+import { createXenditInvoice, getXenditInvoice, isXenditPaymentUrl, verifyXenditCallbackToken, xenditConfig, type XenditInvoice } from "../services/xendit.service.js";
+
+export async function createPayment(req: Request, res: Response): Promise<void> {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: String(req.body.orderId) },
+      include: { items: true, payments: { orderBy: { createdAt: "desc" }, take: 1 }, user: true }
+    });
+    if (!order || !canAccessOrder(req, order)) {
+      res.status(404).json({ message: "Order tidak ditemukan." });
+      return;
+    }
+    if (Number(req.body.amount) !== order.total) {
+      res.status(409).json({ message: "Nominal pembayaran tidak cocok dengan total order." });
+      return;
+    }
+    if (order.paymentStatus === "PAID") {
+      res.status(409).json({ message: "Order ini sudah dibayar." });
+      return;
+    }
+    if (!["PENDING_PAYMENT", "WAITING_PAYMENT"].includes(order.status) || !["UNPAID", "PENDING"].includes(order.paymentStatus)) {
+      res.status(409).json({ message: "Order ini tidak dapat membuat sesi pembayaran baru." });
+      return;
+    }
+    const existing = order.payments[0];
+    if (existing?.status === "PENDING" && isXenditPaymentUrl(existing.paymentUrl)) {
+      res.json({ invoice_id: existing.invoiceId, invoice_url: existing.paymentUrl });
+      return;
+    }
+    if (order.xenditInvoiceId && isXenditPaymentUrl(order.paymentRedirectUrl)) {
+      res.json({ invoice_id: order.xenditInvoiceId, invoice_url: order.paymentRedirectUrl });
+      return;
+    }
+    if (!xenditConfig.isReady) {
+      res.status(503).json({ message: xenditConfig.validationMessage });
+      return;
+    }
+
+    const invoice = await createXenditInvoice({
+      amount: order.total,
+      customerEmail: order.user.email,
+      customerName: order.user.name,
+      description: `Pembayaran order ${order.orderNumber}`,
+      externalId: order.orderNumber,
+      items: [{ category: "ORDER", name: `Order ${order.orderNumber}`, price: order.total, quantity: 1 }]
+    });
+    if (!invoice.invoice_url || !isXenditPaymentUrl(invoice.invoice_url)) throw new Error("Xendit tidak mengembalikan URL pembayaran yang aman.");
+
+    await prisma.$transaction([
+      prisma.order.update({
+        where: { id: order.id },
+        data: {
+          paymentDeadline: invoice.expiry_date ? new Date(invoice.expiry_date) : new Date(Date.now() + xenditConfig.invoiceDurationSeconds * 1000),
+          paymentExternalId: invoice.id,
+          paymentInvoiceUrl: invoice.invoice_url,
+          paymentMethod: "xendit",
+          paymentProvider: "xendit",
+          paymentRedirectUrl: invoice.invoice_url,
+          paymentStatus: "PENDING",
+          status: "PENDING_PAYMENT",
+          xenditInvoiceId: invoice.id,
+          xenditInvoiceStatus: invoice.status
+        }
+      }),
+      prisma.payment.upsert({
+        where: { invoiceId: invoice.id },
+        create: { amount: order.total, invoiceId: invoice.id, orderId: order.id, paymentUrl: invoice.invoice_url, provider: "xendit", status: "PENDING" },
+        update: { amount: order.total, paymentUrl: invoice.invoice_url, status: "PENDING" }
+      })
+    ]);
+
+    res.status(201).json({ invoice_id: invoice.id, invoice_url: invoice.invoice_url });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+}
 
 export async function getPaymentStatus(req: Request, res: Response): Promise<void> {
   try {

@@ -1,25 +1,34 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(8),
-  referralCode: z.preprocess((value) => value === "" ? undefined : value, z.string().optional())
-});
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().toLowerCase().email().max(254),
+  password: z.string().min(8).max(128),
+  referralCode: z.preprocess((value) => value === "" ? undefined : value, z.string().trim().max(40).optional())
+}).strict();
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
-});
+  email: z.string().trim().toLowerCase().email().max(254),
+  password: z.string().min(1).max(128)
+}).strict();
 
 export const passwordResetRequestSchema = z.object({
-  email: z.string().email()
-});
+  email: z.string().trim().toLowerCase().email().max(254)
+}).strict();
 
 export const passwordResetConfirmSchema = z.object({
   token: z.string().min(20),
-  password: z.string().min(8)
-});
+  password: z.string().min(8).max(128)
+}).strict();
+
+export const createPaymentSchema = z.object({
+  orderId: z.string().min(1),
+  amount: z.coerce.number().int().positive(),
+  customer: z.object({
+    email: z.string().trim().toLowerCase().email().max(254).optional(),
+    name: z.string().trim().min(1).max(100).optional()
+  }).strict().optional()
+}).strict();
 
 export const createOrderSchema = z.object({
   userId: z.string().optional(),
@@ -124,12 +133,12 @@ export const rejectStoreAdminRequestSchema = z.object({
 });
 
 export const emailVerificationRequestSchema = z.object({
-  email: z.string().email()
-});
+  email: z.string().trim().toLowerCase().email().max(254)
+}).strict();
 
 export const emailVerificationConfirmSchema = z.object({
   token: z.string().min(20)
-});
+}).strict();
 
 export const createUserSchema = z.object({
   name: z.string().min(2),

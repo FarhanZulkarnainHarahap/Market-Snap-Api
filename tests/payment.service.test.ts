@@ -81,6 +81,14 @@ describe("mapXenditInvoiceStatus", () => {
       paymentStatus: "EXPIRED",
       orderStatus: "CANCELLED"
     });
+    assert.deepEqual(mapXenditInvoiceStatus("FAILED"), {
+      paymentStatus: "FAILED",
+      orderStatus: "CANCELLED"
+    });
+    assert.deepEqual(mapXenditInvoiceStatus("SETTLED"), {
+      paymentStatus: "PAID",
+      orderStatus: "PAID"
+    });
   });
 });
 

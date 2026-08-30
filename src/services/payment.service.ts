@@ -67,6 +67,7 @@ export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; or
         data: metadata,
         select: paymentResultSelect
       });
+      await persistPayment(tx, order.id, order.total, order.paymentStatus, order.paymentRedirectUrl, input.invoice);
       return paymentResult(updated);
     }
 
@@ -158,6 +159,7 @@ export async function reconcileXenditInvoice(input: { invoice: XenditInvoice; or
       },
       select: paymentResultSelect
     });
+    await persistPayment(tx, order.id, order.total, mapped.paymentStatus, order.paymentRedirectUrl, input.invoice);
 
     if (invoiceData) logBusinessEvent("INVOICE_CREATED", { invoiceNumber: invoiceData.invoiceNumber, orderId: order.id, orderNumber: order.orderNumber });
 
@@ -179,6 +181,8 @@ export function mapXenditInvoiceStatus(status?: string): { orderStatus: OrderSta
   if (status === "PENDING") return { paymentStatus: "PENDING", orderStatus: "PENDING_PAYMENT" };
   if (status === "PAID" || status === "SETTLED") return { paymentStatus: "PAID", orderStatus: "PAID" };
   if (status === "EXPIRED") return { paymentStatus: "EXPIRED", orderStatus: "CANCELLED" };
+  if (status === "FAILED") return { paymentStatus: "FAILED", orderStatus: "CANCELLED" };
+  if (status === "CANCELLED") return { paymentStatus: "CANCELLED", orderStatus: "CANCELLED" };
   return null;
 }
 
@@ -352,4 +356,30 @@ function paymentResult(order: Prisma.OrderGetPayload<{ select: typeof paymentRes
     total: order.total,
     transactionStatus: order.xenditInvoiceStatus
   };
+}
+
+async function persistPayment(
+  tx: Prisma.TransactionClient,
+  orderId: string,
+  amount: number,
+  status: PaymentStatus,
+  existingUrl: string | null,
+  invoice: XenditInvoice
+): Promise<void> {
+  await tx.payment.upsert({
+    where: { invoiceId: invoice.id },
+    create: {
+      amount,
+      invoiceId: invoice.id,
+      orderId,
+      paymentUrl: invoice.invoice_url ?? existingUrl,
+      provider: "xendit",
+      status
+    },
+    update: {
+      amount,
+      paymentUrl: invoice.invoice_url ?? existingUrl,
+      status
+    }
+  });
 }

@@ -18,6 +18,7 @@ export function publicErrorMessage(error: unknown): string {
   if (message.includes("prisma.") || message.includes("Prisma") || message.includes("does not exist in the current database") || message.includes("column") || message.includes("constraint")) {
     return "Data belum dapat diproses. Coba lagi sebentar atau hubungi bantuan Market Snap.";
   }
+  if (process.env.NODE_ENV === "production") return "Terjadi kesalahan server. Silakan coba lagi.";
   return message || "Terjadi kesalahan server";
 }
 

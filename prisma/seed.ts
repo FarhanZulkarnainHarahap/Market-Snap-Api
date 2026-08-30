@@ -354,7 +354,7 @@ async function seedStocks(productId: string) {
 }
 
 async function seedUsers() {
-  const passwordHash = hashPassword("password123");
+  const passwordHash = await hashPassword("password123");
   await prisma.user.upsert({
     where: { email: "superadmin@marketsnap.id" },
     update: { authProvider: "credentials", passwordHash, role: "SUPER_ADMIN", verifiedAt: new Date(), isActive: true },

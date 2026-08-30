@@ -1,11 +1,17 @@
-import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
+import bcrypt from "bcrypt";
+import { createHmac, pbkdf2Sync, timingSafeEqual } from "node:crypto";
 
 export type JwtPayload = {
   sub: string;
   role: string;
+  type: "access" | "purpose";
   iat: number;
   exp: number;
 };
+
+const accessTokenTtlSeconds = 15 * 60;
+const purposeTokenTtlSeconds = 60 * 60;
+const bcryptRounds = 12;
 
 export function jwtSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -14,9 +20,17 @@ export function jwtSecret(): string {
 }
 
 export function signToken(payload: Pick<JwtPayload, "sub" | "role">): string {
+  return signJwt({ ...payload, type: "access" }, accessTokenTtlSeconds);
+}
+
+export function signPurposeToken(payload: Pick<JwtPayload, "sub" | "role">): string {
+  return signJwt({ ...payload, type: "purpose" }, purposeTokenTtlSeconds);
+}
+
+function signJwt(payload: Pick<JwtPayload, "sub" | "role" | "type">, ttlSeconds: number): string {
   const header = encode({ alg: "HS256", typ: "JWT" });
   const issuedAt = now();
-  const body = encode({ ...payload, iat: issuedAt, exp: issuedAt + 60 * 60 * 24 });
+  const body = encode({ ...payload, iat: issuedAt, exp: issuedAt + ttlSeconds });
   const signature = signatureFor(header, body);
   return `${header}.${body}.${signature}`;
 }
@@ -24,25 +38,39 @@ export function signToken(payload: Pick<JwtPayload, "sub" | "role">): string {
 export function verifyToken(token: string): JwtPayload | null {
   const [header, body, signature] = token.split(".");
   if (!header || !body || !signature || !sameSignature(signature, signatureFor(header, body))) return null;
+  if (!validHeader(header)) return null;
   const payload = decode(body);
-  if (!payload || payload.exp < now()) return null;
+  if (!payload || payload.exp <= now() || payload.iat > now() + 30) return null;
   return payload;
 }
 
-export function hashPassword(password: string): string {
-  const iterations = 120000;
-  const salt = randomBytes(16).toString("base64url");
-  const hash = pbkdf2Sync(password, salt, iterations, 32, "sha256").toString("base64url");
-  return `pbkdf2_sha256$${iterations}$${salt}$${hash}`;
+function validHeader(value: string): boolean {
+  try {
+    const header = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as { alg?: unknown; typ?: unknown };
+    return header.alg === "HS256" && header.typ === "JWT";
+  } catch {
+    return false;
+  }
 }
 
-export function verifyPassword(password: string, stored?: string | null): boolean {
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, bcryptRounds);
+}
+
+export async function verifyPassword(password: string, stored?: string | null): Promise<boolean> {
   if (!stored) return false;
+  if (stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$")) {
+    return bcrypt.compare(password, stored);
+  }
   const [scheme, iterationsText, salt, expected] = stored.split("$");
-  if (scheme !== "pbkdf2_sha256" || !iterationsText || !salt || !expected) return stored === password;
+  if (scheme !== "pbkdf2_sha256" || !iterationsText || !salt || !expected) return false;
   const iterations = Number(iterationsText);
   const hash = pbkdf2Sync(password, salt, iterations, 32, "sha256").toString("base64url");
   return sameSignature(hash, expected);
+}
+
+export function passwordNeedsRehash(stored?: string | null): boolean {
+  return Boolean(stored && !stored.startsWith("$2b$"));
 }
 
 function signatureFor(header: string, body: string): string {
@@ -62,7 +90,13 @@ function encode(value: object): string {
 function decode(value: string): JwtPayload | null {
   try {
     const payload = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as Partial<JwtPayload>;
-    if (typeof payload.sub !== "string" || typeof payload.role !== "string" || typeof payload.iat !== "number" || typeof payload.exp !== "number") return null;
+    if (
+      typeof payload.sub !== "string" ||
+      typeof payload.role !== "string" ||
+      (payload.type !== "access" && payload.type !== "purpose") ||
+      typeof payload.iat !== "number" ||
+      typeof payload.exp !== "number"
+    ) return null;
     return payload as JwtPayload;
   } catch {
     return null;
