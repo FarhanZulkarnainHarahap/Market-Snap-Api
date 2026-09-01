@@ -11,6 +11,7 @@ import {
 } from "../config/passport.js";
 import { prisma } from "../config/prisma.js";
 import { resend } from "../config/resend.js";
+import { logger } from "../config/logger.js";
 import { clearSessionCookies, createSession, revokeSession, rotateSession } from "../config/session.js";
 import { handleControllerError, mapUser } from "../utils/controllerHelpers.js";
 
@@ -340,7 +341,10 @@ function completeOAuth(provider: "facebook" | "google", req: Request, res: Respo
       await createSession(res, { id: user.id, role: user.role });
       redirectOAuthResult(res, provider, { success: "1" });
     } catch (sessionError) {
-      next(sessionError);
+      logger.error({ err: sessionError, provider, userId: user.id }, "OAUTH_SESSION_CREATE_FAILED");
+      redirectOAuthResult(res, provider, {
+        error: "Login berhasil diverifikasi, tetapi sesi belum dapat dibuat. Silakan coba lagi setelah layanan diperbarui."
+      });
     }
   })(req, res, next);
 }
