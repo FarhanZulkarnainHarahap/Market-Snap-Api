@@ -79,11 +79,6 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
- * Model RefreshSession
- * 
- */
-export type RefreshSession = $Result.DefaultSelection<Prisma.$RefreshSessionPayload>
-/**
  * Model OrderItem
  * 
  */
@@ -466,16 +461,6 @@ export class PrismaClient<
     * ```
     */
   get payment(): Prisma.PaymentDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.refreshSession`: Exposes CRUD operations for the **RefreshSession** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RefreshSessions
-    * const refreshSessions = await prisma.refreshSession.findMany()
-    * ```
-    */
-  get refreshSession(): Prisma.RefreshSessionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderItem`: Exposes CRUD operations for the **OrderItem** model.
@@ -1000,7 +985,6 @@ export namespace Prisma {
     Voucher: 'Voucher',
     Order: 'Order',
     Payment: 'Payment',
-    RefreshSession: 'RefreshSession',
     OrderItem: 'OrderItem',
     OrderStatusHistory: 'OrderStatusHistory',
     VoucherUsage: 'VoucherUsage',
@@ -1026,7 +1010,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "store" | "address" | "productCategory" | "product" | "productImage" | "inventory" | "cartItem" | "stockJournal" | "discount" | "voucher" | "order" | "payment" | "refreshSession" | "orderItem" | "orderStatusHistory" | "voucherUsage" | "storeAdminRequest" | "notification" | "auditLog" | "contactMessage"
+      modelProps: "user" | "store" | "address" | "productCategory" | "product" | "productImage" | "inventory" | "cartItem" | "stockJournal" | "discount" | "voucher" | "order" | "payment" | "orderItem" | "orderStatusHistory" | "voucherUsage" | "storeAdminRequest" | "notification" | "auditLog" | "contactMessage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1992,80 +1976,6 @@ export namespace Prisma {
           }
         }
       }
-      RefreshSession: {
-        payload: Prisma.$RefreshSessionPayload<ExtArgs>
-        fields: Prisma.RefreshSessionFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.RefreshSessionFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.RefreshSessionFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>
-          }
-          findFirst: {
-            args: Prisma.RefreshSessionFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.RefreshSessionFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>
-          }
-          findMany: {
-            args: Prisma.RefreshSessionFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>[]
-          }
-          create: {
-            args: Prisma.RefreshSessionCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>
-          }
-          createMany: {
-            args: Prisma.RefreshSessionCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.RefreshSessionCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>[]
-          }
-          delete: {
-            args: Prisma.RefreshSessionDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>
-          }
-          update: {
-            args: Prisma.RefreshSessionUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>
-          }
-          deleteMany: {
-            args: Prisma.RefreshSessionDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.RefreshSessionUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.RefreshSessionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>[]
-          }
-          upsert: {
-            args: Prisma.RefreshSessionUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RefreshSessionPayload>
-          }
-          aggregate: {
-            args: Prisma.RefreshSessionAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateRefreshSession>
-          }
-          groupBy: {
-            args: Prisma.RefreshSessionGroupByArgs<ExtArgs>
-            result: $Utils.Optional<RefreshSessionGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.RefreshSessionCountArgs<ExtArgs>
-            result: $Utils.Optional<RefreshSessionCountAggregateOutputType> | number
-          }
-        }
-      }
       OrderItem: {
         payload: Prisma.$OrderItemPayload<ExtArgs>
         fields: Prisma.OrderItemFieldRefs
@@ -2693,7 +2603,6 @@ export namespace Prisma {
     voucher?: VoucherOmit
     order?: OrderOmit
     payment?: PaymentOmit
-    refreshSession?: RefreshSessionOmit
     orderItem?: OrderItemOmit
     orderStatusHistory?: OrderStatusHistoryOmit
     voucherUsage?: VoucherUsageOmit
@@ -2789,7 +2698,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests: number
     notifications: number
     auditLogs: number
-    refreshSessions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2801,7 +2709,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: boolean | UserCountOutputTypeCountReviewedStoreAdminRequestsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
-    refreshSessions?: boolean | UserCountOutputTypeCountRefreshSessionsArgs
   }
 
   // Custom InputTypes
@@ -2869,13 +2776,6 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountRefreshSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RefreshSessionWhereInput
   }
 
 
@@ -3434,7 +3334,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: boolean | User$reviewedStoreAdminRequestsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
-    refreshSessions?: boolean | User$refreshSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3508,7 +3407,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: boolean | User$reviewedStoreAdminRequestsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
-    refreshSessions?: boolean | User$refreshSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3530,7 +3428,6 @@ export namespace Prisma {
       reviewedStoreAdminRequests: Prisma.$StoreAdminRequestPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
-      refreshSessions: Prisma.$RefreshSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3952,7 +3849,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests<T extends User$reviewedStoreAdminRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewedStoreAdminRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StoreAdminRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    refreshSessions<T extends User$refreshSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$refreshSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4602,30 +4498,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
-  }
-
-  /**
-   * User.refreshSessions
-   */
-  export type User$refreshSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    where?: RefreshSessionWhereInput
-    orderBy?: RefreshSessionOrderByWithRelationInput | RefreshSessionOrderByWithRelationInput[]
-    cursor?: RefreshSessionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: RefreshSessionScalarFieldEnum | RefreshSessionScalarFieldEnum[]
   }
 
   /**
@@ -19334,1090 +19206,6 @@ export namespace Prisma {
 
 
   /**
-   * Model RefreshSession
-   */
-
-  export type AggregateRefreshSession = {
-    _count: RefreshSessionCountAggregateOutputType | null
-    _min: RefreshSessionMinAggregateOutputType | null
-    _max: RefreshSessionMaxAggregateOutputType | null
-  }
-
-  export type RefreshSessionMinAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    tokenHash: string | null
-    expiresAt: Date | null
-    revokedAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type RefreshSessionMaxAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    tokenHash: string | null
-    expiresAt: Date | null
-    revokedAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type RefreshSessionCountAggregateOutputType = {
-    id: number
-    userId: number
-    tokenHash: number
-    expiresAt: number
-    revokedAt: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type RefreshSessionMinAggregateInputType = {
-    id?: true
-    userId?: true
-    tokenHash?: true
-    expiresAt?: true
-    revokedAt?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type RefreshSessionMaxAggregateInputType = {
-    id?: true
-    userId?: true
-    tokenHash?: true
-    expiresAt?: true
-    revokedAt?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type RefreshSessionCountAggregateInputType = {
-    id?: true
-    userId?: true
-    tokenHash?: true
-    expiresAt?: true
-    revokedAt?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type RefreshSessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RefreshSession to aggregate.
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RefreshSessions to fetch.
-     */
-    orderBy?: RefreshSessionOrderByWithRelationInput | RefreshSessionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: RefreshSessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RefreshSessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RefreshSessions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned RefreshSessions
-    **/
-    _count?: true | RefreshSessionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: RefreshSessionMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: RefreshSessionMaxAggregateInputType
-  }
-
-  export type GetRefreshSessionAggregateType<T extends RefreshSessionAggregateArgs> = {
-        [P in keyof T & keyof AggregateRefreshSession]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateRefreshSession[P]>
-      : GetScalarType<T[P], AggregateRefreshSession[P]>
-  }
-
-
-
-
-  export type RefreshSessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RefreshSessionWhereInput
-    orderBy?: RefreshSessionOrderByWithAggregationInput | RefreshSessionOrderByWithAggregationInput[]
-    by: RefreshSessionScalarFieldEnum[] | RefreshSessionScalarFieldEnum
-    having?: RefreshSessionScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: RefreshSessionCountAggregateInputType | true
-    _min?: RefreshSessionMinAggregateInputType
-    _max?: RefreshSessionMaxAggregateInputType
-  }
-
-  export type RefreshSessionGroupByOutputType = {
-    id: string
-    userId: string
-    tokenHash: string
-    expiresAt: Date
-    revokedAt: Date | null
-    createdAt: Date
-    updatedAt: Date
-    _count: RefreshSessionCountAggregateOutputType | null
-    _min: RefreshSessionMinAggregateOutputType | null
-    _max: RefreshSessionMaxAggregateOutputType | null
-  }
-
-  type GetRefreshSessionGroupByPayload<T extends RefreshSessionGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<RefreshSessionGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof RefreshSessionGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], RefreshSessionGroupByOutputType[P]>
-            : GetScalarType<T[P], RefreshSessionGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type RefreshSessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    tokenHash?: boolean
-    expiresAt?: boolean
-    revokedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["refreshSession"]>
-
-  export type RefreshSessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    tokenHash?: boolean
-    expiresAt?: boolean
-    revokedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["refreshSession"]>
-
-  export type RefreshSessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    tokenHash?: boolean
-    expiresAt?: boolean
-    revokedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["refreshSession"]>
-
-  export type RefreshSessionSelectScalar = {
-    id?: boolean
-    userId?: boolean
-    tokenHash?: boolean
-    expiresAt?: boolean
-    revokedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type RefreshSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "tokenHash" | "expiresAt" | "revokedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["refreshSession"]>
-  export type RefreshSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type RefreshSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type RefreshSessionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-
-  export type $RefreshSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "RefreshSession"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      userId: string
-      tokenHash: string
-      expiresAt: Date
-      revokedAt: Date | null
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["refreshSession"]>
-    composites: {}
-  }
-
-  type RefreshSessionGetPayload<S extends boolean | null | undefined | RefreshSessionDefaultArgs> = $Result.GetResult<Prisma.$RefreshSessionPayload, S>
-
-  type RefreshSessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<RefreshSessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: RefreshSessionCountAggregateInputType | true
-    }
-
-  export interface RefreshSessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RefreshSession'], meta: { name: 'RefreshSession' } }
-    /**
-     * Find zero or one RefreshSession that matches the filter.
-     * @param {RefreshSessionFindUniqueArgs} args - Arguments to find a RefreshSession
-     * @example
-     * // Get one RefreshSession
-     * const refreshSession = await prisma.refreshSession.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends RefreshSessionFindUniqueArgs>(args: SelectSubset<T, RefreshSessionFindUniqueArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one RefreshSession that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {RefreshSessionFindUniqueOrThrowArgs} args - Arguments to find a RefreshSession
-     * @example
-     * // Get one RefreshSession
-     * const refreshSession = await prisma.refreshSession.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends RefreshSessionFindUniqueOrThrowArgs>(args: SelectSubset<T, RefreshSessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first RefreshSession that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionFindFirstArgs} args - Arguments to find a RefreshSession
-     * @example
-     * // Get one RefreshSession
-     * const refreshSession = await prisma.refreshSession.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends RefreshSessionFindFirstArgs>(args?: SelectSubset<T, RefreshSessionFindFirstArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first RefreshSession that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionFindFirstOrThrowArgs} args - Arguments to find a RefreshSession
-     * @example
-     * // Get one RefreshSession
-     * const refreshSession = await prisma.refreshSession.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends RefreshSessionFindFirstOrThrowArgs>(args?: SelectSubset<T, RefreshSessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more RefreshSessions that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all RefreshSessions
-     * const refreshSessions = await prisma.refreshSession.findMany()
-     * 
-     * // Get first 10 RefreshSessions
-     * const refreshSessions = await prisma.refreshSession.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const refreshSessionWithIdOnly = await prisma.refreshSession.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends RefreshSessionFindManyArgs>(args?: SelectSubset<T, RefreshSessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a RefreshSession.
-     * @param {RefreshSessionCreateArgs} args - Arguments to create a RefreshSession.
-     * @example
-     * // Create one RefreshSession
-     * const RefreshSession = await prisma.refreshSession.create({
-     *   data: {
-     *     // ... data to create a RefreshSession
-     *   }
-     * })
-     * 
-     */
-    create<T extends RefreshSessionCreateArgs>(args: SelectSubset<T, RefreshSessionCreateArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many RefreshSessions.
-     * @param {RefreshSessionCreateManyArgs} args - Arguments to create many RefreshSessions.
-     * @example
-     * // Create many RefreshSessions
-     * const refreshSession = await prisma.refreshSession.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends RefreshSessionCreateManyArgs>(args?: SelectSubset<T, RefreshSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many RefreshSessions and returns the data saved in the database.
-     * @param {RefreshSessionCreateManyAndReturnArgs} args - Arguments to create many RefreshSessions.
-     * @example
-     * // Create many RefreshSessions
-     * const refreshSession = await prisma.refreshSession.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many RefreshSessions and only return the `id`
-     * const refreshSessionWithIdOnly = await prisma.refreshSession.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends RefreshSessionCreateManyAndReturnArgs>(args?: SelectSubset<T, RefreshSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a RefreshSession.
-     * @param {RefreshSessionDeleteArgs} args - Arguments to delete one RefreshSession.
-     * @example
-     * // Delete one RefreshSession
-     * const RefreshSession = await prisma.refreshSession.delete({
-     *   where: {
-     *     // ... filter to delete one RefreshSession
-     *   }
-     * })
-     * 
-     */
-    delete<T extends RefreshSessionDeleteArgs>(args: SelectSubset<T, RefreshSessionDeleteArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one RefreshSession.
-     * @param {RefreshSessionUpdateArgs} args - Arguments to update one RefreshSession.
-     * @example
-     * // Update one RefreshSession
-     * const refreshSession = await prisma.refreshSession.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends RefreshSessionUpdateArgs>(args: SelectSubset<T, RefreshSessionUpdateArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more RefreshSessions.
-     * @param {RefreshSessionDeleteManyArgs} args - Arguments to filter RefreshSessions to delete.
-     * @example
-     * // Delete a few RefreshSessions
-     * const { count } = await prisma.refreshSession.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends RefreshSessionDeleteManyArgs>(args?: SelectSubset<T, RefreshSessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more RefreshSessions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many RefreshSessions
-     * const refreshSession = await prisma.refreshSession.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends RefreshSessionUpdateManyArgs>(args: SelectSubset<T, RefreshSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more RefreshSessions and returns the data updated in the database.
-     * @param {RefreshSessionUpdateManyAndReturnArgs} args - Arguments to update many RefreshSessions.
-     * @example
-     * // Update many RefreshSessions
-     * const refreshSession = await prisma.refreshSession.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more RefreshSessions and only return the `id`
-     * const refreshSessionWithIdOnly = await prisma.refreshSession.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends RefreshSessionUpdateManyAndReturnArgs>(args: SelectSubset<T, RefreshSessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one RefreshSession.
-     * @param {RefreshSessionUpsertArgs} args - Arguments to update or create a RefreshSession.
-     * @example
-     * // Update or create a RefreshSession
-     * const refreshSession = await prisma.refreshSession.upsert({
-     *   create: {
-     *     // ... data to create a RefreshSession
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the RefreshSession we want to update
-     *   }
-     * })
-     */
-    upsert<T extends RefreshSessionUpsertArgs>(args: SelectSubset<T, RefreshSessionUpsertArgs<ExtArgs>>): Prisma__RefreshSessionClient<$Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of RefreshSessions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionCountArgs} args - Arguments to filter RefreshSessions to count.
-     * @example
-     * // Count the number of RefreshSessions
-     * const count = await prisma.refreshSession.count({
-     *   where: {
-     *     // ... the filter for the RefreshSessions we want to count
-     *   }
-     * })
-    **/
-    count<T extends RefreshSessionCountArgs>(
-      args?: Subset<T, RefreshSessionCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], RefreshSessionCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a RefreshSession.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends RefreshSessionAggregateArgs>(args: Subset<T, RefreshSessionAggregateArgs>): Prisma.PrismaPromise<GetRefreshSessionAggregateType<T>>
-
-    /**
-     * Group by RefreshSession.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RefreshSessionGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends RefreshSessionGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: RefreshSessionGroupByArgs['orderBy'] }
-        : { orderBy?: RefreshSessionGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, RefreshSessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRefreshSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the RefreshSession model
-   */
-  readonly fields: RefreshSessionFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for RefreshSession.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__RefreshSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the RefreshSession model
-   */
-  interface RefreshSessionFieldRefs {
-    readonly id: FieldRef<"RefreshSession", 'String'>
-    readonly userId: FieldRef<"RefreshSession", 'String'>
-    readonly tokenHash: FieldRef<"RefreshSession", 'String'>
-    readonly expiresAt: FieldRef<"RefreshSession", 'DateTime'>
-    readonly revokedAt: FieldRef<"RefreshSession", 'DateTime'>
-    readonly createdAt: FieldRef<"RefreshSession", 'DateTime'>
-    readonly updatedAt: FieldRef<"RefreshSession", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * RefreshSession findUnique
-   */
-  export type RefreshSessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * Filter, which RefreshSession to fetch.
-     */
-    where: RefreshSessionWhereUniqueInput
-  }
-
-  /**
-   * RefreshSession findUniqueOrThrow
-   */
-  export type RefreshSessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * Filter, which RefreshSession to fetch.
-     */
-    where: RefreshSessionWhereUniqueInput
-  }
-
-  /**
-   * RefreshSession findFirst
-   */
-  export type RefreshSessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * Filter, which RefreshSession to fetch.
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RefreshSessions to fetch.
-     */
-    orderBy?: RefreshSessionOrderByWithRelationInput | RefreshSessionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RefreshSessions.
-     */
-    cursor?: RefreshSessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RefreshSessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RefreshSessions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RefreshSessions.
-     */
-    distinct?: RefreshSessionScalarFieldEnum | RefreshSessionScalarFieldEnum[]
-  }
-
-  /**
-   * RefreshSession findFirstOrThrow
-   */
-  export type RefreshSessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * Filter, which RefreshSession to fetch.
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RefreshSessions to fetch.
-     */
-    orderBy?: RefreshSessionOrderByWithRelationInput | RefreshSessionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RefreshSessions.
-     */
-    cursor?: RefreshSessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RefreshSessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RefreshSessions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RefreshSessions.
-     */
-    distinct?: RefreshSessionScalarFieldEnum | RefreshSessionScalarFieldEnum[]
-  }
-
-  /**
-   * RefreshSession findMany
-   */
-  export type RefreshSessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * Filter, which RefreshSessions to fetch.
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RefreshSessions to fetch.
-     */
-    orderBy?: RefreshSessionOrderByWithRelationInput | RefreshSessionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing RefreshSessions.
-     */
-    cursor?: RefreshSessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RefreshSessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RefreshSessions.
-     */
-    skip?: number
-    distinct?: RefreshSessionScalarFieldEnum | RefreshSessionScalarFieldEnum[]
-  }
-
-  /**
-   * RefreshSession create
-   */
-  export type RefreshSessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * The data needed to create a RefreshSession.
-     */
-    data: XOR<RefreshSessionCreateInput, RefreshSessionUncheckedCreateInput>
-  }
-
-  /**
-   * RefreshSession createMany
-   */
-  export type RefreshSessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many RefreshSessions.
-     */
-    data: RefreshSessionCreateManyInput | RefreshSessionCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * RefreshSession createManyAndReturn
-   */
-  export type RefreshSessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * The data used to create many RefreshSessions.
-     */
-    data: RefreshSessionCreateManyInput | RefreshSessionCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * RefreshSession update
-   */
-  export type RefreshSessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * The data needed to update a RefreshSession.
-     */
-    data: XOR<RefreshSessionUpdateInput, RefreshSessionUncheckedUpdateInput>
-    /**
-     * Choose, which RefreshSession to update.
-     */
-    where: RefreshSessionWhereUniqueInput
-  }
-
-  /**
-   * RefreshSession updateMany
-   */
-  export type RefreshSessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update RefreshSessions.
-     */
-    data: XOR<RefreshSessionUpdateManyMutationInput, RefreshSessionUncheckedUpdateManyInput>
-    /**
-     * Filter which RefreshSessions to update
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * Limit how many RefreshSessions to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * RefreshSession updateManyAndReturn
-   */
-  export type RefreshSessionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * The data used to update RefreshSessions.
-     */
-    data: XOR<RefreshSessionUpdateManyMutationInput, RefreshSessionUncheckedUpdateManyInput>
-    /**
-     * Filter which RefreshSessions to update
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * Limit how many RefreshSessions to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * RefreshSession upsert
-   */
-  export type RefreshSessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * The filter to search for the RefreshSession to update in case it exists.
-     */
-    where: RefreshSessionWhereUniqueInput
-    /**
-     * In case the RefreshSession found by the `where` argument doesn't exist, create a new RefreshSession with this data.
-     */
-    create: XOR<RefreshSessionCreateInput, RefreshSessionUncheckedCreateInput>
-    /**
-     * In case the RefreshSession was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<RefreshSessionUpdateInput, RefreshSessionUncheckedUpdateInput>
-  }
-
-  /**
-   * RefreshSession delete
-   */
-  export type RefreshSessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-    /**
-     * Filter which RefreshSession to delete.
-     */
-    where: RefreshSessionWhereUniqueInput
-  }
-
-  /**
-   * RefreshSession deleteMany
-   */
-  export type RefreshSessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RefreshSessions to delete
-     */
-    where?: RefreshSessionWhereInput
-    /**
-     * Limit how many RefreshSessions to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * RefreshSession without action
-   */
-  export type RefreshSessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RefreshSession
-     */
-    select?: RefreshSessionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RefreshSession
-     */
-    omit?: RefreshSessionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RefreshSessionInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Model OrderItem
    */
 
@@ -28577,19 +27365,6 @@ export namespace Prisma {
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
-  export const RefreshSessionScalarFieldEnum: {
-    id: 'id',
-    userId: 'userId',
-    tokenHash: 'tokenHash',
-    expiresAt: 'expiresAt',
-    revokedAt: 'revokedAt',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type RefreshSessionScalarFieldEnum = (typeof RefreshSessionScalarFieldEnum)[keyof typeof RefreshSessionScalarFieldEnum]
-
-
   export const OrderItemScalarFieldEnum: {
     id: 'id',
     orderId: 'orderId',
@@ -28933,7 +27708,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestListRelationFilter
     notifications?: NotificationListRelationFilter
     auditLogs?: AuditLogListRelationFilter
-    refreshSessions?: RefreshSessionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -28962,7 +27736,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
-    refreshSessions?: RefreshSessionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -28994,7 +27767,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestListRelationFilter
     notifications?: NotificationListRelationFilter
     auditLogs?: AuditLogListRelationFilter
-    refreshSessions?: RefreshSessionListRelationFilter
   }, "id" | "email" | "referralCode">
 
   export type UserOrderByWithAggregationInput = {
@@ -30187,71 +28959,6 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
   }
 
-  export type RefreshSessionWhereInput = {
-    AND?: RefreshSessionWhereInput | RefreshSessionWhereInput[]
-    OR?: RefreshSessionWhereInput[]
-    NOT?: RefreshSessionWhereInput | RefreshSessionWhereInput[]
-    id?: StringFilter<"RefreshSession"> | string
-    userId?: StringFilter<"RefreshSession"> | string
-    tokenHash?: StringFilter<"RefreshSession"> | string
-    expiresAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    revokedAt?: DateTimeNullableFilter<"RefreshSession"> | Date | string | null
-    createdAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    updatedAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }
-
-  export type RefreshSessionOrderByWithRelationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    tokenHash?: SortOrder
-    expiresAt?: SortOrder
-    revokedAt?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
-  }
-
-  export type RefreshSessionWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    tokenHash?: string
-    AND?: RefreshSessionWhereInput | RefreshSessionWhereInput[]
-    OR?: RefreshSessionWhereInput[]
-    NOT?: RefreshSessionWhereInput | RefreshSessionWhereInput[]
-    userId?: StringFilter<"RefreshSession"> | string
-    expiresAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    revokedAt?: DateTimeNullableFilter<"RefreshSession"> | Date | string | null
-    createdAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    updatedAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "tokenHash">
-
-  export type RefreshSessionOrderByWithAggregationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    tokenHash?: SortOrder
-    expiresAt?: SortOrder
-    revokedAt?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: RefreshSessionCountOrderByAggregateInput
-    _max?: RefreshSessionMaxOrderByAggregateInput
-    _min?: RefreshSessionMinOrderByAggregateInput
-  }
-
-  export type RefreshSessionScalarWhereWithAggregatesInput = {
-    AND?: RefreshSessionScalarWhereWithAggregatesInput | RefreshSessionScalarWhereWithAggregatesInput[]
-    OR?: RefreshSessionScalarWhereWithAggregatesInput[]
-    NOT?: RefreshSessionScalarWhereWithAggregatesInput | RefreshSessionScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"RefreshSession"> | string
-    userId?: StringWithAggregatesFilter<"RefreshSession"> | string
-    tokenHash?: StringWithAggregatesFilter<"RefreshSession"> | string
-    expiresAt?: DateTimeWithAggregatesFilter<"RefreshSession"> | Date | string
-    revokedAt?: DateTimeNullableWithAggregatesFilter<"RefreshSession"> | Date | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"RefreshSession"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"RefreshSession"> | Date | string
-  }
-
   export type OrderItemWhereInput = {
     AND?: OrderItemWhereInput | OrderItemWhereInput[]
     OR?: OrderItemWhereInput[]
@@ -30817,7 +29524,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -30845,7 +29551,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -30873,7 +29578,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -30901,7 +29605,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -32250,75 +30953,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RefreshSessionCreateInput = {
-    id?: string
-    tokenHash: string
-    expiresAt: Date | string
-    revokedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutRefreshSessionsInput
-  }
-
-  export type RefreshSessionUncheckedCreateInput = {
-    id?: string
-    userId: string
-    tokenHash: string
-    expiresAt: Date | string
-    revokedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RefreshSessionUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutRefreshSessionsNestedInput
-  }
-
-  export type RefreshSessionUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RefreshSessionCreateManyInput = {
-    id?: string
-    userId: string
-    tokenHash: string
-    expiresAt: Date | string
-    revokedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RefreshSessionUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RefreshSessionUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type OrderItemCreateInput = {
     id?: string
     quantity: number
@@ -32999,12 +31633,6 @@ export namespace Prisma {
     none?: AuditLogWhereInput
   }
 
-  export type RefreshSessionListRelationFilter = {
-    every?: RefreshSessionWhereInput
-    some?: RefreshSessionWhereInput
-    none?: RefreshSessionWhereInput
-  }
-
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -33035,10 +31663,6 @@ export namespace Prisma {
   }
 
   export type AuditLogOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type RefreshSessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34135,36 +32759,6 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
-  export type RefreshSessionCountOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    tokenHash?: SortOrder
-    expiresAt?: SortOrder
-    revokedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type RefreshSessionMaxOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    tokenHash?: SortOrder
-    expiresAt?: SortOrder
-    revokedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type RefreshSessionMinOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    tokenHash?: SortOrder
-    expiresAt?: SortOrder
-    revokedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
   export type OrderItemCountOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
@@ -34533,13 +33127,6 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
-  export type RefreshSessionCreateNestedManyWithoutUserInput = {
-    create?: XOR<RefreshSessionCreateWithoutUserInput, RefreshSessionUncheckedCreateWithoutUserInput> | RefreshSessionCreateWithoutUserInput[] | RefreshSessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: RefreshSessionCreateOrConnectWithoutUserInput | RefreshSessionCreateOrConnectWithoutUserInput[]
-    createMany?: RefreshSessionCreateManyUserInputEnvelope
-    connect?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-  }
-
   export type AddressUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AddressCreateWithoutUserInput, AddressUncheckedCreateWithoutUserInput> | AddressCreateWithoutUserInput[] | AddressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutUserInput | AddressCreateOrConnectWithoutUserInput[]
@@ -34594,13 +33181,6 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
     createMany?: AuditLogCreateManyActorInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-  }
-
-  export type RefreshSessionUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<RefreshSessionCreateWithoutUserInput, RefreshSessionUncheckedCreateWithoutUserInput> | RefreshSessionCreateWithoutUserInput[] | RefreshSessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: RefreshSessionCreateOrConnectWithoutUserInput | RefreshSessionCreateOrConnectWithoutUserInput[]
-    createMany?: RefreshSessionCreateManyUserInputEnvelope
-    connect?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -34749,20 +33329,6 @@ export namespace Prisma {
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
-  export type RefreshSessionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<RefreshSessionCreateWithoutUserInput, RefreshSessionUncheckedCreateWithoutUserInput> | RefreshSessionCreateWithoutUserInput[] | RefreshSessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: RefreshSessionCreateOrConnectWithoutUserInput | RefreshSessionCreateOrConnectWithoutUserInput[]
-    upsert?: RefreshSessionUpsertWithWhereUniqueWithoutUserInput | RefreshSessionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: RefreshSessionCreateManyUserInputEnvelope
-    set?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    disconnect?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    delete?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    connect?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    update?: RefreshSessionUpdateWithWhereUniqueWithoutUserInput | RefreshSessionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: RefreshSessionUpdateManyWithWhereWithoutUserInput | RefreshSessionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: RefreshSessionScalarWhereInput | RefreshSessionScalarWhereInput[]
-  }
-
   export type AddressUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AddressCreateWithoutUserInput, AddressUncheckedCreateWithoutUserInput> | AddressCreateWithoutUserInput[] | AddressUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutUserInput | AddressCreateOrConnectWithoutUserInput[]
@@ -34873,20 +33439,6 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutActorInput | AuditLogUpdateWithWhereUniqueWithoutActorInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutActorInput | AuditLogUpdateManyWithWhereWithoutActorInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
-  }
-
-  export type RefreshSessionUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<RefreshSessionCreateWithoutUserInput, RefreshSessionUncheckedCreateWithoutUserInput> | RefreshSessionCreateWithoutUserInput[] | RefreshSessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: RefreshSessionCreateOrConnectWithoutUserInput | RefreshSessionCreateOrConnectWithoutUserInput[]
-    upsert?: RefreshSessionUpsertWithWhereUniqueWithoutUserInput | RefreshSessionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: RefreshSessionCreateManyUserInputEnvelope
-    set?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    disconnect?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    delete?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    connect?: RefreshSessionWhereUniqueInput | RefreshSessionWhereUniqueInput[]
-    update?: RefreshSessionUpdateWithWhereUniqueWithoutUserInput | RefreshSessionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: RefreshSessionUpdateManyWithWhereWithoutUserInput | RefreshSessionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: RefreshSessionScalarWhereInput | RefreshSessionScalarWhereInput[]
   }
 
   export type UserCreateNestedManyWithoutStoreInput = {
@@ -35981,20 +34533,6 @@ export namespace Prisma {
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPaymentsInput, OrderUpdateWithoutPaymentsInput>, OrderUncheckedUpdateWithoutPaymentsInput>
   }
 
-  export type UserCreateNestedOneWithoutRefreshSessionsInput = {
-    create?: XOR<UserCreateWithoutRefreshSessionsInput, UserUncheckedCreateWithoutRefreshSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRefreshSessionsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type UserUpdateOneRequiredWithoutRefreshSessionsNestedInput = {
-    create?: XOR<UserCreateWithoutRefreshSessionsInput, UserUncheckedCreateWithoutRefreshSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRefreshSessionsInput
-    upsert?: UserUpsertWithoutRefreshSessionsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRefreshSessionsInput, UserUpdateWithoutRefreshSessionsInput>, UserUncheckedUpdateWithoutRefreshSessionsInput>
-  }
-
   export type OrderCreateNestedOneWithoutItemsInput = {
     create?: XOR<OrderCreateWithoutItemsInput, OrderUncheckedCreateWithoutItemsInput>
     connectOrCreate?: OrderCreateOrConnectWithoutItemsInput
@@ -36912,34 +35450,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type RefreshSessionCreateWithoutUserInput = {
-    id?: string
-    tokenHash: string
-    expiresAt: Date | string
-    revokedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RefreshSessionUncheckedCreateWithoutUserInput = {
-    id?: string
-    tokenHash: string
-    expiresAt: Date | string
-    revokedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RefreshSessionCreateOrConnectWithoutUserInput = {
-    where: RefreshSessionWhereUniqueInput
-    create: XOR<RefreshSessionCreateWithoutUserInput, RefreshSessionUncheckedCreateWithoutUserInput>
-  }
-
-  export type RefreshSessionCreateManyUserInputEnvelope = {
-    data: RefreshSessionCreateManyUserInput | RefreshSessionCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
   export type StoreUpsertWithoutAdminsInput = {
     update: XOR<StoreUpdateWithoutAdminsInput, StoreUncheckedUpdateWithoutAdminsInput>
     create: XOR<StoreCreateWithoutAdminsInput, StoreUncheckedCreateWithoutAdminsInput>
@@ -37262,35 +35772,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
   }
 
-  export type RefreshSessionUpsertWithWhereUniqueWithoutUserInput = {
-    where: RefreshSessionWhereUniqueInput
-    update: XOR<RefreshSessionUpdateWithoutUserInput, RefreshSessionUncheckedUpdateWithoutUserInput>
-    create: XOR<RefreshSessionCreateWithoutUserInput, RefreshSessionUncheckedCreateWithoutUserInput>
-  }
-
-  export type RefreshSessionUpdateWithWhereUniqueWithoutUserInput = {
-    where: RefreshSessionWhereUniqueInput
-    data: XOR<RefreshSessionUpdateWithoutUserInput, RefreshSessionUncheckedUpdateWithoutUserInput>
-  }
-
-  export type RefreshSessionUpdateManyWithWhereWithoutUserInput = {
-    where: RefreshSessionScalarWhereInput
-    data: XOR<RefreshSessionUpdateManyMutationInput, RefreshSessionUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type RefreshSessionScalarWhereInput = {
-    AND?: RefreshSessionScalarWhereInput | RefreshSessionScalarWhereInput[]
-    OR?: RefreshSessionScalarWhereInput[]
-    NOT?: RefreshSessionScalarWhereInput | RefreshSessionScalarWhereInput[]
-    id?: StringFilter<"RefreshSession"> | string
-    userId?: StringFilter<"RefreshSession"> | string
-    tokenHash?: StringFilter<"RefreshSession"> | string
-    expiresAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    revokedAt?: DateTimeNullableFilter<"RefreshSession"> | Date | string | null
-    createdAt?: DateTimeFilter<"RefreshSession"> | Date | string
-    updatedAt?: DateTimeFilter<"RefreshSession"> | Date | string
-  }
-
   export type UserCreateWithoutStoreInput = {
     id?: string
     name: string
@@ -37315,7 +35796,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStoreInput = {
@@ -37342,7 +35822,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStoreInput = {
@@ -37870,7 +36349,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAddressesInput = {
@@ -37897,7 +36375,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAddressesInput = {
@@ -37940,7 +36417,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -37967,7 +36443,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProductCreateWithoutCategoryInput = {
@@ -38722,7 +37197,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCartsInput = {
@@ -38749,7 +37223,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCartsInput = {
@@ -38884,7 +37357,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCartsInput = {
@@ -38911,7 +37383,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProductUpsertWithoutCartsInput = {
@@ -39478,7 +37949,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -39505,7 +37975,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -39715,7 +38184,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -39742,7 +38210,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StoreUpsertWithoutOrdersInput = {
@@ -40096,130 +38563,6 @@ export namespace Prisma {
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
     histories?: OrderStatusHistoryUncheckedUpdateManyWithoutOrderNestedInput
     voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutOrderNestedInput
-  }
-
-  export type UserCreateWithoutRefreshSessionsInput = {
-    id?: string
-    name: string
-    email: string
-    phone?: string | null
-    password?: string | null
-    passwordHash?: string | null
-    authProvider?: string
-    role?: $Enums.Role
-    isActive?: boolean
-    verifiedAt?: Date | string | null
-    avatarUrl?: string | null
-    referralCode?: string | null
-    referredBy?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    store?: StoreCreateNestedOneWithoutAdminsInput
-    addresses?: AddressCreateNestedManyWithoutUserInput
-    carts?: CartItemCreateNestedManyWithoutUserInput
-    orders?: OrderCreateNestedManyWithoutUserInput
-    voucherUsages?: VoucherUsageCreateNestedManyWithoutUserInput
-    storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
-    reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
-    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-  }
-
-  export type UserUncheckedCreateWithoutRefreshSessionsInput = {
-    id?: string
-    name: string
-    email: string
-    phone?: string | null
-    password?: string | null
-    passwordHash?: string | null
-    authProvider?: string
-    role?: $Enums.Role
-    isActive?: boolean
-    verifiedAt?: Date | string | null
-    avatarUrl?: string | null
-    referralCode?: string | null
-    referredBy?: string | null
-    storeId?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    addresses?: AddressUncheckedCreateNestedManyWithoutUserInput
-    carts?: CartItemUncheckedCreateNestedManyWithoutUserInput
-    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
-    voucherUsages?: VoucherUsageUncheckedCreateNestedManyWithoutUserInput
-    storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
-    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-  }
-
-  export type UserCreateOrConnectWithoutRefreshSessionsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutRefreshSessionsInput, UserUncheckedCreateWithoutRefreshSessionsInput>
-  }
-
-  export type UserUpsertWithoutRefreshSessionsInput = {
-    update: XOR<UserUpdateWithoutRefreshSessionsInput, UserUncheckedUpdateWithoutRefreshSessionsInput>
-    create: XOR<UserCreateWithoutRefreshSessionsInput, UserUncheckedCreateWithoutRefreshSessionsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutRefreshSessionsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutRefreshSessionsInput, UserUncheckedUpdateWithoutRefreshSessionsInput>
-  }
-
-  export type UserUpdateWithoutRefreshSessionsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
-    authProvider?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
-    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    store?: StoreUpdateOneWithoutAdminsNestedInput
-    addresses?: AddressUpdateManyWithoutUserNestedInput
-    carts?: CartItemUpdateManyWithoutUserNestedInput
-    orders?: OrderUpdateManyWithoutUserNestedInput
-    voucherUsages?: VoucherUsageUpdateManyWithoutUserNestedInput
-    storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
-    reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
-    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutRefreshSessionsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
-    authProvider?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
-    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
-    storeId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    addresses?: AddressUncheckedUpdateManyWithoutUserNestedInput
-    carts?: CartItemUncheckedUpdateManyWithoutUserNestedInput
-    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
-    voucherUsages?: VoucherUsageUncheckedUpdateManyWithoutUserNestedInput
-    storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
-    reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type OrderCreateWithoutItemsInput = {
@@ -40807,7 +39150,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVoucherUsagesInput = {
@@ -40834,7 +39176,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVoucherUsagesInput = {
@@ -41019,7 +39360,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVoucherUsagesInput = {
@@ -41046,7 +39386,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderUpsertWithoutVoucherUsagesInput = {
@@ -41182,7 +39521,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStoreAdminRequestsInput = {
@@ -41209,7 +39547,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStoreAdminRequestsInput = {
@@ -41327,7 +39664,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReviewedStoreAdminRequestsInput = {
@@ -41354,7 +39690,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReviewedStoreAdminRequestsInput = {
@@ -41397,7 +39732,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStoreAdminRequestsInput = {
@@ -41424,7 +39758,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StoreUpsertWithoutRequestedStoreAdminRequestsInput = {
@@ -41560,7 +39893,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewedStoreAdminRequestsInput = {
@@ -41587,7 +39919,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -41614,7 +39945,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -41641,7 +39971,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -41684,7 +40013,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -41711,7 +40039,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -41738,7 +40065,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestCreateNestedManyWithoutUserInput
     reviewedStoreAdminRequests?: StoreAdminRequestCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    refreshSessions?: RefreshSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -41765,7 +40091,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutUserInput
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedCreateNestedManyWithoutReviewedByInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    refreshSessions?: RefreshSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -41808,7 +40133,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUpdateManyWithoutUserNestedInput
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -41835,7 +40159,6 @@ export namespace Prisma {
     storeAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutUserNestedInput
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AddressCreateManyUserInput = {
@@ -41967,15 +40290,6 @@ export namespace Prisma {
     after?: NullableJsonNullValueInput | InputJsonValue
     requestId?: string | null
     createdAt?: Date | string
-  }
-
-  export type RefreshSessionCreateManyUserInput = {
-    id?: string
-    tokenHash: string
-    expiresAt: Date | string
-    revokedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type AddressUpdateWithoutUserInput = {
@@ -42379,33 +40693,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RefreshSessionUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RefreshSessionUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RefreshSessionUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tokenHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type UserCreateManyStoreInput = {
     id?: string
     name: string
@@ -42559,7 +40846,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStoreInput = {
@@ -42586,7 +40872,6 @@ export namespace Prisma {
     reviewedStoreAdminRequests?: StoreAdminRequestUncheckedUpdateManyWithoutReviewedByNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
-    refreshSessions?: RefreshSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutStoreInput = {

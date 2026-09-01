@@ -86,7 +86,6 @@ model User {
   reviewedStoreAdminRequests StoreAdminRequest[] @relation("StoreAdminRequestReviewer")
   notifications              Notification[]
   auditLogs                  AuditLog[]          @relation("AuditLogActor")
-  refreshSessions            RefreshSession[]
   createdAt                  DateTime            @default(now())
   updatedAt                  DateTime            @updatedAt
 }
@@ -313,19 +312,6 @@ model Payment {
 
   @@index([orderId, createdAt])
   @@index([status, updatedAt])
-}
-
-model RefreshSession {
-  id        String    @id @default(cuid())
-  userId    String
-  tokenHash String    @unique
-  expiresAt DateTime
-  revokedAt DateTime?
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  @@index([userId, expiresAt])
 }
 
 model OrderItem {

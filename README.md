@@ -130,7 +130,7 @@ npm run db:deploy        # apply migration di production/CI
 
 ## Authorization
 
-Endpoint protected memakai access JWT di cookie `market_snap_session` yang HttpOnly. Refresh credential dirotasi melalui `POST /api/auth/refresh`, disimpan sebagai hash di database, dan tidak pernah dikirim dalam JSON.
+Endpoint protected memakai JWT stateless 24 jam di cookie `market_snap_session` yang HttpOnly. Tidak ada endpoint rotasi atau credential sesi kedua.
 
 ```bash
 curl -X POST https://your-market-snap-api.vercel.app/api/auth/login \

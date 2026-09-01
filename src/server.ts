@@ -80,7 +80,6 @@ app.use(/^\/(?:api\/)?auth\/(?:register|password-reset\/request)$/, rateLimit({
   legacyHeaders: false
 }));
 app.use(/^\/(?:api\/)?auth\/(?:google|facebook)/, rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false }));
-app.use(/^\/(?:api\/)?auth\/refresh$/, rateLimit({ windowMs: 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 app.use(/^\/(?:api\/)?contact$/, rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }));
 app.use(/^\/(?:api\/)?(?:orders|payments|payment|cart)/, rateLimit({ windowMs: 60 * 1000, limit: 90, standardHeaders: true, legacyHeaders: false }));
 app.get("/", (_req, res) => {

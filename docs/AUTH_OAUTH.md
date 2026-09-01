@@ -1,6 +1,6 @@
 # Authentication dan OAuth
 
-Session browser menggunakan cookie `market_snap_session` (15 menit) dan refresh credential `market_snap_refresh` (30 hari). Keduanya HttpOnly; production memakai Secure dan SameSite=None karena frontend/API berbeda origin. Refresh token disimpan sebagai SHA-256 digest dan dirotasi. Logout serta reset password mencabut refresh session terkait.
+Session browser menggunakan satu cookie JWT `market_snap_session` yang stateless dan berlaku 24 jam. Cookie bersifat HttpOnly, memakai SameSite=Lax, dan memakai Secure pada production. Logout menghapus cookie browser; perubahan password tidak dapat mencabut salinan token lama sebelum masa berlakunya habis.
 
 Daftarkan callback provider secara persis:
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { confirmEmailVerification, confirmPasswordReset, facebookCallback, facebookLogin, googleCallback, googleLogin, login, logout, me, refreshSession, register, requestEmailVerification, requestPasswordReset, uploadAvatar } from "../controllers/authController.js";
+import { confirmEmailVerification, confirmPasswordReset, facebookCallback, facebookLogin, googleCallback, googleLogin, login, logout, me, register, requestEmailVerification, requestPasswordReset, uploadAvatar } from "../controllers/authController.js";
 import { authenticate } from "../middleware/authRole.js";
 import { emailVerificationConfirmSchema, emailVerificationRequestSchema, loginSchema, passwordResetConfirmSchema, passwordResetRequestSchema, registerSchema } from "../middleware/schemas.js";
 import { uploadProfileImage, validateUploadedImageBytes } from "../middleware/upload.js";
@@ -10,7 +10,6 @@ export const authRouter = Router();
 authRouter.post("/auth/register", validate(registerSchema), register);
 authRouter.post("/auth/login", validate(loginSchema), login);
 authRouter.post("/auth/logout", logout);
-authRouter.post("/auth/refresh", refreshSession);
 authRouter.post("/auth/password-reset/request", validate(passwordResetRequestSchema), requestPasswordReset);
 authRouter.post("/auth/password-reset/confirm", validate(passwordResetConfirmSchema), confirmPasswordReset);
 authRouter.post("/auth/verification/request", authenticate, validate(emailVerificationRequestSchema), requestEmailVerification);

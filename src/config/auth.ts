@@ -9,7 +9,7 @@ export type JwtPayload = {
   exp: number;
 };
 
-const accessTokenTtlSeconds = 15 * 60;
+const accessTokenTtlSeconds = 24 * 60 * 60;
 const purposeTokenTtlSeconds = 60 * 60;
 const bcryptRounds = 12;
 

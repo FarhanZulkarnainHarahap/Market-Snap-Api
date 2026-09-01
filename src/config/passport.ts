@@ -45,7 +45,7 @@ export function apiOrigin(): string {
 }
 
 export function webOrigin(): string {
-  return normalizeOrigin(env("WEB_ORIGIN")?.split(",")[0] ?? env("CLIENT_URL") ?? defaultWebOrigin);
+  return normalizeOrigin(env("WEB_ORIGIN")?.split(",")[0] ?? env("FRONTEND_URL") ?? env("CLIENT_URL") ?? defaultWebOrigin);
 }
 
 export function googleCallbackUrl(): string {
@@ -56,7 +56,13 @@ export function facebookCallbackUrl(): string {
   return env("FACEBOOK_CALLBACK_URL") ?? `${apiOrigin()}/api/auth/facebook/callback`;
 }
 
-async function findOrCreateOAuthUser(provider: "facebook" | "google", profile: FacebookProfile | GoogleProfile): Promise<User> {
+export type OAuthUserRepository = Pick<typeof prisma.user, "create" | "findFirst" | "update">;
+
+export async function findOrCreateOAuthUser(
+  provider: "facebook" | "google",
+  profile: FacebookProfile | GoogleProfile,
+  users: OAuthUserRepository = prisma.user
+): Promise<User> {
   const email = profile.emails?.map((entry) => entry.value.trim().toLowerCase()).find(Boolean);
   if (!email) throw new OAuthLoginError(`Email ${provider === "google" ? "Google" : "Facebook"} tidak tersedia. Izinkan akses email lalu coba lagi.`);
 
@@ -65,13 +71,13 @@ async function findOrCreateOAuthUser(provider: "facebook" | "google", profile: F
     if (verified === false) throw new OAuthLoginError("Email Google belum terverifikasi.");
   }
 
-  const existing = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
+  const existing = await users.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   if (existing && !existing.isActive) throw new OAuthLoginError("Akun Market Snap ini sedang dinonaktifkan.");
   const name = profile.displayName?.trim() || email.split("@")[0] || "Market Snap User";
   const avatarUrl = profile.photos?.map((photo) => photo.value.trim()).find(Boolean);
 
   if (existing) {
-    return prisma.user.update({
+    return users.update({
       where: { id: existing.id },
       data: {
         authProvider: existing.passwordHash || existing.password ? existing.authProvider : provider,
@@ -81,7 +87,7 @@ async function findOrCreateOAuthUser(provider: "facebook" | "google", profile: F
     });
   }
 
-  return prisma.user.create({
+  return users.create({
     data: {
       authProvider: provider,
       avatarUrl,

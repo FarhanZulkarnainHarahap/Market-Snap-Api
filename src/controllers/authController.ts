@@ -1,7 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type { NextFunction, Request, Response } from "express";
 import { cloudinary } from "../config/cloudinary.js";
-import { hashPassword, passwordNeedsRehash, signPurposeToken, verifyPassword, verifyToken } from "../config/auth.js";
+import { hashPassword, passwordNeedsRehash, signPurposeToken, signToken, verifyPassword, verifyToken } from "../config/auth.js";
 import {
   facebookOAuthEnabled,
   googleOAuthEnabled,
@@ -11,8 +11,7 @@ import {
 } from "../config/passport.js";
 import { prisma } from "../config/prisma.js";
 import { resend } from "../config/resend.js";
-import { logger } from "../config/logger.js";
-import { clearSessionCookies, createSession, revokeSession, rotateSession } from "../config/session.js";
+import { clearSessionCookie, setSessionCookie } from "../config/session.js";
 import { handleControllerError, mapUser } from "../utils/controllerHelpers.js";
 
 export async function register(req: Request, res: Response): Promise<void> {
@@ -68,31 +67,16 @@ export async function login(req: Request, res: Response): Promise<void> {
     if (passwordNeedsRehash(storedPassword)) {
       await prisma.user.update({ where: { id: user.id }, data: { password: null, passwordHash: await hashPassword(req.body.password) } });
     }
-    await createSession(res, user);
+    setSessionCookie(res, signToken({ sub: user.id, role: user.role }));
     res.json({ token: "", user: mapUser(user) });
   } catch (error) {
     handleControllerError(res, error);
   }
 }
 
-export async function logout(req: Request, res: Response): Promise<void> {
-  await revokeSession(req).catch(() => undefined);
-  clearSessionCookies(res);
+export function logout(_req: Request, res: Response): void {
+  clearSessionCookie(res);
   res.json({ message: "Logout berhasil." });
-}
-
-export async function refreshSession(req: Request, res: Response): Promise<void> {
-  try {
-    const user = await rotateSession(req, res);
-    if (!user) {
-      clearSessionCookies(res);
-      res.status(401).json({ message: "Sesi login sudah berakhir. Silakan login kembali." });
-      return;
-    }
-    res.json({ message: "Sesi berhasil diperbarui." });
-  } catch (error) {
-    handleControllerError(res, error);
-  }
 }
 
 export async function me(req: Request, res: Response): Promise<void> {
@@ -168,15 +152,9 @@ export async function confirmPasswordReset(req: Request, res: Response): Promise
       res.status(400).json({ message: "Link ubah password sudah tidak berlaku." });
       return;
     }
-    await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { id: token.sub },
-        data: { password: null, passwordHash: await hashPassword(String(req.body.password)) }
-      });
-      await tx.refreshSession.updateMany({
-        where: { userId: token.sub, revokedAt: null },
-        data: { revokedAt: new Date() }
-      });
+    await prisma.user.update({
+      where: { id: token.sub },
+      data: { password: null, passwordHash: await hashPassword(String(req.body.password)) }
     });
     res.json({ message: "Password berhasil diperbarui. Silakan masuk kembali." });
   } catch (error) {
@@ -337,15 +315,8 @@ function completeOAuth(provider: "facebook" | "google", req: Request, res: Respo
       redirectOAuthResult(res, provider, { error: message });
       return;
     }
-    try {
-      await createSession(res, { id: user.id, role: user.role });
-      redirectOAuthResult(res, provider, { success: "1" });
-    } catch (sessionError) {
-      logger.error({ err: sessionError, provider, userId: user.id }, "OAUTH_SESSION_CREATE_FAILED");
-      redirectOAuthResult(res, provider, {
-        error: "Login berhasil diverifikasi, tetapi sesi belum dapat dibuat. Silakan coba lagi setelah layanan diperbarui."
-      });
-    }
+    setSessionCookie(res, signToken({ sub: user.id, role: user.role }));
+    redirectOAuthResult(res, provider, { success: "1" });
   })(req, res, next);
 }
 

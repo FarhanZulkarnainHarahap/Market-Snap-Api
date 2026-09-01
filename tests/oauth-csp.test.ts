@@ -3,6 +3,7 @@ import { once } from "node:events";
 import { after, before, test } from "node:test";
 import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
+import passport from "passport";
 
 process.env.JWT_SECRET = "oauth-state-test-secret";
 process.env.GOOGLE_CLIENT_ID = "google-client-id";
@@ -52,4 +53,46 @@ test("Google OAuth cancellation returns a visible frontend error instead of a bl
   assert.equal(frontendUrl.pathname, "/auth/callback");
   assert.equal(frontendUrl.searchParams.get("provider"), "google");
   assert.match(frontendUrl.searchParams.get("error") ?? "", /dibatalkan/i);
+});
+
+test("Google OAuth rejects an invalid state before authenticating", async () => {
+  const callback = await fetch(`${baseUrl}/api/auth/google/callback?state=invalid`, { redirect: "manual" });
+  const frontendUrl = new URL(String(callback.headers.get("location")));
+
+  assert.equal(callback.status, 302);
+  assert.equal(frontendUrl.pathname, "/auth/callback");
+  assert.match(frontendUrl.searchParams.get("error") ?? "", /tidak valid|kedaluwarsa/i);
+});
+
+test("Google OAuth callback creates the legacy stateless session from a mocked verified profile", async () => {
+  const start = await fetch(`${baseUrl}/api/auth/google`, { redirect: "manual" });
+  const providerUrl = new URL(String(start.headers.get("location")));
+  const state = String(providerUrl.searchParams.get("state"));
+  const cookie = String(start.headers.get("set-cookie")).split(";", 1)[0];
+  const { oauthPassport } = await import("../src/config/passport.js");
+  const originalStrategy = oauthPassport._strategy("google");
+
+  class MockVerifiedGoogleProfileStrategy extends passport.Strategy {
+    override name = "google";
+
+    override authenticate(): void {
+      this.success({ id: "existing-store-admin", role: "STORE_ADMIN" } as Express.User);
+    }
+  }
+
+  oauthPassport.use(new MockVerifiedGoogleProfileStrategy());
+  try {
+    const callback = await fetch(`${baseUrl}/api/auth/google/callback?code=mock-code&state=${encodeURIComponent(state)}`, {
+      headers: { cookie },
+      redirect: "manual"
+    });
+    const frontendUrl = new URL(String(callback.headers.get("location")));
+
+    assert.equal(callback.status, 302);
+    assert.equal(frontendUrl.pathname, "/auth/callback");
+    assert.equal(frontendUrl.searchParams.get("success"), "1");
+    assert.match(callback.headers.get("set-cookie") ?? "", /market_snap_session=/);
+  } finally {
+    oauthPassport.use(originalStrategy);
+  }
 });
