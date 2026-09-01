@@ -7,7 +7,7 @@ import { createProduct } from "../controllers/productController.js";
 import { createUser, getUsers } from "../controllers/userController.js";
 import { authenticate, onlyAdmin, onlySuperAdmin } from "../middleware/authRole.js";
 import { createDiscountSchema, createProductSchema, createStoreSchema, createUserSchema } from "../middleware/schemas.js";
-import { uploadProductImages } from "../middleware/upload.js";
+import { uploadProductImages, validateUploadedImageBytes } from "../middleware/upload.js";
 import { validate } from "../middleware/validate.js";
 
 export const roleRouter = Router();
@@ -15,7 +15,7 @@ export const roleRouter = Router();
 roleRouter.get("/super-admin/stores", ...onlySuperAdmin, getStores);
 roleRouter.post("/super-admin/stores", ...onlySuperAdmin, validate(createStoreSchema), createStore);
 roleRouter.get("/super-admin/products", ...onlySuperAdmin, getProducts);
-roleRouter.post("/super-admin/products", ...onlySuperAdmin, uploadProductImages.array("images", 5), validate(createProductSchema), createProduct);
+roleRouter.post("/super-admin/products", ...onlySuperAdmin, uploadProductImages.array("images", 5), validateUploadedImageBytes, validate(createProductSchema), createProduct);
 roleRouter.get("/super-admin/categories", ...onlySuperAdmin, getCategories);
 roleRouter.get("/super-admin/users", ...onlySuperAdmin, getUsers);
 roleRouter.get("/super-admin/store-admins", ...onlySuperAdmin, getUsers);

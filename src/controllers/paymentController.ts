@@ -154,9 +154,13 @@ export async function handleXenditInvoiceWebhook(req: Request, res: Response): P
       res.status(403).json({ message: "Callback token Xendit tidak valid." });
       return;
     }
-    const invoice = req.body as XenditInvoice;
+    const invoice = normalizeXenditWebhook(req.body);
     if (!invoice.external_id || !invoice.id || !invoice.status) {
       res.status(400).json({ message: "Payload webhook Xendit tidak valid." });
+      return;
+    }
+    if ((invoice.status === "PAID" || invoice.status === "SETTLED") && xenditConfig.apiMode === "payment_session" && !invoice.payment_id) {
+      res.status(400).json({ message: "Payment Session selesai tanpa payment reference yang valid." });
       return;
     }
     logBusinessEvent("PAYMENT_WEBHOOK_RECEIVED", { invoiceId: invoice.id, externalId: invoice.external_id, status: invoice.status });
@@ -173,6 +177,26 @@ export async function handleXenditInvoiceWebhook(req: Request, res: Response): P
     }
     handleControllerError(res, error);
   }
+}
+
+function normalizeXenditWebhook(payload: unknown): XenditInvoice {
+  const body = payload && typeof payload === "object" ? payload as Record<string, unknown> : {};
+  const data = body.data && typeof body.data === "object" ? body.data as Record<string, unknown> : body;
+  if (typeof data.payment_session_id !== "string") return body as XenditInvoice;
+  const rawStatus = String(data.status ?? "");
+  return {
+    id: data.payment_session_id,
+    payment_session_id: data.payment_session_id,
+    external_id: String(data.reference_id ?? ""),
+    amount: Number(data.amount),
+    paid_amount: rawStatus === "COMPLETED" ? Number(data.amount) : undefined,
+    status: rawStatus === "ACTIVE" ? "PENDING" : rawStatus === "COMPLETED" ? "PAID" : rawStatus === "CANCELED" ? "CANCELLED" : rawStatus,
+    invoice_url: typeof data.payment_link_url === "string" ? data.payment_link_url : undefined,
+    expiry_date: typeof data.expires_at === "string" ? data.expires_at : undefined,
+    paid_at: rawStatus === "COMPLETED" && typeof data.updated === "string" ? data.updated : undefined,
+    payment_id: typeof data.payment_id === "string" ? data.payment_id : undefined,
+    currency: typeof data.currency === "string" ? data.currency : undefined
+  };
 }
 
 function paymentStatusPayload(result: {

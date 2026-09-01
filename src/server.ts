@@ -29,16 +29,16 @@ if (process.env.SENTRY_DSN) {
 
 const webOrigins = (process.env.WEB_ORIGIN ?? "").split(",").map(normalizeOrigin).filter(Boolean);
 
-const allowedOrigins = [
+const developmentOrigins = [
+  "http://localhost:3000", "http://localhost:3100", "http://localhost:3200",
+  "http://127.0.0.1:3000", "http://127.0.0.1:3100", "http://127.0.0.1:3200"
+];
+const allowedOrigins = Array.from(new Set([
   ...webOrigins,
-  "https://market-snap.web.id",
-  "http://localhost:3000",
-  "http://localhost:3100",
-  "http://localhost:3200",
-  "http://127.0.0.1:3000",
-  "http://127.0.0.1:3100",
-  "http://127.0.0.1:3200"
-].filter(Boolean) as string[];
+  ...(process.env.NODE_ENV === "production" ? ["https://market-snap.web.id"] : developmentOrigins)
+].filter(Boolean))) as string[];
+
+validateSecurityConfiguration();
 
 app.use((_req, res, next) => {
   res.locals.cspNonce = randomBytes(32).toString("base64");
@@ -81,6 +81,7 @@ app.use(/^\/(?:api\/)?auth\/(?:register|password-reset\/request)$/, rateLimit({
 }));
 app.use(/^\/(?:api\/)?auth\/(?:google|facebook)/, rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false }));
 app.use(/^\/(?:api\/)?auth\/refresh$/, rateLimit({ windowMs: 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
+app.use(/^\/(?:api\/)?contact$/, rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }));
 app.use(/^\/(?:api\/)?(?:orders|payments|payment|cart)/, rateLimit({ windowMs: 60 * 1000, limit: 90, standardHeaders: true, legacyHeaders: false }));
 app.get("/", (_req, res) => {
   res.json({
@@ -95,4 +96,11 @@ app.use(errorHandler);
 
 function normalizeOrigin(origin: string): string {
   return origin.trim().replace(/\/+$/, "");
+}
+
+function validateSecurityConfiguration() {
+  if (process.env.NODE_ENV !== "production") return;
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) throw new Error("JWT_SECRET production wajib berisi minimal 32 karakter acak.");
+  if (!webOrigins.length || webOrigins.some((origin) => !origin.startsWith("https://"))) throw new Error("WEB_ORIGIN production wajib berisi allowlist origin HTTPS.");
+  if (!process.env.API_PUBLIC_URL?.startsWith("https://")) throw new Error("API_PUBLIC_URL production wajib menggunakan HTTPS.");
 }

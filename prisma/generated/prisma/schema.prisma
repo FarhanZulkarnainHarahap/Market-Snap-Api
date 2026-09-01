@@ -372,6 +372,7 @@ model VoucherUsage {
   discount  Int
   createdAt DateTime @default(now())
 
+  @@unique([userId, voucherId])
   @@index([userId, voucherId])
   @@index([orderId])
 }
@@ -433,4 +434,17 @@ model AuditLog {
 
   @@index([actorId, createdAt])
   @@index([entityType, entityId])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
 }

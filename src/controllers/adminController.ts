@@ -22,8 +22,17 @@ export async function createStore(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function getDiscounts(_req: Request, res: Response): Promise<void> {
+export async function getDiscounts(req: Request, res: Response): Promise<void> {
   try {
+    if (req.user?.role === "store_admin") {
+      if (!req.user.storeId) {
+        res.status(403).json({ message: "Store admin belum terhubung ke cabang" });
+        return;
+      }
+      const discounts = await prisma.discount.findMany({ where: { storeId: req.user.storeId }, orderBy: { createdAt: "desc" } });
+      res.json({ data: discounts });
+      return;
+    }
     const vouchers = await prisma.voucher.findMany({ orderBy: { createdAt: "desc" } });
     res.json({ data: vouchers });
   } catch (error) {
@@ -33,6 +42,26 @@ export async function getDiscounts(_req: Request, res: Response): Promise<void> 
 
 export async function createDiscount(req: Request, res: Response): Promise<void> {
   try {
+    if (req.user?.role === "store_admin") {
+      if (!req.user.storeId) {
+        res.status(403).json({ message: "Store admin belum terhubung ke cabang" });
+        return;
+      }
+      const discount = await prisma.discount.create({
+        data: {
+          storeId: req.user.storeId,
+          title: req.body.title,
+          type: discountType(req.body.discountType),
+          value: Number(req.body.value),
+          maxDiscount: Number(req.body.maxDiscount ?? 0),
+          minSpend: Number(req.body.minSpend ?? 0),
+          startsAt: new Date(),
+          expiresAt: new Date(req.body.expiresAt)
+        }
+      });
+      res.status(201).json({ data: discount });
+      return;
+    }
     const voucher = await prisma.voucher.create({ data: { code: req.body.code ?? `SNAP-${Date.now()}`, title: req.body.title, scope: voucherScope(req.body.type), type: discountType(req.body.discountType), value: Number(req.body.value), maxDiscount: Number(req.body.maxDiscount ?? 0), minSpend: Number(req.body.minSpend ?? 0), expiresAt: new Date(req.body.expiresAt) } });
     res.status(201).json({ data: voucher });
   } catch (error) {
@@ -40,10 +69,18 @@ export async function createDiscount(req: Request, res: Response): Promise<void>
   }
 }
 
-export async function getSalesReport(_req: Request, res: Response): Promise<void> {
+export async function getSalesReport(req: Request, res: Response): Promise<void> {
   try {
-    const [total, orders] = await Promise.all([prisma.order.aggregate({ _sum: { total: true } }), prisma.order.count()]);
-    res.json({ data: { month: "Mei 2026", totalSales: total._sum.total ?? 0, orders, byCategory: [] } });
+    const where = req.user?.role === "store_admin" ? { storeId: req.user.storeId } : undefined;
+    if (req.user?.role === "store_admin" && !req.user.storeId) {
+      res.status(403).json({ message: "Store admin belum terhubung ke cabang" });
+      return;
+    }
+    const [total, orders] = await Promise.all([
+      prisma.order.aggregate({ where, _sum: { total: true } }),
+      prisma.order.count({ where })
+    ]);
+    res.json({ data: { month: new Date().toISOString().slice(0, 7), totalSales: total._sum.total ?? 0, orders, byCategory: [] } });
   } catch (error) {
     handleControllerError(res, error);
   }

@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: Market Snap API
+  version: 1.0.0
+servers:
+  - url: https://api-node.market-snap.web.id/api
+paths:
+  /auth/login:
+    post:
+      summary: Create secure browser session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties: { email: { type: string, format: email }, password: { type: string } }
+      responses: { "200": { description: Authenticated }, "401": { description: Invalid credentials }, "429": { description: Rate limited } }
+  /auth/refresh:
+    post:
+      summary: Rotate refresh session
+      responses: { "200": { description: Rotated }, "401": { description: Session expired } }
+  /products:
+    get:
+      summary: Public active product catalog
+      responses: { "200": { description: Product page } }
+  /cart:
+    get:
+      summary: Authenticated cart
+      responses: { "200": { description: Cart }, "401": { description: Authentication required } }
+  /orders:
+    post:
+      summary: Recalculate and create order, reserve stock, create payment session
+      responses: { "201": { description: Order and payment redirect created }, "409": { description: Duplicate or voucher conflict }, "422": { description: Validation, stock, or schedule error } }
+  /payments/{orderNumber}/status:
+    get:
+      summary: Owner-scoped payment reconciliation
+      parameters: [{ in: path, name: orderNumber, required: true, schema: { type: string } }]
+      responses: { "200": { description: Verified backend status }, "404": { description: Not found or not owned } }
+  /payment/xendit/callback:
+    post:
+      summary: Xendit webhook
+      parameters: [{ in: header, name: x-callback-token, required: true, schema: { type: string } }]
+      responses: { "200": { description: Idempotently processed }, "403": { description: Invalid callback token }, "409": { description: Payment identity or amount mismatch } }
+  /contact:
+    post:
+      summary: Persist validated support message
+      responses: { "201": { description: Stored }, "429": { description: Rate limited } }

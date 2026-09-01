@@ -2,7 +2,7 @@ import { Router } from "express";
 import { confirmEmailVerification, confirmPasswordReset, facebookCallback, facebookLogin, googleCallback, googleLogin, login, logout, me, refreshSession, register, requestEmailVerification, requestPasswordReset, uploadAvatar } from "../controllers/authController.js";
 import { authenticate } from "../middleware/authRole.js";
 import { emailVerificationConfirmSchema, emailVerificationRequestSchema, loginSchema, passwordResetConfirmSchema, passwordResetRequestSchema, registerSchema } from "../middleware/schemas.js";
-import { uploadProfileImage } from "../middleware/upload.js";
+import { uploadProfileImage, validateUploadedImageBytes } from "../middleware/upload.js";
 import { validate } from "../middleware/validate.js";
 
 export const authRouter = Router();
@@ -20,4 +20,4 @@ authRouter.get("/auth/google/callback", googleCallback);
 authRouter.get("/auth/facebook", facebookLogin);
 authRouter.get("/auth/facebook/callback", facebookCallback);
 authRouter.get("/auth/me", authenticate, me);
-authRouter.post("/auth/avatar", authenticate, uploadProfileImage.single("avatar"), uploadAvatar);
+authRouter.post("/auth/avatar", authenticate, uploadProfileImage.single("avatar"), validateUploadedImageBytes, uploadAvatar);

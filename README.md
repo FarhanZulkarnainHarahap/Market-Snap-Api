@@ -15,6 +15,8 @@ Market Snap API adalah backend TypeScript untuk grocery web app. API ini menanga
 
 Frontend terpisah ada di repo `market-snap-web` dan membaca API melalui `NEXT_PUBLIC_API_URL`.
 
+> Production handover: mulai dari `.env.example`, lalu baca `SECURITY.md`, `docs/DATABASE.md`, `docs/AUTH_OAUTH.md`, `docs/XENDIT.md`, `docs/DEPLOYMENT.md`, `docs/TROUBLESHOOTING.md`, dan `openapi.yaml`. Jangan memakai `.env` milik penjual atau seed credential sebagai akun production.
+
 ## Main Features
 
 - Location-based nearest store selection dari latitude dan longitude.
@@ -108,6 +110,8 @@ RESEND_API_KEY=""
 XENDIT_SECRET_KEY=""
 XENDIT_CALLBACK_TOKEN=""
 XENDIT_INVOICE_DURATION_SECONDS=3600
+XENDIT_API_MODE=payment_session
+XENDIT_RETURN_ORIGIN=https://your-web-domain.example
 ```
 
 Jangan commit `.env` ke GitHub.
@@ -160,8 +164,8 @@ Flow dimulai dari `GET /api/auth/google` atau `GET /api/auth/facebook` dan kemba
 - Memilih store terdekat dari `location`.
 - Menghitung ongkir RajaOngkir jika `destinationId` dikirim.
 - Menghitung ulang subtotal, diskon, ongkir, service fee, dan total di backend.
-- Membuat invoice Xendit saat `XENDIT_SECRET_KEY` tersedia, lalu mengembalikan `payment.redirectUrl` dari `invoice_url` Xendit untuk halaman pembayaran.
-- Menerima webhook invoice Xendit di `/api/payment/xendit/callback` untuk rekonsiliasi payment status otomatis.
+- Membuat hosted Payment Session Xendit saat konfigurasi lengkap, lalu mengembalikan URL pembayaran resmi Xendit.
+- Menerima webhook Payment Session Xendit di `/api/payment/xendit/callback` untuk rekonsiliasi payment status otomatis. Legacy invoice hanya aktif bila `XENDIT_API_MODE=legacy_invoice` dipilih eksplisit untuk masa transisi.
 - Menyimpan `shippingCost`, `total`, `paymentDeadline`, `paymentStatus`, `paymentRedirectUrl`, metadata Xendit, dan order items.
 
 ## Product Seed and Merchandising Data

@@ -1,9 +1,16 @@
 import { z } from "zod";
 
+const strongPassword = z.string()
+  .min(8, "Password minimal 8 karakter")
+  .max(128)
+  .regex(/[a-z]/, "Password harus memiliki huruf kecil")
+  .regex(/[A-Z]/, "Password harus memiliki huruf besar")
+  .regex(/[0-9]/, "Password harus memiliki angka");
+
 export const registerSchema = z.object({
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().toLowerCase().email().max(254),
-  password: z.string().min(8).max(128),
+  password: strongPassword,
   referralCode: z.preprocess((value) => value === "" ? undefined : value, z.string().trim().max(40).optional())
 }).strict();
 
@@ -18,7 +25,7 @@ export const passwordResetRequestSchema = z.object({
 
 export const passwordResetConfirmSchema = z.object({
   token: z.string().min(20),
-  password: z.string().min(8).max(128)
+  password: strongPassword
 }).strict();
 
 export const createPaymentSchema = z.object({
@@ -31,8 +38,6 @@ export const createPaymentSchema = z.object({
 }).strict();
 
 export const createOrderSchema = z.object({
-  userId: z.string().optional(),
-  total: z.coerce.number().nonnegative().optional(),
   items: z.array(z.object({
     productId: z.string().min(1),
     quantity: z.coerce.number().int().positive().max(1000)
@@ -50,8 +55,9 @@ export const createOrderSchema = z.object({
   paymentMethod: z.enum(["xendit"]).optional(),
   paymentChannel: z.string().optional(),
   orderNote: z.string().max(500).optional(),
-  storeId: z.string().optional()
-});
+  storeId: z.string().optional(),
+  termsAccepted: z.literal(true)
+}).strict();
 
 export const validateVoucherSchema = z.object({
   code: z.string().min(2),
@@ -59,14 +65,11 @@ export const validateVoucherSchema = z.object({
 });
 
 export const updateOrderStatusSchema = z.object({
-  status: z.string().min(2)
-});
+  status: z.enum(["PICKING", "PACKED", "READY", "OUT_FOR_DELIVERY", "DELIVERED", "COMPLETED", "CANCELLED", "PROCESSING", "SHIPPED", "CONFIRMED"]),
+  location: z.string().trim().max(200).optional()
+}).strict();
 
-export const updateOrderSchema = z.object({
-  total: z.coerce.number().nonnegative().optional(),
-  status: z.string().min(2).optional(),
-  items: z.array(z.unknown()).optional()
-});
+export const updateOrderSchema = updateOrderStatusSchema;
 
 export const addCartItemSchema = z.object({
   productId: z.string().min(1),
@@ -112,11 +115,11 @@ export const updateUserSchema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().email().optional(),
   phone: z.string().min(8).max(20).optional(),
-  password: z.string().min(8).optional(),
+  password: strongPassword.optional(),
   avatarUrl: z.string().url().optional(),
   role: z.enum(["customer", "super_admin", "store_admin"]).optional(),
   verified: z.coerce.boolean().optional()
-});
+}).strict();
 
 export const createStoreAdminRequestSchema = z.object({
   requestedStoreId: z.preprocess((value) => value === "" ? undefined : value, z.string().min(1).optional()),
@@ -168,3 +171,11 @@ export const createDiscountSchema = z.object({
   minSpend: z.coerce.number().nonnegative().default(0),
   expiresAt: z.string().min(8)
 });
+
+export const contactMessageSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().toLowerCase().email().max(254),
+  subject: z.enum(["ORDER", "PAYMENT", "PRODUCT", "PARTNERSHIP", "OTHER"]),
+  message: z.string().trim().min(10).max(2000),
+  website: z.literal("").optional()
+}).strict();

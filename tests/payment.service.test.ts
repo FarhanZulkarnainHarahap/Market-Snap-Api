@@ -28,6 +28,8 @@ describe("Xendit callback token verification", () => {
 describe("isXenditPaymentUrl", () => {
   it("allows official HTTPS hosts and rejects arbitrary or insecure URLs", () => {
     assert.equal(isXenditPaymentUrl("https://checkout.xendit.co/web/invoice-id"), true);
+    assert.equal(isXenditPaymentUrl("https://xen.to/session-id"), true);
+    assert.equal(isXenditPaymentUrl("https://dev.xen.to/session-id"), true);
     assert.equal(isXenditPaymentUrl("https://example.com/payment"), false);
     assert.equal(isXenditPaymentUrl("http://checkout.xendit.co/web/invoice-id"), false);
   });

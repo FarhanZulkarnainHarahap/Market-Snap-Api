@@ -167,9 +167,15 @@ export async function confirmPasswordReset(req: Request, res: Response): Promise
       res.status(400).json({ message: "Link ubah password sudah tidak berlaku." });
       return;
     }
-    await prisma.user.update({
-      where: { id: token.sub },
-      data: { password: null, passwordHash: await hashPassword(String(req.body.password)) }
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: token.sub },
+        data: { password: null, passwordHash: await hashPassword(String(req.body.password)) }
+      });
+      await tx.refreshSession.updateMany({
+        where: { userId: token.sub, revokedAt: null },
+        data: { revokedAt: new Date() }
+      });
     });
     res.json({ message: "Password berhasil diperbarui. Silakan masuk kembali." });
   } catch (error) {

@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import type { OrderStatus, Prisma } from "../../prisma/generated/prisma/client.js";
 import { logBusinessEvent } from "../config/logger.js";
+import { cloudinary } from "../config/cloudinary.js";
 import { prisma } from "../config/prisma.js";
 import { calculateDomesticShippingCost, rajaongkirConfig } from "../config/rajaongkir.js";
 import { createXenditInvoice, isXenditPaymentUrl, xenditConfig, type XenditInvoiceItem } from "../services/xendit.service.js";
@@ -159,7 +160,7 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
     }
 
     const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-    const voucher = await validateVoucher(body.voucherCode, subtotal, items.map((item) => item.productId));
+    const voucher = await validateVoucher(body.voucherCode, subtotal, items.map((item) => item.productId), userId);
     if (body.voucherCode && !voucher.valid) {
       res.status(422).json({ message: voucher.message });
       return;
@@ -247,6 +248,10 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       }
     });
   } catch (error) {
+    if (isPrismaUniqueError(error)) {
+      res.status(409).json({ message: "Pesanan duplikat atau voucher sudah pernah digunakan." });
+      return;
+    }
     handleControllerError(res, error);
   }
 }
@@ -486,12 +491,24 @@ export async function uploadPayment(req: Request, res: Response): Promise<void> 
       res.status(404).json({ message: "Order tidak ditemukan." });
       return;
     }
+    if (exists.paymentMethod === "xendit" || exists.paymentProvider === "xendit") {
+      res.status(422).json({ message: "Pembayaran Xendit diverifikasi melalui webhook; bukti manual tidak digunakan." });
+      return;
+    }
+    if (exists.paymentStatus === "PAID") {
+      res.status(409).json({ message: "Order ini sudah dibayar." });
+      return;
+    }
+    const uploaded = await cloudinary.uploader.upload(
+      `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+      { folder: "market-snap/payment-proofs", public_id: exists.id, overwrite: true, resource_type: "image" }
+    );
     const order = await prisma.$transaction(async (tx) => {
-      const updated = await tx.order.update({ where: { id: exists.id }, data: { status: "WAITING_PAYMENT_CONFIRMATION" } });
+      const updated = await tx.order.update({ where: { id: exists.id }, data: { paymentProofUrl: uploaded.secure_url, status: "WAITING_PAYMENT_CONFIRMATION" } });
       await tx.orderStatusHistory.create({ data: { orderId: updated.id, status: "WAITING_PAYMENT_CONFIRMATION", description: "Bukti pembayaran diunggah dan menunggu konfirmasi." } });
       return updated;
     });
-    res.json({ message: "Bukti bayar tervalidasi dan siap dikirim ke Cloudinary", file: { name: req.file.originalname, size: req.file.size, type: req.file.mimetype }, data: order });
+    res.json({ message: "Bukti bayar berhasil disimpan dan menunggu konfirmasi.", data: order });
   } catch (error) {
     handleControllerError(res, error);
   }
@@ -646,7 +663,7 @@ function activeProductDiscount(price: number, discounts: { expiresAt: Date; maxD
   return Math.min(price, Math.max(0, ...active, 0));
 }
 
-async function validateVoucher(code: string | undefined, subtotal: number, productIds: string[]): Promise<VoucherValidation> {
+async function validateVoucher(code: string | undefined, subtotal: number, productIds: string[], userId: string): Promise<VoucherValidation> {
   const normalized = code?.trim().toUpperCase();
   if (!normalized) return { discount: 0, message: "", valid: true };
   const voucher = await prisma.voucher.findUnique({ where: { code: normalized } });
@@ -654,9 +671,15 @@ async function validateVoucher(code: string | undefined, subtotal: number, produ
   if (voucher.expiresAt.getTime() < Date.now()) return { discount: 0, message: "Voucher sudah kedaluwarsa.", valid: false };
   if (voucher.minSpend && subtotal < voucher.minSpend) return { discount: 0, message: "Voucher belum memenuhi minimum pembelian.", valid: false };
   if (voucher.scope === "PRODUCT" && voucher.productId && !productIds.includes(voucher.productId)) return { discount: 0, message: "Voucher tidak dapat digunakan untuk produk tersebut.", valid: false };
+  const alreadyUsed = await prisma.voucherUsage.findUnique({ where: { userId_voucherId: { userId, voucherId: voucher.id } }, select: { id: true } });
+  if (alreadyUsed) return { discount: 0, message: "Voucher sudah pernah digunakan oleh akun ini.", valid: false };
   const raw = voucher.type === "PERCENTAGE" ? Math.round(subtotal * (voucher.value / 100)) : voucher.value;
   const discount = Math.min(subtotal, voucher.maxDiscount ? Math.min(raw, voucher.maxDiscount) : raw);
   return { discount: Math.max(0, discount), message: "Voucher berhasil digunakan.", valid: true, voucher: { id: voucher.id, code: voucher.code } };
+}
+
+function isPrismaUniqueError(error: unknown) {
+  return Boolean(error && typeof error === "object" && "code" in error && error.code === "P2002");
 }
 
 async function shippingQuote(body: CreateOrderBody, method: ReturnType<typeof shippingMethodOptions>[number]) {

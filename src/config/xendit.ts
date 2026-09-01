@@ -4,7 +4,8 @@ import { Xendit } from "xendit-node";
 const baseUrl = (process.env.XENDIT_BASE_URL ?? "https://api.xendit.co").replace(/\/+$/, "");
 const secretKey = process.env.XENDIT_SECRET_KEY?.trim() ?? "";
 const callbackToken = process.env.XENDIT_CALLBACK_TOKEN?.trim() ?? "";
-const webOrigin = normalizeUrl(process.env.WEB_ORIGIN ?? "http://localhost:3000");
+const webOrigin = normalizeUrl(process.env.XENDIT_RETURN_ORIGIN ?? process.env.WEB_ORIGIN?.split(",")[0] ?? "http://localhost:3000");
+const apiMode = process.env.XENDIT_API_MODE === "legacy_invoice" ? "legacy_invoice" : "payment_session";
 const configuredInvoiceDuration = Number(process.env.XENDIT_INVOICE_DURATION_SECONDS ?? 3600);
 const invoiceDurationSeconds = Number.isInteger(configuredInvoiceDuration) && configuredInvoiceDuration >= 60
   ? configuredInvoiceDuration
@@ -19,6 +20,7 @@ export const xenditConfig = {
   callbackTokenConfigured: Boolean(callbackToken),
   hasSecretKey: Boolean(secretKey),
   invoiceDurationSeconds,
+  apiMode,
   isReady: Boolean(secretKey && callbackToken),
   validationMessage: missingConfiguration.length
     ? `Konfigurasi Xendit belum lengkap. ${missingConfiguration.join(" dan ")} wajib diisi.`
@@ -46,6 +48,7 @@ export type XenditInvoice = {
   payment_method?: string;
   payment_channel?: string;
   currency?: string;
+  payment_session_id?: string;
 };
 
 export async function createXenditInvoice(input: {
@@ -57,6 +60,7 @@ export async function createXenditInvoice(input: {
   items: XenditInvoiceItem[];
 }) {
   if (!xenditConfig.isReady) throw new Error(xenditConfig.validationMessage);
+  if (apiMode === "payment_session") return createPaymentSession(input);
   try {
     const invoice = await xenditClient().Invoice.createInvoice({
       data: {
@@ -87,6 +91,7 @@ export async function createXenditInvoice(input: {
 export async function getXenditInvoice(invoiceId: string) {
   if (!invoiceId.trim()) throw new Error("Invoice ID Xendit wajib diisi.");
   if (!secretKey) throw new Error(xenditConfig.validationMessage);
+  if (apiMode === "payment_session") return getPaymentSession(invoiceId);
   try {
     const invoice = await xenditClient().Invoice.getInvoiceById({ invoiceId });
     return normalizeSdkInvoice(invoice);
@@ -112,7 +117,12 @@ export function isXenditPaymentUrl(value?: string | null): value is string {
   try {
     const url = new URL(value);
     const host = url.hostname.toLowerCase();
-    return url.protocol === "https:" && (host === "xendit.co" || host.endsWith(".xendit.co"));
+    return url.protocol === "https:" && (
+      host === "xendit.co" ||
+      host.endsWith(".xendit.co") ||
+      host === "xen.to" ||
+      host === "dev.xen.to"
+    );
   } catch {
     return false;
   }
@@ -120,6 +130,103 @@ export function isXenditPaymentUrl(value?: string | null): value is string {
 
 function xenditClient(): Xendit {
   return new Xendit({ secretKey, xenditURL: baseUrl });
+}
+
+async function createPaymentSession(input: {
+  amount: number;
+  customerEmail: string;
+  customerName?: string;
+  description: string;
+  externalId: string;
+  items: XenditInvoiceItem[];
+}): Promise<XenditInvoice> {
+  assertHttpsReturnOrigin();
+  const itemTotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const items = itemTotal === input.amount ? input.items : [{ name: `Pesanan ${input.externalId}`, price: input.amount, quantity: 1, category: "ORDER" }];
+  const response = await xenditFetch("/sessions", {
+    method: "POST",
+    body: JSON.stringify({
+      reference_id: input.externalId.slice(0, 64),
+      session_type: "PAY",
+      mode: "PAYMENT_LINK",
+      amount: input.amount,
+      currency: "IDR",
+      country: "ID",
+      customer: {
+        reference_id: `market-snap-${createHash("sha256").update(input.customerEmail || input.externalId).digest("hex").slice(0, 24)}`,
+        type: "INDIVIDUAL",
+        email: input.customerEmail || undefined,
+        individual_detail: { given_names: input.customerName || "Market Snap Customer" }
+      },
+      items: items.map((item, index) => ({
+        reference_id: `${input.externalId}-${index + 1}`.slice(0, 255),
+        name: item.name.slice(0, 255),
+        type: item.category === "Shipping" || item.category === "Service Fee" ? "FEE" : "PHYSICAL_PRODUCT",
+        category: (item.category || "GROCERY").slice(0, 255),
+        net_unit_amount: item.price,
+        quantity: item.quantity,
+        currency: "IDR"
+      })),
+      capture_method: "AUTOMATIC",
+      locale: "id",
+      description: input.description.slice(0, 1000),
+      expires_at: new Date(Date.now() + invoiceDurationSeconds * 1000).toISOString(),
+      success_return_url: `${webOrigin}/payment/finish?order_id=${encodeURIComponent(input.externalId)}`,
+      cancel_return_url: `${webOrigin}/payment/error?order_id=${encodeURIComponent(input.externalId)}`,
+      metadata: { orderNumber: input.externalId, source: "market-snap" }
+    })
+  });
+  return normalizePaymentSession(response);
+}
+
+async function getPaymentSession(sessionId: string): Promise<XenditInvoice> {
+  return normalizePaymentSession(await xenditFetch(`/sessions/${encodeURIComponent(sessionId)}`));
+}
+
+async function xenditFetch(path: string, init: RequestInit = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12_000);
+  try {
+    const response = await fetch(`${baseUrl}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`,
+        "Content-Type": "application/json",
+        ...init.headers
+      }
+    });
+    const payload = await response.json().catch(() => ({})) as Record<string, unknown>;
+    if (!response.ok) throw new Error(`Xendit request failed (${response.status}): ${String(payload.message ?? payload.error_code ?? "unknown")}`);
+    return payload;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function normalizePaymentSession(value: Record<string, unknown>): XenditInvoice {
+  const id = String(value.payment_session_id ?? "");
+  if (!id) throw new Error("Xendit tidak mengembalikan payment session ID.");
+  const status = String(value.status ?? "ACTIVE");
+  return {
+    id,
+    payment_session_id: id,
+    external_id: String(value.reference_id ?? ""),
+    amount: Number(value.amount),
+    paid_amount: status === "COMPLETED" ? Number(value.amount) : undefined,
+    status: status === "ACTIVE" ? "PENDING" : status === "COMPLETED" ? "PAID" : status === "CANCELED" ? "CANCELLED" : status,
+    invoice_url: typeof value.payment_link_url === "string" ? value.payment_link_url : undefined,
+    expiry_date: typeof value.expires_at === "string" ? value.expires_at : undefined,
+    paid_at: status === "COMPLETED" && typeof value.updated === "string" ? value.updated : undefined,
+    payment_id: typeof value.payment_id === "string" ? value.payment_id : undefined,
+    currency: typeof value.currency === "string" ? value.currency : undefined
+  };
+}
+
+function assertHttpsReturnOrigin() {
+  if (new URL(webOrigin).protocol !== "https:" && process.env.NODE_ENV === "production") {
+    throw new Error("WEB_ORIGIN production wajib menggunakan HTTPS untuk Payment Session Xendit.");
+  }
 }
 
 function normalizeSdkInvoice(invoice: {

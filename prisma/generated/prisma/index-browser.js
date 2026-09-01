@@ -398,6 +398,16 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ContactMessageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  subject: 'subject',
+  message: 'message',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -496,7 +506,8 @@ exports.Prisma.ModelName = {
   VoucherUsage: 'VoucherUsage',
   StoreAdminRequest: 'StoreAdminRequest',
   Notification: 'Notification',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  ContactMessage: 'ContactMessage'
 };
 
 /**
